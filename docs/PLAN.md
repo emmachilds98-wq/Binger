@@ -27,18 +27,63 @@ Where things stand on 2026-10-18:
   end to end: **deck filters** and **feeling tags in scoring**. The other five
   are **designed** (canvas row 3) and need only their screens built and wired.
   Each one is a self-contained step in [Phase 2: build order](#phase-2-build-order).
-- **Checks:** `npm test` 90 passing, `npm run e2e` 32/32.
+- **Checks:** `npm test` 90 passing, `npm run e2e` 32/32. Re-run and
+  confirmed on `main` at `e86c79f` (2026-10-18 14:20 UTC), and CI is green there.
+- **Not live yet:** GitHub Pages is still off (the site URL returned 404 at
+  14:20 UTC). The repo is public, so Pages is free; turning it on is in
+  [Phase 1.1](#phase-11-go-live-needs-the-owner-).
+- **Default branch:** GitHub's default branch is still
+  `claude/happy-cerf-qei1lg` (the first build's working branch), not `main`.
+  Clone or branch from **`main`**: `git clone -b main …`, or
+  `git checkout main` after cloning.
 
 Do these in order:
 
 1. Run `npm run check && npm test && npm run e2e` to confirm a green start.
 2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
-   It has been blocked twice for want of a key, and Phase 2 adds four TMDB
+   It has been blocked three times for want of a key, and Phase 2 adds four TMDB
    endpoints that are still tested only against hand-written responses.
 3. Build Phase 2 steps 1 to 5 below, one PR each (or one PR with one commit
    each). Every step lists the design artboard, the functions that already
    exist, the files to touch and the checks to add.
 4. Tick the boxes here and add a [status log](#status-log) entry.
+
+### New to the project? (human engineers)
+
+Everything above applies to you too. This is the extra you need on day one.
+
+**The owner does these once** (repo owner: @emmachilds98-wq):
+1. **Settings → Collaborators** → add the engineer with write access.
+2. **Settings → General → Default branch** → switch to `main`, so the repo
+   page, clones and new PRs all start from current code.
+3. **Settings → Pages** → Deploy from a branch → `main` / `(root)` → Save.
+4. Optional: share the design canvas from its Share menu. Without it, the
+   copy in [design/canvas/](design/canvas/) has every screen's markup and copy.
+
+**Your setup** (about 15 minutes):
+- Node 20 or newer. There's no `npm install`: the app has no dependencies
+  and no build step.
+- `npm run check && npm test`: no network or key needed.
+- Browser run, the same way CI does it:
+  `npm i -g playwright@1.56.1 && npx playwright install chromium`, then
+  `PLAYWRIGHT_MODULE="$(npm root -g)/playwright" npm run e2e`.
+- `npm run serve`, then open http://localhost:8080. Anime works with no key.
+- Films and TV: get your own free TMDB key (themoviedb.org → Settings → API).
+  Paste it into the app (Taste → ⚙ → TMDB key → Test & save), and
+  `export TMDB_API_KEY=…` in your shell for [Verifying TMDB live](#verifying-tmdb-live).
+  **Never commit it.** The repo is public, and a test fails if
+  `js/config.js` holds a key.
+
+**How work flows:** branch from `main` → PR into `main` → CI (syntax, unit
+tests, browser run) must be green → merge. [CLAUDE.md](../CLAUDE.md) is
+written for AI agents but its rules apply to everyone, especially "one
+source of truth" and keeping `SHELL` in `service-worker.js` complete.
+Product decisions (what to build, how it should feel) go to the owner.
+Everything technical you need is in this file,
+[ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md).
+
+**Your first tasks:** the live TMDB check (once you have a key), then
+[Phase 2 step 1](#phase-2-build-order) (the streaming services picker).
 
 ---
 
@@ -153,14 +198,16 @@ Do these in order:
 
 ### Phase 1.1: Go live (needs the owner) ⏳
 - [x] Merge the first PR into `main`
-- [ ] Switch on GitHub Pages: repo **Settings → Pages → Build and deployment →
+- [ ] Set the default branch to `main`: repo **Settings → General → Default branch**
+      (it's still `claude/happy-cerf-qei1lg`, the first build's working branch)
+- [ ] Switch on GitHub Pages (still off at 2026-10-18 14:20 UTC): repo **Settings → Pages → Build and deployment →
       Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
       The app appears at `https://emmachilds98-wq.github.io/Binger/`
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
 - [ ] Add to Home Screen (Safari: Share → Add to Home Screen). On iPhone this
       also stops Safari clearing the library after 7 days unused.
 - [ ] **Verify films and TV against the live TMDB API.** Still not done: the
-      `TMDB_API_KEY` secret wasn't present in either session so far. Steps in
+      `TMDB_API_KEY` secret wasn't present in any of the three sessions so far. Steps in
       [Verifying TMDB live](#verifying-tmdb-live).
 
 ### Phase 2: Smarter suggestions ◐
@@ -280,6 +327,22 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-18 (third session): handover check for a new engineer
+- The owner asked for the handover to be ready in GitHub for a new engineer.
+  No code changed.
+- Verified the second session's state instead of trusting it: on `main` at
+  `e86c79f`, `npm run check` passes, `npm test` 90/90, `npm run e2e` 32/32,
+  and CI is green on that commit.
+- Found and wrote up three things a newcomer would trip on: GitHub's default
+  branch is still the first build's working branch (`claude/happy-cerf-qei1lg`,
+  which this PR brings level with `main`, but it'll fall behind again until
+  the owner switches the default to `main`); Pages is still off (404); and
+  there was no human-engineer setup. Added
+  [New to the project?](#new-to-the-project-human-engineers) and Phase 1.1 items.
+- **Blocking (unchanged):** live TMDB verification; `TMDB_API_KEY` wasn't
+  in this session either.
+- **Next:** the owner's one-time steps, then the live TMDB check, then Phase 2 step 1.
 
 ### 2026-10-18 (second session): Phase 2 logic, design, deck filters
 - `main` held only a README; the first build was waiting in an unmerged draft
