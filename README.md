@@ -22,6 +22,9 @@ teaches Binger your taste, and every card tells you why it was picked:
 - **Yours.** Your library stays on your device. Export/import backups anytime.
 
 **Plan, status and handover: [docs/PLAN.md](docs/PLAN.md)**. Start there.
+New to the project? Read its [Start here](docs/PLAN.md#start-here-next-session)
+and [New to the project?](docs/PLAN.md#new-to-the-project-human-engineers)
+sections, and work from the `main` branch.
 Phase 2 (streaming services, people, "not this franchise", new seasons, taste
 over time) is designed and its logic is built; the screens are next.
 

@@ -225,3 +225,12 @@ test('pickSeeds and sequelIdsToFetch read the library', () => {
   assert.deepEqual(seeds.tmdb, []);
   assert.deepEqual(sequelIdsToFetch(items), frieren.sequelIds);
 });
+
+test('a TMDB response with no id is refused, not turned into a broken title', async () => {
+  assert.equal(fromTmdbList({ results: [] }, 'movie'), null);
+  assert.equal(fromTmdbDetail({ results: [] }, 'movie', 'GB'), null);
+  const fetchImpl = fakeFetch([['/movie/6', { results: [] }]]);
+  const light = { ...fromTmdbList(fx('tmdb-trending-movie.json').results[3], 'movie'), via: [] };
+  const [same] = await hydrate([light], { tmdb: createTmdb({ key: 'k', fetchImpl }) });
+  assert.equal(same, light, 'hydrate keeps the original when details are unusable');
+});

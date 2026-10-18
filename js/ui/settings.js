@@ -4,12 +4,18 @@
 import { h, icon } from './dom.js';
 import { openSheet, closeButton, confirmSheet, choiceSheet, toast } from './sheet.js';
 import { toggle } from './taste.js';
+import { servicesSummary } from './services.js';
 
 const REGIONS = [
   ['GB', 'United Kingdom'], ['IE', 'Ireland'], ['US', 'United States'], ['CA', 'Canada'], ['AU', 'Australia'],
   ['NZ', 'New Zealand'], ['DE', 'Germany'], ['FR', 'France'], ['ES', 'Spain'], ['IT', 'Italy'], ['NL', 'Netherlands'],
   ['SE', 'Sweden'], ['NO', 'Norway'], ['DK', 'Denmark'], ['JP', 'Japan'], ['IN', 'India'], ['BR', 'Brazil'], ['MX', 'Mexico'],
 ];
+
+export function regionName(code) {
+  const hit = REGIONS.find(([c]) => c === code);
+  return hit ? hit[1] : code;
+}
 
 export function openSettings(ctx) {
   const sheet = openSheet({ label: 'Settings', variant: 'full', className: 'settings' });
@@ -29,6 +35,12 @@ export function openSettings(ctx) {
     keyStatus.classList.toggle('error', !result.ok);
     testBtn.disabled = false;
   });
+
+  // --- your services ---
+  const servicesLine = h('span', { class: 'small muted' }, servicesSummary(s.services));
+  const servicesBtn = h('button', { type: 'button', class: 'row-btn', onClick: () => ctx.onServices(() => {
+    servicesLine.textContent = servicesSummary(ctx.getState().settings.services);
+  }) }, h('span', { class: 'switch-text' }, h('span', { class: 'switch-label' }, 'Your streaming services'), servicesLine), icon('forward', 18));
 
   // --- region & playback ---
   const region = h('select', { id: 'region' }, REGIONS.map(([code, name]) => h('option', { value: code, selected: s.region === code }, name)));
@@ -70,7 +82,8 @@ export function openSettings(ctx) {
         h('div', { class: 'row-gap' }, testBtn, h('a', { href: 'https://www.themoviedb.org/settings/api', target: '_blank', rel: 'noopener', class: 'small' }, 'Get a key', icon('external', 14))),
         keyStatus),
       group('Where you watch',
-        field('Region (for streaming info and certificates)', 'region', region)),
+        field('Region (for streaming info and certificates)', 'region', region),
+        servicesBtn),
       group('Trailers',
         toggle('Autoplay trailer in details', 'Muted; tap the video for sound', s.autoplayTrailers, (v) => ctx.updateSettings({ autoplayTrailers: v })),
         field('Clip length', 'clip', clip)),
