@@ -20,6 +20,19 @@ export const SIGNAL = {
   watchedUnrated: 0.35, // you chose to watch it, but didn't say how it went
 };
 
+// Feeling tags fine-tune a rating. Two 4-star films aren't equal if you
+// called one "Rewatchable" and the other "Overhyped". The nudges are small
+// (capped at a quarter of a star's worth either way) so stars stay in charge.
+export const TAG_NUDGE = {
+  Gripping: 0.06, Funny: 0.04, Moving: 0.06, Beautiful: 0.04, Clever: 0.06,
+  'Comfort watch': 0.06, Rewatchable: 0.08,
+  Slow: -0.08, Confusing: -0.08, Overhyped: -0.1,
+};
+const TAG_CAP = 0.25;
+// "Slow" is also evidence about length: it counts against that title's length
+// bucket on its own, so several "Slow" tags on long films lower long films.
+export const SLOW_LENGTH_SIGNAL = -0.5;
+
 // Recent behaviour counts more, so the profile drifts as your taste does.
 export const HALF_LIFE_DAYS = { watched: 540, want: 180, pass: 120 };
 export const SHRINK = 1.5;
@@ -30,6 +43,17 @@ export function latestWatch(item) {
   const watches = (item.watches || []).filter((w) => w && w.date);
   if (!watches.length) return null;
   return watches.reduce((a, b) => (String(b.date) >= String(a.date) ? b : a));
+}
+
+// Tags from your most recent viewing (a rewatch can change your mind).
+export function latestTags(item) {
+  const w = latestWatch(item);
+  return (w && Array.isArray(w.tags)) ? w.tags : [];
+}
+
+export function tagNudge(tags) {
+  const sum = (tags || []).reduce((acc, t) => acc + (TAG_NUDGE[t] || 0), 0);
+  return clamp(sum, -TAG_CAP, TAG_CAP);
 }
 
 export function latestRating(item) {
@@ -58,9 +82,10 @@ export function itemSignal(item, baseline) {
     const r = latestRating(item);
     const w = latestWatch(item);
     const at = Date.parse((w && w.date) || item.updatedAt || item.addedAt || 0) || 0;
-    if (r == null) return { s: SIGNAL.watchedUnrated, at, halfLife: HALF_LIFE_DAYS.watched };
+    const nudge = tagNudge(latestTags(item));
+    if (r == null) return { s: SIGNAL.watchedUnrated + nudge, at, halfLife: HALF_LIFE_DAYS.watched };
     // Half absolute (3 stars = neutral), half relative to your own baseline.
-    const s = 0.5 * ((r - 3) / 2) + 0.5 * ((r - baseline) / 2);
+    const s = 0.5 * ((r - 3) / 2) + 0.5 * ((r - baseline) / 2) + nudge;
     return { s: clamp(s, -1.25, 1), at, halfLife: HALF_LIFE_DAYS.watched };
   }
   const at = Date.parse(item.updatedAt || item.addedAt || 0) || 0;
@@ -82,7 +107,9 @@ export function buildProfile(items, { now = Date.now() } = {}) {
   const N = new Map();
   const evidence = new Map();
   const people = new Map();
-  const stats = { items: 0, rated: 0, watched: 0, wants: 0, passes: 0, baseline, strength: 0 };
+  // hype: how often (recently) you've called something "Overhyped"; the
+  // score trusts trending lists less as it grows. tags: how often you use each.
+  const stats = { items: 0, rated: 0, watched: 0, wants: 0, passes: 0, baseline, strength: 0, hype: 0, tags: {} };
 
   for (const item of list) {
     if (!item || !item.title) continue;
@@ -97,9 +124,11 @@ export function buildProfile(items, { now = Date.now() } = {}) {
 
     const d = decay(sig.at, now, sig.halfLife);
     stats.strength += Math.abs(sig.s) * d;
+    const tags = item.status === 'watched' ? latestTags(item) : [];
+    for (const t of tags) stats.tags[t] = (stats.tags[t] || 0) + 1;
+    if (tags.includes('Overhyped')) stats.hype += d;
 
-    for (const f of featuresOf(item.title)) {
-      const v = sig.s * d * f.w;
+    const record = (f, v, extra = false) => {
       P.set(f.key, (P.get(f.key) || 0) + v);
       N.set(f.key, (N.get(f.key) || 0) + Math.abs(v));
       let e = evidence.get(f.key);
@@ -107,11 +136,15 @@ export function buildProfile(items, { now = Date.now() } = {}) {
         e = { key: f.key, group: f.group, label: f.label, n: 0, pos: 0, neg: 0, best: null };
         evidence.set(f.key, e);
       }
-      e.n += 1;
+      if (!extra) e.n += 1;
       if (v > 0) e.pos += 1; else if (v < 0) e.neg += 1;
       if (v > 0 && (!e.best || v > e.best.strength)) {
         e.best = { id: item.id, title: item.title.title, rating, strength: v };
       }
+    };
+    for (const f of featuresOf(item.title)) {
+      record(f, sig.s * d * f.w);
+      if (f.group === 'length' && tags.includes('Slow')) record(f, SLOW_LENGTH_SIGNAL * d * f.w, true);
     }
 
     // People you'd recognise: anyone in something you've watched or want to.

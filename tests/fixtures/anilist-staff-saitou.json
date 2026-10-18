@@ -1,0 +1,3119 @@
+{
+ "data": {
+  "Staff": {
+   "id": 134254,
+   "name": {
+    "full": "Keiichirou Saitou"
+   },
+   "image": {
+    "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n134254-bqcsuWzJr87n.png",
+    "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n134254-bqcsuWzJr87n.png"
+   },
+   "primaryOccupations": [
+    "Director",
+    "Animator"
+   ],
+   "siteUrl": "https://anilist.co/staff/134254",
+   "characterMedia": {
+    "edges": []
+   },
+   "staffMedia": {
+    "edges": [
+     {
+      "staffRole": "Director",
+      "node": {
+       "id": 154587,
+       "type": "ANIME",
+       "title": {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey’s End"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 28,
+       "duration": 24,
+       "season": "FALL",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 9,
+        "day": 29
+       },
+       "endDate": {
+        "year": 2024,
+        "month": 3,
+        "day": 22
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+       "genres": [
+        "Adventure",
+        "Drama",
+        "Fantasy"
+       ],
+       "averageScore": 91,
+       "popularity": 490681,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+        "color": "#bbf1a1"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+       "trailer": {
+        "id": "tR8YH0G67Rk",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Travel",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Magic",
+         "rank": 95,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Elf",
+         "rank": 91,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 85,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Philosophy",
+         "rank": 84,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Time Skip",
+         "rank": 82,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Medieval",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Found Family",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Kuudere",
+         "rank": 75,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Demons",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Shounen",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Foreign",
+         "rank": 69,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Iyashikei",
+         "rank": 63,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Adoption",
+         "rank": 61,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rural",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Aromantic",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dungeon",
+         "rank": 56,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Asexual",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Episodic",
+         "rank": 54,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Religion",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rotoscoping",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Snowscape",
+         "rank": 43,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Spearplay",
+         "rank": 42,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dragons",
+         "rank": 38,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "CGI",
+         "rank": 37,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Food",
+         "rank": 36,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Horticulture",
+         "rank": 30,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 245,
+          "name": "Toho"
+         },
+         {
+          "id": 11,
+          "name": "MADHOUSE"
+         },
+         {
+          "id": 6161,
+          "name": "Shogakukan"
+         },
+         {
+          "id": 6620,
+          "name": "Nippon Television Network"
+         },
+         {
+          "id": 62,
+          "name": "Shogakukan-Shueisha Productions"
+         },
+         {
+          "id": 17,
+          "name": "Aniplex"
+         },
+         {
+          "id": 53,
+          "name": "Dentsu"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 122202,
+           "name": {
+            "full": "Kanehito Yamada"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 170189,
+           "name": {
+            "full": "Tsukasa Abe"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134254,
+           "name": {
+            "full": "Keiichirou Saitou"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 119119,
+           "name": {
+            "full": "Tomohiro Suzuki"
+           }
+          }
+         },
+         {
+          "role": "Action Director",
+          "node": {
+           "id": 131949,
+           "name": {
+            "full": "Tooru Iwazawa"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 140343,
+           "name": {
+            "full": "Reiko Nagasawa"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Frieren"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 112215,
+            "name": {
+             "full": "Atsumi Tanezaki"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Fern"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 124390,
+            "name": {
+             "full": "Kana Ichinose"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Stark"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 133507,
+            "name": {
+             "full": "Chiaki Kobayashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+            }
+           },
+           {
+            "id": 115100,
+            "name": {
+             "full": "Arisa Kiyoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Himmel"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95270,
+            "name": {
+             "full": "Nobuhiko Okamoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Heiter"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95236,
+            "name": {
+             "full": "Hiroki Touchi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Eisen"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95926,
+            "name": {
+             "full": "Youji Ueda"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 169811,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 175691,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://frieren-anime.jp/",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2090295",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+         "isDisabled": false
+        },
+        {
+         "site": "TikTok",
+         "type": "SOCIAL",
+         "url": "https://www.tiktok.com/@anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81726714",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+         "isDisabled": false
+        },
+        {
+         "site": "Amazon Prime Video",
+         "type": "STREAMING",
+         "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/154587"
+      }
+     },
+     {
+      "staffRole": "Storyboard (OP1, OP2, eps 1, 11, 21, 26, 28)",
+      "node": {
+       "id": 154587,
+       "type": "ANIME",
+       "title": {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey’s End"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 28,
+       "duration": 24,
+       "season": "FALL",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 9,
+        "day": 29
+       },
+       "endDate": {
+        "year": 2024,
+        "month": 3,
+        "day": 22
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+       "genres": [
+        "Adventure",
+        "Drama",
+        "Fantasy"
+       ],
+       "averageScore": 91,
+       "popularity": 490681,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+        "color": "#bbf1a1"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+       "trailer": {
+        "id": "tR8YH0G67Rk",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Travel",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Magic",
+         "rank": 95,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Elf",
+         "rank": 91,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 85,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Philosophy",
+         "rank": 84,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Time Skip",
+         "rank": 82,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Medieval",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Found Family",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Kuudere",
+         "rank": 75,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Demons",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Shounen",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Foreign",
+         "rank": 69,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Iyashikei",
+         "rank": 63,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Adoption",
+         "rank": 61,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rural",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Aromantic",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dungeon",
+         "rank": 56,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Asexual",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Episodic",
+         "rank": 54,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Religion",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rotoscoping",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Snowscape",
+         "rank": 43,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Spearplay",
+         "rank": 42,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dragons",
+         "rank": 38,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "CGI",
+         "rank": 37,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Food",
+         "rank": 36,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Horticulture",
+         "rank": 30,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 245,
+          "name": "Toho"
+         },
+         {
+          "id": 11,
+          "name": "MADHOUSE"
+         },
+         {
+          "id": 6161,
+          "name": "Shogakukan"
+         },
+         {
+          "id": 6620,
+          "name": "Nippon Television Network"
+         },
+         {
+          "id": 62,
+          "name": "Shogakukan-Shueisha Productions"
+         },
+         {
+          "id": 17,
+          "name": "Aniplex"
+         },
+         {
+          "id": 53,
+          "name": "Dentsu"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 122202,
+           "name": {
+            "full": "Kanehito Yamada"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 170189,
+           "name": {
+            "full": "Tsukasa Abe"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134254,
+           "name": {
+            "full": "Keiichirou Saitou"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 119119,
+           "name": {
+            "full": "Tomohiro Suzuki"
+           }
+          }
+         },
+         {
+          "role": "Action Director",
+          "node": {
+           "id": 131949,
+           "name": {
+            "full": "Tooru Iwazawa"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 140343,
+           "name": {
+            "full": "Reiko Nagasawa"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Frieren"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 112215,
+            "name": {
+             "full": "Atsumi Tanezaki"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Fern"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 124390,
+            "name": {
+             "full": "Kana Ichinose"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Stark"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 133507,
+            "name": {
+             "full": "Chiaki Kobayashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+            }
+           },
+           {
+            "id": 115100,
+            "name": {
+             "full": "Arisa Kiyoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Himmel"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95270,
+            "name": {
+             "full": "Nobuhiko Okamoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Heiter"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95236,
+            "name": {
+             "full": "Hiroki Touchi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Eisen"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95926,
+            "name": {
+             "full": "Youji Ueda"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 169811,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 175691,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://frieren-anime.jp/",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2090295",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+         "isDisabled": false
+        },
+        {
+         "site": "TikTok",
+         "type": "SOCIAL",
+         "url": "https://www.tiktok.com/@anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81726714",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+         "isDisabled": false
+        },
+        {
+         "site": "Amazon Prime Video",
+         "type": "STREAMING",
+         "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/154587"
+      }
+     },
+     {
+      "staffRole": "Episode Director (OP1, OP2, ep 28)",
+      "node": {
+       "id": 154587,
+       "type": "ANIME",
+       "title": {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey’s End"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 28,
+       "duration": 24,
+       "season": "FALL",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 9,
+        "day": 29
+       },
+       "endDate": {
+        "year": 2024,
+        "month": 3,
+        "day": 22
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+       "genres": [
+        "Adventure",
+        "Drama",
+        "Fantasy"
+       ],
+       "averageScore": 91,
+       "popularity": 490681,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+        "color": "#bbf1a1"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+       "trailer": {
+        "id": "tR8YH0G67Rk",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Travel",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Magic",
+         "rank": 95,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Elf",
+         "rank": 91,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 85,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Philosophy",
+         "rank": 84,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Time Skip",
+         "rank": 82,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Medieval",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Found Family",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Kuudere",
+         "rank": 75,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Demons",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Shounen",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Foreign",
+         "rank": 69,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Iyashikei",
+         "rank": 63,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Adoption",
+         "rank": 61,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rural",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Aromantic",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dungeon",
+         "rank": 56,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Asexual",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Episodic",
+         "rank": 54,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Religion",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rotoscoping",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Snowscape",
+         "rank": 43,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Spearplay",
+         "rank": 42,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dragons",
+         "rank": 38,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "CGI",
+         "rank": 37,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Food",
+         "rank": 36,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Horticulture",
+         "rank": 30,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 245,
+          "name": "Toho"
+         },
+         {
+          "id": 11,
+          "name": "MADHOUSE"
+         },
+         {
+          "id": 6161,
+          "name": "Shogakukan"
+         },
+         {
+          "id": 6620,
+          "name": "Nippon Television Network"
+         },
+         {
+          "id": 62,
+          "name": "Shogakukan-Shueisha Productions"
+         },
+         {
+          "id": 17,
+          "name": "Aniplex"
+         },
+         {
+          "id": 53,
+          "name": "Dentsu"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 122202,
+           "name": {
+            "full": "Kanehito Yamada"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 170189,
+           "name": {
+            "full": "Tsukasa Abe"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134254,
+           "name": {
+            "full": "Keiichirou Saitou"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 119119,
+           "name": {
+            "full": "Tomohiro Suzuki"
+           }
+          }
+         },
+         {
+          "role": "Action Director",
+          "node": {
+           "id": 131949,
+           "name": {
+            "full": "Tooru Iwazawa"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 140343,
+           "name": {
+            "full": "Reiko Nagasawa"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Frieren"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 112215,
+            "name": {
+             "full": "Atsumi Tanezaki"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Fern"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 124390,
+            "name": {
+             "full": "Kana Ichinose"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Stark"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 133507,
+            "name": {
+             "full": "Chiaki Kobayashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+            }
+           },
+           {
+            "id": 115100,
+            "name": {
+             "full": "Arisa Kiyoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Himmel"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95270,
+            "name": {
+             "full": "Nobuhiko Okamoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Heiter"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95236,
+            "name": {
+             "full": "Hiroki Touchi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Eisen"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95926,
+            "name": {
+             "full": "Youji Ueda"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 169811,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 175691,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://frieren-anime.jp/",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2090295",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+         "isDisabled": false
+        },
+        {
+         "site": "TikTok",
+         "type": "SOCIAL",
+         "url": "https://www.tiktok.com/@anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81726714",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+         "isDisabled": false
+        },
+        {
+         "site": "Amazon Prime Video",
+         "type": "STREAMING",
+         "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/154587"
+      }
+     },
+     {
+      "staffRole": "2nd Key Animation (OP2, ep 27)",
+      "node": {
+       "id": 154587,
+       "type": "ANIME",
+       "title": {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey’s End"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 28,
+       "duration": 24,
+       "season": "FALL",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 9,
+        "day": 29
+       },
+       "endDate": {
+        "year": 2024,
+        "month": 3,
+        "day": 22
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+       "genres": [
+        "Adventure",
+        "Drama",
+        "Fantasy"
+       ],
+       "averageScore": 91,
+       "popularity": 490681,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+        "color": "#bbf1a1"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+       "trailer": {
+        "id": "tR8YH0G67Rk",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Travel",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Magic",
+         "rank": 95,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Elf",
+         "rank": 91,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 85,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Philosophy",
+         "rank": 84,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Time Skip",
+         "rank": 82,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Medieval",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Found Family",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Kuudere",
+         "rank": 75,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Demons",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Shounen",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Foreign",
+         "rank": 69,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Iyashikei",
+         "rank": 63,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Adoption",
+         "rank": 61,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rural",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Aromantic",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dungeon",
+         "rank": 56,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Asexual",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Episodic",
+         "rank": 54,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Religion",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rotoscoping",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Snowscape",
+         "rank": 43,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Spearplay",
+         "rank": 42,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dragons",
+         "rank": 38,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "CGI",
+         "rank": 37,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Food",
+         "rank": 36,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Horticulture",
+         "rank": 30,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 245,
+          "name": "Toho"
+         },
+         {
+          "id": 11,
+          "name": "MADHOUSE"
+         },
+         {
+          "id": 6161,
+          "name": "Shogakukan"
+         },
+         {
+          "id": 6620,
+          "name": "Nippon Television Network"
+         },
+         {
+          "id": 62,
+          "name": "Shogakukan-Shueisha Productions"
+         },
+         {
+          "id": 17,
+          "name": "Aniplex"
+         },
+         {
+          "id": 53,
+          "name": "Dentsu"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 122202,
+           "name": {
+            "full": "Kanehito Yamada"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 170189,
+           "name": {
+            "full": "Tsukasa Abe"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134254,
+           "name": {
+            "full": "Keiichirou Saitou"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 119119,
+           "name": {
+            "full": "Tomohiro Suzuki"
+           }
+          }
+         },
+         {
+          "role": "Action Director",
+          "node": {
+           "id": 131949,
+           "name": {
+            "full": "Tooru Iwazawa"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 140343,
+           "name": {
+            "full": "Reiko Nagasawa"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Frieren"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 112215,
+            "name": {
+             "full": "Atsumi Tanezaki"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Fern"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 124390,
+            "name": {
+             "full": "Kana Ichinose"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Stark"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 133507,
+            "name": {
+             "full": "Chiaki Kobayashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+            }
+           },
+           {
+            "id": 115100,
+            "name": {
+             "full": "Arisa Kiyoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Himmel"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95270,
+            "name": {
+             "full": "Nobuhiko Okamoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Heiter"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95236,
+            "name": {
+             "full": "Hiroki Touchi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Eisen"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95926,
+            "name": {
+             "full": "Youji Ueda"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 169811,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 175691,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://frieren-anime.jp/",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2090295",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+         "isDisabled": false
+        },
+        {
+         "site": "TikTok",
+         "type": "SOCIAL",
+         "url": "https://www.tiktok.com/@anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81726714",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+         "isDisabled": false
+        },
+        {
+         "site": "Amazon Prime Video",
+         "type": "STREAMING",
+         "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/154587"
+      }
+     },
+     {
+      "staffRole": "Key Animation (ep 28)",
+      "node": {
+       "id": 154587,
+       "type": "ANIME",
+       "title": {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey’s End"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 28,
+       "duration": 24,
+       "season": "FALL",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 9,
+        "day": 29
+       },
+       "endDate": {
+        "year": 2024,
+        "month": 3,
+        "day": 22
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+       "genres": [
+        "Adventure",
+        "Drama",
+        "Fantasy"
+       ],
+       "averageScore": 91,
+       "popularity": 490681,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+        "color": "#bbf1a1"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+       "trailer": {
+        "id": "tR8YH0G67Rk",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Travel",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Magic",
+         "rank": 95,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Elf",
+         "rank": 91,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 85,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Philosophy",
+         "rank": 84,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Time Skip",
+         "rank": 82,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Medieval",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Found Family",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Kuudere",
+         "rank": 75,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Demons",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Shounen",
+         "rank": 71,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Foreign",
+         "rank": 69,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Iyashikei",
+         "rank": 63,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Adoption",
+         "rank": 61,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rural",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Aromantic",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dungeon",
+         "rank": 56,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Asexual",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Episodic",
+         "rank": 54,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Religion",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Rotoscoping",
+         "rank": 47,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Snowscape",
+         "rank": 43,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Spearplay",
+         "rank": 42,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Dragons",
+         "rank": 38,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "CGI",
+         "rank": 37,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Food",
+         "rank": 36,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Horticulture",
+         "rank": 30,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 245,
+          "name": "Toho"
+         },
+         {
+          "id": 11,
+          "name": "MADHOUSE"
+         },
+         {
+          "id": 6161,
+          "name": "Shogakukan"
+         },
+         {
+          "id": 6620,
+          "name": "Nippon Television Network"
+         },
+         {
+          "id": 62,
+          "name": "Shogakukan-Shueisha Productions"
+         },
+         {
+          "id": 17,
+          "name": "Aniplex"
+         },
+         {
+          "id": 53,
+          "name": "Dentsu"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 122202,
+           "name": {
+            "full": "Kanehito Yamada"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 170189,
+           "name": {
+            "full": "Tsukasa Abe"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134254,
+           "name": {
+            "full": "Keiichirou Saitou"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 119119,
+           "name": {
+            "full": "Tomohiro Suzuki"
+           }
+          }
+         },
+         {
+          "role": "Action Director",
+          "node": {
+           "id": 131949,
+           "name": {
+            "full": "Tooru Iwazawa"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 140343,
+           "name": {
+            "full": "Reiko Nagasawa"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Frieren"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 112215,
+            "name": {
+             "full": "Atsumi Tanezaki"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Fern"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 124390,
+            "name": {
+             "full": "Kana Ichinose"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Stark"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 133507,
+            "name": {
+             "full": "Chiaki Kobayashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+            }
+           },
+           {
+            "id": 115100,
+            "name": {
+             "full": "Arisa Kiyoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Himmel"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95270,
+            "name": {
+             "full": "Nobuhiko Okamoto"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Heiter"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95236,
+            "name": {
+             "full": "Hiroki Touchi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Eisen"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 95926,
+            "name": {
+             "full": "Youji Ueda"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 169811,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 175691,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://frieren-anime.jp/",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2090295",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+         "isDisabled": false
+        },
+        {
+         "site": "TikTok",
+         "type": "SOCIAL",
+         "url": "https://www.tiktok.com/@anime_frieren",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81726714",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+         "isDisabled": false
+        },
+        {
+         "site": "Amazon Prime Video",
+         "type": "STREAMING",
+         "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/154587"
+      }
+     },
+     {
+      "staffRole": "Key Animation (OP)",
+      "node": {
+       "id": 150672,
+       "type": "ANIME",
+       "title": {
+        "romaji": "[Oshi no Ko]",
+        "english": "OSHI NO KO"
+       },
+       "format": "TV",
+       "status": "FINISHED",
+       "episodes": 11,
+       "duration": 24,
+       "season": "SPRING",
+       "seasonYear": 2023,
+       "startDate": {
+        "year": 2023,
+        "month": 4,
+        "day": 12
+       },
+       "endDate": {
+        "year": 2023,
+        "month": 6,
+        "day": 28
+       },
+       "nextAiringEpisode": null,
+       "countryOfOrigin": "JP",
+       "isAdult": false,
+       "description": "When a pregnant young starlet appears in Gorou Amemiya’s countryside medical clinic, the doctor takes it upon himself to safely (and secretly) deliver Ai Hoshino’s child so she can make a scandal-free return to the stage. But no good deed goes unpunished, and on the eve of her delivery, he finds himself slain at the hands of Ai’s deluded stalker — and subsequently reborn as Ai’s child, Aquamarine Hoshino! The glitz and glamor of showbiz hide the dark underbelly of the entertainment industry, threatening to dull the shine of his favorite star. Can he help his new mother rise to the top of the charts? And what will he do when unthinkable disaster strikes? <br>\n<br>\n(Source: HIDIVE)\n<br><br>\n\n<i>Note: Episode 1<b>【推しの子】Mother and Children</b> was pre-screened in advance in Japanese theaters on March 17, 2023. The regular TV broadcast began on April 12, 2023. The first episode has an extended runtime of ~82 minutes.</i>",
+       "genres": [
+        "Drama",
+        "Mystery",
+        "Psychological",
+        "Supernatural"
+       ],
+       "averageScore": 84,
+       "popularity": 334165,
+       "coverImage": {
+        "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx150672-WqmmwZ4nMzAy.png",
+        "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx150672-WqmmwZ4nMzAy.png",
+        "color": "#ff35c9"
+       },
+       "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/150672-ISwoA0eS722H.jpg",
+       "trailer": {
+        "id": "gKWEUJ4r5do",
+        "site": "youtube"
+       },
+       "tags": [
+        {
+         "name": "Acting",
+         "rank": 96,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Tragedy",
+         "rank": 93,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Idol",
+         "rank": 92,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Revenge",
+         "rank": 89,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Twins",
+         "rank": 83,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Male Protagonist",
+         "rank": 83,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Urban",
+         "rank": 82,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Reincarnation",
+         "rank": 80,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Heterosexual",
+         "rank": 79,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Detective",
+         "rank": 78,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Ensemble Cast",
+         "rank": 76,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Coming of Age",
+         "rank": 73,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Female Protagonist",
+         "rank": 72,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Anti-Hero",
+         "rank": 72,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Time Skip",
+         "rank": 70,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Orphan",
+         "rank": 70,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Pregnancy",
+         "rank": 70,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Age Regression",
+         "rank": 67,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Tsundere",
+         "rank": 65,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Filmmaking",
+         "rank": 64,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Seinen",
+         "rank": 64,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Bullying",
+         "rank": 62,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Love Triangle",
+         "rank": 60,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Fake Relationship",
+         "rank": 60,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Unrequited Love",
+         "rank": 60,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Primarily Female Cast",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Family Life",
+         "rank": 58,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Urban Fantasy",
+         "rank": 55,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Suicide",
+         "rank": 53,
+         "isMediaSpoiler": true
+        },
+        {
+         "name": "Fashion",
+         "rank": 53,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "School",
+         "rank": 52,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Otaku Culture",
+         "rank": 52,
+         "isMediaSpoiler": false
+        },
+        {
+         "name": "Female Harem",
+         "rank": 44,
+         "isMediaSpoiler": false
+        }
+       ],
+       "studios": {
+        "nodes": [
+         {
+          "id": 95,
+          "name": "Doga Kobo"
+         },
+         {
+          "id": 6698,
+          "name": "KADOKAWA"
+         },
+         {
+          "id": 6570,
+          "name": "Shueisha"
+         },
+         {
+          "id": 95,
+          "name": "Doga Kobo"
+         },
+         {
+          "id": 7232,
+          "name": "CyberAgent"
+         }
+        ]
+       },
+       "staff": {
+        "edges": [
+         {
+          "role": "Original Story",
+          "node": {
+           "id": 97139,
+           "name": {
+            "full": "Aka Akasaka"
+           }
+          }
+         },
+         {
+          "role": "Original Character Design",
+          "node": {
+           "id": 108173,
+           "name": {
+            "full": "Mengo Yokoyari"
+           }
+          }
+         },
+         {
+          "role": "Director",
+          "node": {
+           "id": 134794,
+           "name": {
+            "full": "Daisuke Hiramaki"
+           }
+          }
+         },
+         {
+          "role": "Assistant Director",
+          "node": {
+           "id": 156946,
+           "name": {
+            "full": "Ciao Nekotomi"
+           }
+          }
+         },
+         {
+          "role": "Series Composition",
+          "node": {
+           "id": 122441,
+           "name": {
+            "full": "Jin Tanaka"
+           }
+          }
+         },
+         {
+          "role": "Character Design",
+          "node": {
+           "id": 131185,
+           "name": {
+            "full": "Kanna Hirayama"
+           }
+          }
+         }
+        ]
+       },
+       "characters": {
+        "edges": [
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Aquamarine Hoshino"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 128426,
+            "name": {
+             "full": "Takeo Ootsuka"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n128426-uB8KFqVLbogF.png"
+            }
+           },
+           {
+            "id": 106784,
+            "name": {
+             "full": "Yumi Uchiyama"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106784-reDoHBLWxi7J.jpg"
+            }
+           },
+           {
+            "id": 122874,
+            "name": {
+             "full": "Kento Itou"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n122874-Ay8XWEJ7ljUf.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Ruby Hoshino"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 293910,
+            "name": {
+             "full": "Yurie Igoma"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n293910-UBwHydgOrXO6.png"
+            }
+           },
+           {
+            "id": 122320,
+            "name": {
+             "full": "Tomoyo Takayanagi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n122320-tV8CERbhYcNV.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "MAIN",
+          "node": {
+           "name": {
+            "full": "Kana Arima"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 107961,
+            "name": {
+             "full": "Megumi Han"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n107961-aMetTdEFTi2W.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Akane Kurokawa"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 121821,
+            "name": {
+             "full": "Manaka Iwami"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n121821-tQSkHZEuB3XH.png"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "Ai Hoshino"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 119331,
+            "name": {
+             "full": "Rie Takahashi"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119331-5dPuMCxu4RWf.jpg"
+            }
+           }
+          ]
+         },
+         {
+          "role": "SUPPORTING",
+          "node": {
+           "name": {
+            "full": "MEM-cho"
+           }
+          },
+          "voiceActors": [
+           {
+            "id": 107041,
+            "name": {
+             "full": "Rumi Ookubo"
+            },
+            "image": {
+             "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n107041-ZqPloXZhcuQw.jpg"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 117195,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 164117,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 166531,
+           "type": "ANIME"
+          }
+         }
+        ]
+       },
+       "externalLinks": [
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/anime_oshinoko",
+         "isDisabled": false
+        },
+        {
+         "site": "Official Site",
+         "type": "INFO",
+         "url": "https://ichigoproduction.com/Season1/",
+         "isDisabled": false
+        },
+        {
+         "site": "HIDIVE",
+         "type": "STREAMING",
+         "url": "https://www.hidive.com/tv/oshi-no-ko",
+         "isDisabled": false
+        },
+        {
+         "site": "Twitter",
+         "type": "SOCIAL",
+         "url": "https://twitter.com/oshinoko_global",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/playlist?list=PLxSscENEp7Jhas5i3D5PMB2HNS6Z6HJF2",
+         "isDisabled": false
+        },
+        {
+         "site": "Bilibili TV",
+         "type": "STREAMING",
+         "url": "https://www.bilibili.tv/en/media/2080019",
+         "isDisabled": false
+        },
+        {
+         "site": "YouTube",
+         "type": "STREAMING",
+         "url": "https://www.youtube.com/@anime_oshinoko",
+         "isDisabled": false
+        },
+        {
+         "site": "iQ",
+         "type": "STREAMING",
+         "url": "https://www.iq.com/album/1jvbmah70pd",
+         "isDisabled": false
+        },
+        {
+         "site": "Netflix",
+         "type": "STREAMING",
+         "url": "https://www.netflix.com/title/81684733",
+         "isDisabled": false
+        },
+        {
+         "site": "Hulu",
+         "type": "STREAMING",
+         "url": "https://www.hulu.com/series/oshi-no-ko-9f96dac7-a7cf-4546-87a5-069cb101f174",
+         "isDisabled": false
+        },
+        {
+         "site": "Crunchyroll",
+         "type": "STREAMING",
+         "url": "https://www.crunchyroll.com/series/GT00366791/oshi-no-ko",
+         "isDisabled": false
+        },
+        {
+         "site": "Disney Plus",
+         "type": "STREAMING",
+         "url": "https://www.disneyplus.com/browse/entity-9f96dac7-a7cf-4546-87a5-069cb101f174?season=782c38b7-ad71-48fc-87e4-e6b9ad7f13e4",
+         "isDisabled": false
+        }
+       ],
+       "siteUrl": "https://anilist.co/anime/150672"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

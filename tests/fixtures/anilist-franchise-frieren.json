@@ -1,0 +1,224 @@
+{
+ "data": {
+  "Media": {
+   "id": 154587,
+   "title": {
+    "english": "Frieren: Beyond Journey’s End",
+    "romaji": "Sousou no Frieren"
+   },
+   "relations": {
+    "edges": [
+     {
+      "relationType": "SOURCE",
+      "node": {
+       "id": 118586,
+       "type": "MANGA",
+       "title": {
+        "english": "Frieren: Beyond Journey’s End",
+        "romaji": "Sousou no Frieren"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "ADAPTATION",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 173310,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 179850,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "ADAPTATION",
+          "node": {
+           "id": 182255,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "ADAPTATION",
+          "node": {
+           "id": 209939,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "relationType": "CHARACTER",
+      "node": {
+       "id": 169811,
+       "type": "ANIME",
+       "title": {
+        "english": "The Brave",
+        "romaji": "Yuusha"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "CHARACTER",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "relationType": "SIDE_STORY",
+      "node": {
+       "id": 170068,
+       "type": "ANIME",
+       "title": {
+        "english": null,
+        "romaji": "Sousou no Frieren: ●● no Mahou"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "PARENT",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 189513,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "relationType": "OTHER",
+      "node": {
+       "id": 175691,
+       "type": "ANIME",
+       "title": {
+        "english": "Sunny",
+        "romaji": "Haru"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "OTHER",
+          "node": {
+           "id": 186083,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "relationType": "SEQUEL",
+      "node": {
+       "id": 182255,
+       "type": "ANIME",
+       "title": {
+        "english": "Frieren: Beyond Journey’s End Season 2",
+        "romaji": "Sousou no Frieren 2nd Season"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "SOURCE",
+          "node": {
+           "id": 118586,
+           "type": "MANGA"
+          }
+         },
+         {
+          "relationType": "PREQUEL",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SIDE_STORY",
+          "node": {
+           "id": 206425,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 209939,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "relationType": "SIDE_STORY",
+      "node": {
+       "id": 189513,
+       "type": "ANIME",
+       "title": {
+        "english": null,
+        "romaji": "Sousou no Frieren: ●● no Mahou Part 2"
+       },
+       "relations": {
+        "edges": [
+         {
+          "relationType": "PREQUEL",
+          "node": {
+           "id": 170068,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "PARENT",
+          "node": {
+           "id": 154587,
+           "type": "ANIME"
+          }
+         },
+         {
+          "relationType": "SEQUEL",
+          "node": {
+           "id": 206425,
+           "type": "ANIME"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

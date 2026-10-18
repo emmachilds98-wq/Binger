@@ -1,0 +1,213 @@
+{
+  "_note": "Hand-written to TMDB's documented /person/{id}?append_to_response=combined_credits shape. Not a live capture.",
+  "adult": false,
+  "biography": "An American actor.",
+  "birthday": "1995-12-27",
+  "id": 1190668,
+  "known_for_department": "Acting",
+  "name": "Timothée Chalamet",
+  "popularity": 60.1,
+  "profile_path": "/tc.jpg",
+  "combined_credits": {
+    "cast": [
+      {
+        "adult": false,
+        "id": 693134,
+        "media_type": "movie",
+        "title": "Dune: Part Two",
+        "character": "Paul Atreides",
+        "order": 0,
+        "genre_ids": [
+          878,
+          12
+        ],
+        "original_language": "en",
+        "release_date": "2024-02-27",
+        "poster_path": "/p1.jpg",
+        "vote_average": 8.1,
+        "vote_count": 7000,
+        "popularity": 120.5,
+        "credit_id": "c1"
+      },
+      {
+        "adult": false,
+        "id": 438631,
+        "media_type": "movie",
+        "title": "Dune",
+        "character": "Paul Atreides",
+        "order": 0,
+        "genre_ids": [
+          878,
+          12
+        ],
+        "original_language": "en",
+        "release_date": "2021-09-15",
+        "poster_path": "/d1.jpg",
+        "vote_average": 7.8,
+        "vote_count": 12000,
+        "popularity": 80,
+        "credit_id": "c2"
+      },
+      {
+        "adult": false,
+        "id": 331482,
+        "media_type": "movie",
+        "title": "Little Women",
+        "character": "Theodore 'Laurie' Laurence",
+        "order": 3,
+        "genre_ids": [
+          18,
+          10749
+        ],
+        "original_language": "en",
+        "release_date": "2019-12-25",
+        "poster_path": "/lw.jpg",
+        "vote_average": 7.9,
+        "vote_count": 6000,
+        "popularity": 40,
+        "credit_id": "c3"
+      },
+      {
+        "adult": false,
+        "id": 157336,
+        "media_type": "movie",
+        "title": "Interstellar",
+        "character": "Young Tom",
+        "order": 9,
+        "genre_ids": [
+          12,
+          18,
+          878
+        ],
+        "original_language": "en",
+        "release_date": "2014-11-05",
+        "poster_path": "/i.jpg",
+        "vote_average": 8.4,
+        "vote_count": 35000,
+        "popularity": 150,
+        "credit_id": "c4"
+      },
+      {
+        "adult": false,
+        "id": 1407,
+        "media_type": "tv",
+        "name": "Homeland",
+        "character": "Finn Walden",
+        "episode_count": 8,
+        "genre_ids": [
+          18,
+          80,
+          9648
+        ],
+        "original_language": "en",
+        "origin_country": [
+          "US"
+        ],
+        "first_air_date": "2011-10-02",
+        "poster_path": "/h.jpg",
+        "vote_average": 7.6,
+        "vote_count": 3000,
+        "popularity": 50,
+        "credit_id": "c5"
+      },
+      {
+        "adult": false,
+        "id": 59941,
+        "media_type": "tv",
+        "name": "The Tonight Show Starring Jimmy Fallon",
+        "character": "Self",
+        "episode_count": 3,
+        "genre_ids": [
+          10767,
+          35
+        ],
+        "original_language": "en",
+        "first_air_date": "2014-02-17",
+        "poster_path": "/ts.jpg",
+        "vote_average": 5.8,
+        "vote_count": 400,
+        "popularity": 90,
+        "credit_id": "c6"
+      },
+      {
+        "adult": false,
+        "id": 5000001,
+        "media_type": "movie",
+        "title": "Obscure Short",
+        "character": "Boy",
+        "order": 1,
+        "genre_ids": [
+          18
+        ],
+        "original_language": "en",
+        "release_date": "2009-01-01",
+        "poster_path": null,
+        "vote_average": 0,
+        "vote_count": 0,
+        "popularity": 0.6,
+        "credit_id": "c7"
+      },
+      {
+        "adult": false,
+        "id": 787699,
+        "media_type": "movie",
+        "title": "Wonka",
+        "character": "Willy Wonka",
+        "order": 0,
+        "genre_ids": [
+          35,
+          10751,
+          14
+        ],
+        "original_language": "en",
+        "release_date": "2023-12-06",
+        "poster_path": "/w.jpg",
+        "vote_average": 7.2,
+        "vote_count": 4000,
+        "popularity": 70,
+        "credit_id": "c8"
+      }
+    ],
+    "crew": [
+      {
+        "adult": false,
+        "id": 661539,
+        "media_type": "movie",
+        "title": "A Complete Unknown",
+        "job": "Producer",
+        "department": "Production",
+        "genre_ids": [
+          18,
+          10402
+        ],
+        "original_language": "en",
+        "release_date": "2024-12-18",
+        "poster_path": "/acu.jpg",
+        "vote_average": 7.3,
+        "vote_count": 900,
+        "popularity": 45,
+        "credit_id": "c9"
+      },
+      {
+        "adult": false,
+        "id": 787699,
+        "media_type": "movie",
+        "title": "Wonka",
+        "job": "Screenplay",
+        "department": "Writing",
+        "genre_ids": [
+          35,
+          10751,
+          14
+        ],
+        "original_language": "en",
+        "release_date": "2023-12-06",
+        "poster_path": "/w.jpg",
+        "vote_average": 7.2,
+        "vote_count": 4000,
+        "popularity": 70,
+        "credit_id": "c10"
+      }
+    ]
+  }
+}

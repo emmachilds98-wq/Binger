@@ -14,7 +14,8 @@
 //   status: 'want' | 'watched' | 'passed',
 //   addedAt, updatedAt,                   // ISO strings
 //   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '' }],
-//   via: [...]                            // why Binger showed it (if it did)
+//   via: [...],                           // why Binger showed it (if it did)
+//   dismissed: ['s3'],                    // new-season alerts you've waved away
 // }
 
 export const SCHEMA = 1;
@@ -29,6 +30,9 @@ export const DEFAULT_SETTINGS = {
   autoplayTrailers: true,
   clipSeconds: 30,
   voiceLanguage: 'JAPANESE',
+  services: [],          // canonical names (sources/services.js): ['Netflix', 'Crunchyroll']
+  streamOnly: false,     // true: hide what isn't on your services; false: just lift what is
+  hiddenFranchises: [],  // [{ key, name, ids: [titleId...] }]: "Not this franchise"
 };
 
 export const TAGS = ['Gripping', 'Funny', 'Moving', 'Beautiful', 'Clever', 'Comfort watch', 'Rewatchable', 'Slow', 'Confusing', 'Overhyped'];
@@ -37,7 +41,7 @@ const SNAPSHOT_KEYS = [
   'id', 'source', 'sourceId', 'mediaType', 'kind', 'title', 'originalTitle', 'year', 'releaseDate', 'lastAirDate',
   'overview', 'poster', 'backdrop', 'color', 'genres', 'keywords', 'studios', 'language', 'runtime', 'episodes',
   'seasons', 'format', 'formatLabel', 'score', 'votes', 'trailer', 'url', 'networks', 'certification',
-  'prequelIds', 'sequelIds', 'detailed',
+  'prequelIds', 'sequelIds', 'franchiseIds', 'collection', 'detailed',
 ];
 
 // Enough of a Title to show it in your library and learn from it, without
@@ -159,6 +163,25 @@ export function setOnboarded(state, value = true) {
   return { ...state, onboarded: value };
 }
 
+// "Not this franchise": never suggest anything in this series again.
+export function hideFranchise(state, franchise) {
+  if (!franchise || !franchise.key) return state;
+  const rest = state.settings.hiddenFranchises.filter((f) => f.key !== franchise.key);
+  const entry = { key: franchise.key, name: String(franchise.name || 'Untitled series'), ids: [...new Set(franchise.ids || [])] };
+  return updateSettings(state, { hiddenFranchises: [...rest, entry] });
+}
+
+export function unhideFranchise(state, key) {
+  return updateSettings(state, { hiddenFranchises: state.settings.hiddenFranchises.filter((f) => f.key !== key) });
+}
+
+// Wave away a "new season" alert (key: 's3') without logging a watch.
+export function dismissAlert(state, id, key, now = Date.now()) {
+  const prev = state.items[id];
+  if (!prev || (prev.dismissed || []).includes(key)) return state;
+  return withItem(state, id, { ...prev, dismissed: [...(prev.dismissed || []), key], updatedAt: iso(now) });
+}
+
 export function watchlist(state) {
   return Object.values(state.items).filter((it) => it.status === 'want')
     .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)));
@@ -185,6 +208,10 @@ export function migrate(raw, now = Date.now()) {
   out.settings = { ...base.settings, ...(isObj(raw.settings) ? raw.settings : {}) };
   out.settings.mix = { ...base.settings.mix, ...(isObj(out.settings.mix) ? out.settings.mix : {}) };
   if (!Array.isArray(out.settings.hiddenGenres)) out.settings.hiddenGenres = [];
+  out.settings.services = Array.isArray(out.settings.services) ? out.settings.services.filter((x) => typeof x === 'string') : [];
+  out.settings.streamOnly = !!out.settings.streamOnly;
+  out.settings.hiddenFranchises = Array.isArray(out.settings.hiddenFranchises)
+    ? out.settings.hiddenFranchises.filter((f) => isObj(f) && typeof f.key === 'string' && Array.isArray(f.ids)) : [];
   const items = {};
   for (const [id, it] of Object.entries(isObj(raw.items) ? raw.items : {})) {
     if (!isObj(it) || !isObj(it.title) || !it.title.id || it.title.id !== id) continue;

@@ -11,7 +11,7 @@ import { DECK_FORMATS } from './anilist.js';
 import { mapLimit, DAY } from './http.js';
 
 // When a title arrives by several routes, the most personal reason wins.
-const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, trending: 4, popular: 5, search: 6 };
+const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, stream: 4, trending: 5, popular: 6, search: 7 };
 
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
@@ -66,11 +66,32 @@ export function seedVia(seed) {
   };
 }
 
-export async function gatherCandidates({ tmdb, anilist, items = {}, profile, settings = {}, now = Date.now(), rng = Math.random }) {
+// TMDB date range for the deck's decade filter.
+export function decadeDates(decade) {
+  if (decade === 'older') return { from: null, to: '1979-12-31' };
+  if (typeof decade === 'number') return { from: `${decade}-01-01`, to: `${decade + 9}-12-31` };
+  return null;
+}
+
+// Your services -> TMDB provider ids in your region (one service can have
+// several ids: "Netflix" and "Netflix Standard with Ads").
+export async function providerIdsFor(tmdb, services) {
+  if (!tmdb || !tmdb.hasKey || !services || !services.length) return [];
+  const lists = await Promise.all(['movie', 'tv'].map((m) => tmdb.providers(m).catch(() => [])));
+  const ids = new Set();
+  for (const p of lists.flat()) if (services.includes(p.service)) p.ids.forEach((id) => ids.add(id));
+  return [...ids];
+}
+
+// filters: the deck's session filters { short: boolean, decade: 2020 | ... | 'older' | null }.
+export async function gatherCandidates({ tmdb, anilist, items = {}, profile, settings = {}, filters = null, now = Date.now(), rng = Math.random }) {
   const pool = new Map();
   const errors = [];
   const mix = settings.mix || DEFAULT_MIX;
   const wants = (kind) => (mix[kind] ?? 50) > 0;
+  const services = settings.services || [];
+  const dates = filters ? decadeDates(filters.decade) : null;
+  const short = !!(filters && filters.short);
 
   const add = (title, via) => {
     if (!title || title.animeLike) return;
@@ -79,7 +100,9 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
     if (!entry) {
       entry = { ...title, via: [] };
     } else if (title.detailed && !entry.detailed) {
-      entry = { ...title, via: entry.via, airing: entry.airing || title.airing };
+      entry = { ...title, via: entry.via, airing: entry.airing || title.airing, streamHint: entry.streamHint || title.streamHint };
+    } else if (title.streamHint && !entry.streamHint) {
+      entry = { ...entry, streamHint: true };
     }
     if (via && !entry.via.some((v) => v.type === via.type && v.seedId === via.seedId)) {
       entry.via = [...entry.via, via].sort((a, b) => VIA_RANK[a.type] - VIA_RANK[b.type]);
@@ -96,10 +119,33 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
   }));
 
   if (tmdb && tmdb.hasKey) {
+    // Looked up once (cached for a week) and shared by both media types.
+    const providerIds = services.length ? providerIdsFor(tmdb, services).catch(() => []) : Promise.resolve([]);
     for (const mediaType of ['movie', 'tv']) {
       if (!wants(mediaType === 'movie' ? 'film' : 'tv')) continue;
-      run(`tmdb:trending:${mediaType}`, async () => (await tmdb.trending(mediaType)).forEach((t) => add(t, { type: 'trending' })));
       const genreIds = genres.map((g) => CANON_TO_TMDB[mediaType][g]).filter(Boolean);
+      const dateParams = dates ? { from: dates.from, to: dates.to } : {};
+      const runtimeMax = short && mediaType === 'movie' ? 120 : null;
+      // Your services' catalogues: the titles here are known to be on one of
+      // them, so "Only show what I can stream" never runs dry.
+      if (services.length) {
+        const pages = settings.streamOnly ? [1, 2 + Math.floor(rng() * 2)] : [page];
+        for (const pg of pages) {
+          run(`tmdb:stream:${mediaType}:${pg}`, async () => {
+            const ids = await providerIds;
+            if (!ids.length) return;
+            (await tmdb.discover(mediaType, { providerIds: ids, page: pg, minVotes: 100, genreIds: pg === 1 ? [] : genreIds, runtimeMax, ...dateParams }))
+              .forEach((t) => add({ ...t, streamHint: true }, { type: 'stream' }));
+          });
+        }
+      }
+      // Deck filters: ask for exactly that, since this week's trending list
+      // has no 1990s films in it.
+      if (dates || runtimeMax) {
+        run(`tmdb:filtered:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page, minVotes: dates ? 300 : 150, runtimeMax, ...dateParams, sortBy: dates ? 'vote_count.desc' : 'popularity.desc' }))
+          .forEach((t) => add(t, { type: 'popular' })));
+      }
+      run(`tmdb:trending:${mediaType}`, async () => (await tmdb.trending(mediaType)).forEach((t) => add(t, { type: 'trending' })));
       if (genreIds.length) {
         run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page })).forEach((t) => add(t, { type: 'genre' })));
       } else {
@@ -129,6 +175,7 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         genres: genres.map(canonToAniList).filter(Boolean).slice(0, 2),
         page,
         now: new Date(now),
+        filters,
       });
       batch.trending.forEach((t) => add(t, { type: 'trending' }));
       batch.season.forEach((t) => add(t, { type: 'fresh' }));
@@ -138,6 +185,7 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         group.titles.forEach((t) => add(t, s ? seedVia(s) : null));
       }
       batch.sequels.forEach((t) => add(t, null));
+      (batch.filtered || []).forEach((t) => add(t, { type: 'popular' }));
     });
   }
 
@@ -167,7 +215,7 @@ export async function hydrate(titles, { tmdb, concurrency = 4 } = {}) {
     if (t.detailed || t.source !== 'tmdb' || !tmdb || !tmdb.hasKey) return t;
     try {
       const d = await tmdb.details(t.mediaType, t.sourceId);
-      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing } : t;
+      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing, streamHint: t.streamHint || undefined } : t;
     } catch {
       return t;
     }

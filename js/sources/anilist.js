@@ -4,6 +4,7 @@
 
 import { fetchJSON, cached, HOUR, DAY } from './http.js';
 import { canonicalGenres } from './genres.js';
+import { canonicalServices } from './services.js';
 
 const ENDPOINT = 'https://graphql.anilist.co';
 
@@ -14,7 +15,7 @@ export const DECK_FORMATS = ['TV', 'TV_SHORT', 'MOVIE', 'ONA'];
 export function fragment(voiceLanguage = 'JAPANESE') {
   const lang = voiceLanguage === 'ENGLISH' ? 'ENGLISH' : 'JAPANESE';
   return `fragment M on Media {
-  id title { romaji english } format status episodes duration season seasonYear
+  id type title { romaji english } format status episodes duration season seasonYear
   startDate { year month day } endDate { year month day } nextAiringEpisode { airingAt episode }
   countryOfOrigin isAdult description(asHtml: false) genres averageScore popularity
   coverImage { extraLarge large color } bannerImage trailer { id site }
@@ -24,9 +25,14 @@ export function fragment(voiceLanguage = 'JAPANESE') {
   characters(perPage: 6, sort: [ROLE, RELEVANCE, ID]) { edges { role node { name { full } }
     voiceActors(language: ${lang}, sort: [RELEVANCE, ID]) { id name { full } image { medium } } } }
   relations { edges { relationType(version: 2) node { id type } } }
+  externalLinks { site type url isDisabled }
   siteUrl
 }`;
 }
+
+// Relations that make two anime "the same series" for "Not this franchise".
+// Spin-offs and side stories count; a shared character cameo does not.
+export const FRANCHISE_RELATIONS = ['PREQUEL', 'SEQUEL', 'PARENT', 'SIDE_STORY', 'SPIN_OFF', 'ALTERNATIVE', 'SUMMARY', 'COMPILATION'];
 
 const pad = (n) => String(n).padStart(2, '0');
 function dateOf(d) {
@@ -55,7 +61,8 @@ const FORMAT_LABEL = { TV: 'Series', TV_SHORT: 'Shorts', MOVIE: 'Anime film', ON
 export function fromAniList(m) {
   if (!m || !m.id) return null;
   const relations = (m.relations && m.relations.edges) || [];
-  const rel = (type) => relations.filter((e) => e && e.relationType === type && e.node && e.node.type === 'ANIME').map((e) => e.node.id);
+  const rel = (...types) => relations.filter((e) => e && types.includes(e.relationType) && e.node && e.node.type === 'ANIME').map((e) => e.node.id);
+  const links = ((m.externalLinks || []).filter((l) => l && l.type === 'STREAMING' && !l.isDisabled && l.site));
   const cast = [];
   for (const edge of (m.characters && m.characters.edges) || []) {
     const va = edge.voiceActors && edge.voiceActors[0];
@@ -84,7 +91,13 @@ export function fromAniList(m) {
     lastAirDate: finished ? dateOf(m.endDate) : null,
     airing: m.status === 'RELEASING',
     status: m.status || null,
-    nextEpisode: m.nextAiringEpisode ? { episode: m.nextAiringEpisode.episode, at: m.nextAiringEpisode.airingAt * 1000 } : null,
+    // Same shape as TMDB's ({ season, episode, date }), plus the exact time.
+    nextEpisode: m.nextAiringEpisode ? {
+      season: null,
+      episode: m.nextAiringEpisode.episode,
+      date: new Date(m.nextAiringEpisode.airingAt * 1000).toISOString().slice(0, 10),
+      at: m.nextAiringEpisode.airingAt * 1000,
+    } : null,
     overview: cleanDescription(m.description),
     poster: (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large)) || null,
     backdrop: m.bannerImage || null,
@@ -105,6 +118,10 @@ export function fromAniList(m) {
     trailer: m.trailer && m.trailer.site === 'youtube' && m.trailer.id ? { site: 'youtube', key: m.trailer.id, name: 'Trailer' } : null,
     prequelIds: rel('PREQUEL'),
     sequelIds: rel('SEQUEL'),
+    franchiseIds: [...new Set(rel(...FRANCHISE_RELATIONS))],
+    // AniList's streaming links are worldwide, not per region.
+    streaming: canonicalServices(links.map((l) => l.site)),
+    watchLinks: links.map((l) => ({ name: canonicalServices([l.site])[0], url: l.url })).filter((l) => l.url),
     isAdult: !!m.isAdult,
     url: m.siteUrl || `https://anilist.co/anime/${m.id}`,
     detailed: true,
@@ -120,7 +137,8 @@ export function seasonOf(date) {
 export function buildDeckQuery(voiceLanguage) {
   return `${fragment(voiceLanguage)}
 query ($season: MediaSeason, $year: Int, $genres: [String], $seeds: [Int], $sequels: [Int], $page: Int,
-       $withSeeds: Boolean!, $withGenres: Boolean!, $withSequels: Boolean!) {
+       $withSeeds: Boolean!, $withGenres: Boolean!, $withSequels: Boolean!,
+       $withFiltered: Boolean!, $from: FuzzyDateInt, $to: FuzzyDateInt, $episodesBelow: Int, $filterGenres: [String]) {
   trending: Page(perPage: 25) { media(type: ANIME, sort: [TRENDING_DESC], isAdult: false) { ...M } }
   season: Page(perPage: 20) { media(type: ANIME, season: $season, seasonYear: $year, sort: [POPULARITY_DESC], isAdult: false) { ...M } }
   genre: Page(perPage: 25, page: $page) @include(if: $withGenres) {
@@ -129,7 +147,19 @@ query ($season: MediaSeason, $year: Int, $genres: [String], $seeds: [Int], $sequ
     media(id_in: $seeds) { id title { romaji english }
       recommendations(perPage: 6, sort: [RATING_DESC]) { nodes { mediaRecommendation { ...M } } } } }
   sequels: Page(perPage: 10) @include(if: $withSequels) { media(id_in: $sequels) { ...M } }
+  filtered: Page(perPage: 25, page: $page) @include(if: $withFiltered) {
+    media(type: ANIME, isAdult: false, format_in: [TV, TV_SHORT, MOVIE, ONA], startDate_greater: $from, startDate_lesser: $to,
+          episodes_lesser: $episodesBelow, genre_in: $filterGenres, sort: [SCORE_DESC], popularity_greater: 3000) { ...M } }
 }`;
+}
+
+// AniList dates as FuzzyDateInt (YYYYMMDD). Deck filters ask for a decade,
+// e.g. { from: 1990, to: 1999 } -> 19900000 .. 20000000.
+export function decadeRange(filters = {}) {
+  const d = filters.decade;
+  if (d === 'older') return { from: null, to: 19800000 };
+  if (typeof d === 'number') return { from: d * 10000, to: (d + 10) * 10000 };
+  return { from: null, to: null };
 }
 
 // Turns a deckBatch response into { trending, season, genre, seeds: [{seedId, titles}], sequels }.
@@ -143,8 +173,88 @@ export function parseDeckBatch(data) {
       .map(fromAniList)
       .filter(Boolean),
   }));
-  return { trending: media('trending'), season: media('season'), genre: media('genre'), seeds, sequels: media('sequels') };
+  return { trending: media('trending'), season: media('season'), genre: media('genre'), seeds, sequels: media('sequels'), filtered: media('filtered') };
 }
+
+// A voice actor's roles and a staff member's credits, merged per show (one
+// actor often voices several characters in the same series). `major` marks a
+// lead voice role or a creative lead, which the person screen ranks higher
+// than, say, one episode's key animation.
+const MAJOR_STAFF = /^(Director|Chief Director|Series Director|Original (Creator|Story)|Series Composition|Character Design)$/i;
+
+export function parsePerson(staff) {
+  if (!staff || !staff.id) return null;
+  const byId = new Map();
+  const add = (node, role, major) => {
+    if (!node || node.type !== 'ANIME' || node.isAdult) return;
+    const t = fromAniList(node);
+    if (!t) return;
+    const had = byId.get(t.id);
+    if (had) {
+      if (role && !had.roles.includes(role)) had.roles.push(role);
+      had.major = had.major || major;
+      return;
+    }
+    byId.set(t.id, { ...t, roles: role ? [role] : [], major });
+  };
+  for (const e of (staff.characterMedia && staff.characterMedia.edges) || []) {
+    const names = (e.characters || []).map((c) => c && c.name && String(c.name.full).trim()).filter(Boolean);
+    add(e.node, names.join(' / ') || null, e.characterRole === 'MAIN');
+  }
+  for (const e of (staff.staffMedia && staff.staffMedia.edges) || []) {
+    const role = e.staffRole ? String(e.staffRole).replace(/\s*\(.*\)$/, '') : null;
+    add(e.node, role, !!role && MAJOR_STAFF.test(role));
+  }
+  return {
+    person: {
+      id: `anilist:s:${staff.id}`,
+      name: String((staff.name && staff.name.full) || '').trim(),
+      photo: (staff.image && (staff.image.large || staff.image.medium)) || null,
+      known: (staff.primaryOccupations || []).slice(0, 2).join(' · ') || null,
+      url: staff.siteUrl || `https://anilist.co/staff/${staff.id}`,
+    },
+    // Lead roles first in the role text; two is plenty on a row.
+    credits: [...byId.values()].map(({ roles, ...t }) => {
+      const sorted = [...roles].sort((a, b) => MAJOR_STAFF.test(b) - MAJOR_STAFF.test(a));
+      return { ...t, role: sorted.slice(0, 2).join(', ') || null };
+    }),
+  };
+}
+
+// Every anime in the same series as `media`: its direct relations, the next
+// hop of prequels and sequels, and every anime adapted from the same source
+// manga or novel (the most reliable thread through a long franchise).
+export function parseFranchise(media) {
+  if (!media || !media.id) return null;
+  const ids = new Set([media.id]);
+  let sourceTitle = null;
+  for (const e of (media.relations && media.relations.edges) || []) {
+    const n = e && e.node;
+    if (!n) continue;
+    if (n.type === 'ANIME' && FRANCHISE_RELATIONS.includes(e.relationType)) {
+      ids.add(n.id);
+      for (const e2 of (n.relations && n.relations.edges) || []) {
+        if (e2 && e2.node && e2.node.type === 'ANIME' && FRANCHISE_RELATIONS.includes(e2.relationType)) ids.add(e2.node.id);
+      }
+    }
+    if (e.relationType === 'SOURCE' && n.type === 'MANGA') {
+      sourceTitle = sourceTitle || (n.title && (n.title.english || n.title.romaji)) || null;
+      for (const e2 of (n.relations && n.relations.edges) || []) {
+        if (e2 && e2.relationType === 'ADAPTATION' && e2.node && e2.node.type === 'ANIME') ids.add(e2.node.id);
+      }
+    }
+  }
+  const own = (media.title && (media.title.english || media.title.romaji)) || 'this series';
+  return {
+    key: `anilist:franchise:${Math.min(...ids)}`,
+    name: sourceTitle || own,
+    ids: [...ids].sort((a, b) => a - b).map((id) => `anilist:${id}`),
+  };
+}
+
+const FRANCHISE_QUERY = `query ($id: Int) { Media(id: $id, type: ANIME) { id title { english romaji }
+  relations { edges { relationType(version: 2) node { id type title { english romaji }
+    relations { edges { relationType(version: 2) node { id type } } } } } } } }`;
 
 export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voiceLanguage = 'JAPANESE' } = {}) {
   async function gql(query, variables, cacheKey, ttl) {
@@ -161,12 +271,20 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
   }
 
   return {
-    async deckBatch({ seeds = [], sequels = [], genres = [], page = 1, now = new Date() } = {}) {
+    // filters: the deck's { short, decade } (see decadeRange). When set, one
+    // extra page asks AniList for exactly that, since trending and this season
+    // rarely include, say, 1990s anime.
+    async deckBatch({ seeds = [], sequels = [], genres = [], page = 1, now = new Date(), filters = null } = {}) {
       const { season, year } = seasonOf(now);
+      const range = decadeRange(filters || {});
+      const withFiltered = !!(filters && (filters.short || filters.decade));
       const vars = {
         season, year, genres, page,
         seeds: seeds.slice(0, 10), sequels: sequels.slice(0, 10),
         withSeeds: seeds.length > 0, withGenres: genres.length > 0, withSequels: sequels.length > 0,
+        withFiltered, from: range.from, to: range.to,
+        episodesBelow: withFiltered && filters.short ? 14 : null,
+        filterGenres: withFiltered && genres.length ? genres : null,
       };
       const key = `anilist:deck:${voiceLanguage}:${JSON.stringify(vars)}`;
       return parseDeckBatch(await gql(buildDeckQuery(voiceLanguage), vars, key, 6 * HOUR));
@@ -187,6 +305,19 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
       const query = `${fragment(voiceLanguage)} query ($id: Int) { Media(id: $id, type: ANIME) { ...M } }`;
       const data = await gql(query, { id: Number(id) }, `anilist:media:${voiceLanguage}:${id}`, 3 * DAY);
       return fromAniList(data && data.Media);
+    },
+    // id: the number from 'anilist:s:<n>'.
+    async person(id) {
+      const query = `${fragment(voiceLanguage)} query ($id: Int) { Staff(id: $id) {
+  id name { full } image { large medium } primaryOccupations siteUrl
+  characterMedia(perPage: 25, sort: [POPULARITY_DESC]) { edges { characterRole characters { name { full } } node { ...M } } }
+  staffMedia(perPage: 20, type: ANIME, sort: [POPULARITY_DESC]) { edges { staffRole node { ...M } } } } }`;
+      const data = await gql(query, { id: Number(id) }, `anilist:staff:${voiceLanguage}:${id}`, 3 * DAY);
+      return parsePerson(data && data.Staff);
+    },
+    async franchise(id) {
+      const data = await gql(FRANCHISE_QUERY, { id: Number(id) }, `anilist:franchise:${id}`, 7 * DAY);
+      return parseFranchise(data && data.Media);
     },
   };
 }

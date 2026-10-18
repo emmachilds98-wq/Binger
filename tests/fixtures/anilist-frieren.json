@@ -424,6 +424,62 @@
      }
     ]
    },
+   "externalLinks": [
+    {
+     "site": "Official Site",
+     "type": "INFO",
+     "url": "https://frieren-anime.jp/",
+     "isDisabled": false
+    },
+    {
+     "site": "Twitter",
+     "type": "SOCIAL",
+     "url": "https://twitter.com/anime_frieren",
+     "isDisabled": false
+    },
+    {
+     "site": "Crunchyroll",
+     "type": "STREAMING",
+     "url": "https://www.crunchyroll.com/series/GG5H5XQX4/frieren-beyond-journeys-end",
+     "isDisabled": false
+    },
+    {
+     "site": "Bilibili TV",
+     "type": "STREAMING",
+     "url": "https://www.bilibili.tv/en/media/2090295",
+     "isDisabled": false
+    },
+    {
+     "site": "YouTube",
+     "type": "STREAMING",
+     "url": "https://www.youtube.com/playlist?list=PLwLSw1_eDZl10YPPR7qDsVf10wZfYnIMK",
+     "isDisabled": false
+    },
+    {
+     "site": "TikTok",
+     "type": "SOCIAL",
+     "url": "https://www.tiktok.com/@anime_frieren",
+     "isDisabled": false
+    },
+    {
+     "site": "Netflix",
+     "type": "STREAMING",
+     "url": "https://www.netflix.com/title/81726714",
+     "isDisabled": false
+    },
+    {
+     "site": "Hulu",
+     "type": "STREAMING",
+     "url": "https://www.hulu.com/series/frieren-beyond-journeys-end-1d4725f8-06d1-43fb-a077-72143ac5502f",
+     "isDisabled": false
+    },
+    {
+     "site": "Amazon Prime Video",
+     "type": "STREAMING",
+     "url": "https://www.primevideo.com/detail/0FCJEHY4FXTDVCLZ5NR9A0N42N",
+     "isDisabled": false
+    }
+   ],
    "siteUrl": "https://anilist.co/anime/154587"
   }
  }

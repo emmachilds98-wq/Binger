@@ -2,14 +2,42 @@
   "_note": "Hand-written to TMDB's documented /movie/{id}?append_to_response=credits,keywords,videos,watch/providers,release_dates shape. Not a live capture.",
   "adult": false,
   "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
-  "genres": [{ "id": 878, "name": "Science Fiction" }, { "id": 12, "name": "Adventure" }],
+  "belongs_to_collection": {
+    "id": 726871,
+    "name": "Dune Collection",
+    "poster_path": "/c.jpg",
+    "backdrop_path": "/cb.jpg"
+  },
+  "genres": [
+    {
+      "id": 878,
+      "name": "Science Fiction"
+    },
+    {
+      "id": 12,
+      "name": "Adventure"
+    }
+  ],
   "id": 693134,
   "original_language": "en",
   "original_title": "Dune: Part Two",
   "overview": "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while on a path of revenge against the conspirators who destroyed his family.",
   "popularity": 120.5,
   "poster_path": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-  "production_companies": [{ "id": 923, "name": "Legendary Pictures" }, { "id": 1, "name": "Example Films" }, { "id": 2, "name": "Third Co" }],
+  "production_companies": [
+    {
+      "id": 923,
+      "name": "Legendary Pictures"
+    },
+    {
+      "id": 1,
+      "name": "Example Films"
+    },
+    {
+      "id": 2,
+      "name": "Third Co"
+    }
+  ],
   "release_date": "2024-02-27",
   "runtime": 167,
   "status": "Released",
@@ -19,35 +47,182 @@
   "vote_count": 7000,
   "credits": {
     "cast": [
-      { "id": 1190668, "name": "Timothée Chalamet", "character": "Paul Atreides", "order": 0, "profile_path": "/a.jpg" },
-      { "id": 505710, "name": "Zendaya", "character": "Chani", "order": 1, "profile_path": "/b.jpg" },
-      { "id": 933238, "name": "Rebecca Ferguson", "character": "Lady Jessica", "order": 2, "profile_path": null },
-      { "id": 1381186, "name": "Austin Butler", "character": "Feyd-Rautha Harkonnen", "order": 5, "profile_path": "/d.jpg" },
-      { "id": 16851, "name": "Josh Brolin", "character": "Gurney Halleck", "order": 3, "profile_path": "/c.jpg" }
+      {
+        "id": 1190668,
+        "name": "Timothée Chalamet",
+        "character": "Paul Atreides",
+        "order": 0,
+        "profile_path": "/a.jpg"
+      },
+      {
+        "id": 505710,
+        "name": "Zendaya",
+        "character": "Chani",
+        "order": 1,
+        "profile_path": "/b.jpg"
+      },
+      {
+        "id": 933238,
+        "name": "Rebecca Ferguson",
+        "character": "Lady Jessica",
+        "order": 2,
+        "profile_path": null
+      },
+      {
+        "id": 1381186,
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha Harkonnen",
+        "order": 5,
+        "profile_path": "/d.jpg"
+      },
+      {
+        "id": 16851,
+        "name": "Josh Brolin",
+        "character": "Gurney Halleck",
+        "order": 3,
+        "profile_path": "/c.jpg"
+      }
     ],
     "crew": [
-      { "id": 137427, "name": "Denis Villeneuve", "job": "Director", "department": "Directing" },
-      { "id": 137427, "name": "Denis Villeneuve", "job": "Screenplay", "department": "Writing" },
-      { "id": 999, "name": "Jon Spaihts", "job": "Screenplay", "department": "Writing" },
-      { "id": 1000, "name": "Hans Zimmer", "job": "Original Music Composer", "department": "Sound" }
+      {
+        "id": 137427,
+        "name": "Denis Villeneuve",
+        "job": "Director",
+        "department": "Directing"
+      },
+      {
+        "id": 137427,
+        "name": "Denis Villeneuve",
+        "job": "Screenplay",
+        "department": "Writing"
+      },
+      {
+        "id": 999,
+        "name": "Jon Spaihts",
+        "job": "Screenplay",
+        "department": "Writing"
+      },
+      {
+        "id": 1000,
+        "name": "Hans Zimmer",
+        "job": "Original Music Composer",
+        "department": "Sound"
+      }
     ]
   },
-  "keywords": { "keywords": [{ "id": 1, "name": "desert planet" }, { "id": 2, "name": "based on novel or book" }] },
-  "videos": { "results": [
-    { "iso_639_1": "en", "key": "teaserKEY", "name": "Teaser", "site": "YouTube", "type": "Teaser", "official": true, "published_at": "2023-05-03T00:00:00.000Z" },
-    { "iso_639_1": "en", "key": "fanKEY", "name": "Fan cut", "site": "YouTube", "type": "Trailer", "official": false, "published_at": "2024-01-01T00:00:00.000Z" },
-    { "iso_639_1": "en", "key": "Way9Dexny3w", "name": "Official Trailer 3", "site": "YouTube", "type": "Trailer", "official": true, "published_at": "2023-12-19T00:00:00.000Z" },
-    { "iso_639_1": "en", "key": "vimeoKEY", "name": "Vimeo", "site": "Vimeo", "type": "Trailer", "official": true, "published_at": "2024-02-01T00:00:00.000Z" }
-  ] },
-  "watch/providers": { "results": {
-    "GB": { "link": "https://www.themoviedb.org/movie/693134-dune-part-two/watch?locale=GB",
-            "flatrate": [{ "provider_id": 1, "provider_name": "Example Stream", "logo_path": "/s.jpg" }],
-            "rent": [{ "provider_id": 2, "provider_name": "Example Rent", "logo_path": "/r.jpg" }],
-            "buy": [{ "provider_id": 2, "provider_name": "Example Rent", "logo_path": "/r.jpg" }] },
-    "US": { "link": "https://example.test/us", "flatrate": [] }
-  } },
-  "release_dates": { "results": [
-    { "iso_3166_1": "US", "release_dates": [{ "certification": "PG-13", "type": 3 }] },
-    { "iso_3166_1": "GB", "release_dates": [{ "certification": "", "type": 1 }, { "certification": "12A", "type": 3 }] }
-  ] }
+  "keywords": {
+    "keywords": [
+      {
+        "id": 1,
+        "name": "desert planet"
+      },
+      {
+        "id": 2,
+        "name": "based on novel or book"
+      }
+    ]
+  },
+  "videos": {
+    "results": [
+      {
+        "iso_639_1": "en",
+        "key": "teaserKEY",
+        "name": "Teaser",
+        "site": "YouTube",
+        "type": "Teaser",
+        "official": true,
+        "published_at": "2023-05-03T00:00:00.000Z"
+      },
+      {
+        "iso_639_1": "en",
+        "key": "fanKEY",
+        "name": "Fan cut",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": false,
+        "published_at": "2024-01-01T00:00:00.000Z"
+      },
+      {
+        "iso_639_1": "en",
+        "key": "Way9Dexny3w",
+        "name": "Official Trailer 3",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": true,
+        "published_at": "2023-12-19T00:00:00.000Z"
+      },
+      {
+        "iso_639_1": "en",
+        "key": "vimeoKEY",
+        "name": "Vimeo",
+        "site": "Vimeo",
+        "type": "Trailer",
+        "official": true,
+        "published_at": "2024-02-01T00:00:00.000Z"
+      }
+    ]
+  },
+  "watch/providers": {
+    "results": {
+      "GB": {
+        "link": "https://www.themoviedb.org/movie/693134-dune-part-two/watch?locale=GB",
+        "flatrate": [
+          {
+            "provider_id": 1,
+            "provider_name": "Example Stream",
+            "logo_path": "/s.jpg"
+          },
+          {
+            "provider_id": 1796,
+            "provider_name": "Netflix Standard with Ads",
+            "logo_path": "/n.jpg"
+          }
+        ],
+        "rent": [
+          {
+            "provider_id": 2,
+            "provider_name": "Example Rent",
+            "logo_path": "/r.jpg"
+          }
+        ],
+        "buy": [
+          {
+            "provider_id": 2,
+            "provider_name": "Example Rent",
+            "logo_path": "/r.jpg"
+          }
+        ]
+      },
+      "US": {
+        "link": "https://example.test/us",
+        "flatrate": []
+      }
+    }
+  },
+  "release_dates": {
+    "results": [
+      {
+        "iso_3166_1": "US",
+        "release_dates": [
+          {
+            "certification": "PG-13",
+            "type": 3
+          }
+        ]
+      },
+      {
+        "iso_3166_1": "GB",
+        "release_dates": [
+          {
+            "certification": "",
+            "type": 1
+          },
+          {
+            "certification": "12A",
+            "type": 3
+          }
+        ]
+      }
+    ]
+  }
 }

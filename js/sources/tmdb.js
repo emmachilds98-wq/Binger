@@ -6,6 +6,7 @@
 
 import { fetchJSON, cached, HOUR, DAY, ApiError } from './http.js';
 import { tmdbGenreNames, canonicalGenres } from './genres.js';
+import { canonicalService, canonicalServices } from './services.js';
 
 const API = 'https://api.themoviedb.org/3';
 const IMG = 'https://image.tmdb.org/t/p/';
@@ -70,6 +71,8 @@ export function pickTrailer(videos = []) {
 
 const provider = (p) => ({ name: p.provider_name, logo: img(p.logo_path, 'w92') });
 
+const episode = (e) => (e && e.air_date ? { season: e.season_number ?? null, episode: e.episode_number ?? null, date: e.air_date } : null);
+
 export function fromTmdbDetail(d, mediaType, region = 'GB') {
   const t = fromTmdbList({ ...d, genre_ids: (d.genres || []).map((g) => g.id) }, mediaType);
   if (!t) return null;
@@ -91,6 +94,8 @@ export function fromTmdbDetail(d, mediaType, region = 'GB') {
     t.runtime = d.runtime || null;
     const rel = ((d.release_dates && d.release_dates.results) || []).find((r) => r.iso_3166_1 === region);
     t.certification = (rel && (rel.release_dates || []).map((x) => x.certification).find(Boolean)) || null;
+    const c = d.belongs_to_collection;
+    t.collection = c && c.id ? { id: `tmdb:collection:${c.id}`, name: collectionName(c.name) } : null;
   } else {
     const credits = d.aggregate_credits || d.credits || {};
     t.cast = (credits.cast || []).slice(0, 8).map((c) => ({
@@ -105,6 +110,11 @@ export function fromTmdbDetail(d, mediaType, region = 'GB') {
     t.episodes = d.number_of_episodes ?? null;
     t.lastAirDate = d.last_air_date || null;
     t.airing = !!d.next_episode_to_air;
+    t.nextEpisode = episode(d.next_episode_to_air);
+    t.lastEpisode = episode(d.last_episode_to_air);
+    // Season 0 is "Specials" on TMDB; it's not a new season.
+    t.seasonList = (d.seasons || []).filter((x) => x && x.season_number > 0)
+      .map((x) => ({ number: x.season_number, date: x.air_date || null, episodes: x.episode_count ?? null, name: x.name || null }));
     t.networks = (d.networks || []).map((n) => n.name).slice(0, 2);
     const cr = ((d.content_ratings && d.content_ratings.results) || []).find((r) => r.iso_3166_1 === region);
     t.certification = (cr && cr.rating) || null;
@@ -120,8 +130,94 @@ export function fromTmdbDetail(d, mediaType, region = 'GB') {
     rent: (wp.rent || []).map(provider),
     buy: (wp.buy || []).map(provider),
   } : null;
+  // Included in a subscription or free: what "on my services" means.
+  // Rent and buy don't count.
+  t.streaming = t.providers ? canonicalServices([...t.providers.stream, ...t.providers.free].map((x) => x.name)) : [];
   t.detailed = true;
   return t;
+}
+
+// "Dune Collection" -> "Dune".
+export function collectionName(name) {
+  return String(name || '').replace(/\s*[-:]?\s*(the )?collection$/i, '').trim() || String(name || '');
+}
+
+// The region's providers, one entry per service (TMDB lists the same service
+// several times: "Netflix", "Netflix Standard with Ads"...), most common first.
+export function fromTmdbProviders(json, region = 'GB') {
+  const rank = (p) => (p.display_priorities && p.display_priorities[region]) ?? p.display_priority ?? 999;
+  const list = ((json && json.results) || []).filter((p) => p && p.provider_id && p.provider_name).sort((a, b) => rank(a) - rank(b));
+  const out = [];
+  for (const p of list) {
+    const service = canonicalService(p.provider_name);
+    let entry = out.find((x) => x.service === service);
+    if (!entry) { entry = { service, ids: [], logo: img(p.logo_path, 'w92') }; out.push(entry); }
+    if (!entry.ids.includes(p.provider_id)) entry.ids.push(p.provider_id);
+  }
+  return out;
+}
+
+const KNOWN_FOR = { Acting: 'Actor', Directing: 'Director', Writing: 'Writer', Production: 'Producer', Sound: 'Composer', Camera: 'Cinematographer', Creator: 'Creator' };
+// Crew jobs worth listing on someone's page. Executive producer credits are
+// too many and say too little about the work.
+const PERSON_JOBS = ['Director', 'Creator', 'Screenplay', 'Writer', 'Teleplay', 'Novel', 'Story', 'Original Story', 'Characters', 'Original Music Composer', 'Director of Photography'];
+const MAJOR_JOBS = ['Director', 'Creator', 'Screenplay', 'Writer', 'Novel'];
+const SELF = /\b(self|himself|herself|themselves|host|archive footage)\b/i;
+const NOT_DRAMA = [10763, 10767]; // News, Talk: guest spots, not work you'd watch for them
+
+// A person and their films and shows, from /person/{id}?append_to_response=combined_credits.
+// Each credit is a list-level Title plus `role` and `major` (a lead role or a
+// creative lead), merged when someone is both in and behind the same title.
+export function fromTmdbPerson(d) {
+  if (!d || !d.id) return null;
+  const byId = new Map();
+  const add = (r, role, major) => {
+    if (!r || (r.genre_ids || []).some((g) => NOT_DRAMA.includes(g))) return;
+    if (!r.poster_path && !(r.vote_count >= 10)) return; // obscure: no art, barely rated
+    const t = fromTmdbList(r, r.media_type);
+    if (!t || t.animeLike) return;
+    const had = byId.get(t.id);
+    if (had) {
+      if (role && !had.roles.includes(role)) had.roles.push(role);
+      had.major = had.major || major;
+      return;
+    }
+    byId.set(t.id, { ...t, roles: role ? [role] : [], major });
+  };
+  const credits = d.combined_credits || {};
+  for (const c of credits.cast || []) {
+    if (c.character && SELF.test(c.character)) continue;
+    const major = c.media_type === 'tv' ? (c.episode_count || 0) >= 8 : (c.order ?? 99) <= 3;
+    add(c, c.character || null, major);
+  }
+  for (const c of credits.crew || []) {
+    if (!PERSON_JOBS.includes(c.job)) continue;
+    add(c, c.job, MAJOR_JOBS.includes(c.job));
+  }
+  const list = [...byId.values()]
+    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+    .slice(0, 60)
+    .map(({ roles, ...t }) => ({ ...t, role: roles.slice(0, 2).join(', ') || null }));
+  return {
+    person: {
+      id: `tmdb:p:${d.id}`,
+      name: d.name || '',
+      photo: img(d.profile_path, 'w342'),
+      known: KNOWN_FOR[d.known_for_department] || d.known_for_department || null,
+      url: `https://www.themoviedb.org/person/${d.id}`,
+    },
+    credits: list,
+  };
+}
+
+// Every film in a TMDB collection, for "Not this franchise".
+export function fromTmdbCollection(d) {
+  if (!d || !d.id) return null;
+  return {
+    key: `tmdb:collection:${d.id}`,
+    name: collectionName(d.name),
+    ids: ((d.parts || []).map((p) => p && p.id).filter(Boolean)).map((id) => `tmdb:movie:${id}`),
+  };
 }
 
 export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl = globalThis.fetch, cache = null } = {}) {
@@ -154,9 +250,17 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
     async popular(mediaType, page = 1) {
       return list(await get(`/${mediaType}/popular`, { page, region: mediaType === 'movie' ? region : undefined }, 12 * HOUR), mediaType);
     },
-    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null } = {}) {
-      const p = { sort_by: 'popularity.desc', include_adult: 'false', page, 'vote_count.gte': minVotes };
+    // providerIds: only titles included with these services (subscription or
+    // free) in your region. runtimeMax: films under N minutes.
+    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null, providerIds = [], runtimeMax = null, sortBy = 'popularity.desc' } = {}) {
+      const p = { sort_by: sortBy, include_adult: 'false', page, 'vote_count.gte': minVotes };
       if (genreIds.length) p.with_genres = [...new Set(genreIds)].join('|');
+      if (providerIds.length) {
+        p.with_watch_providers = [...new Set(providerIds)].sort((a, b) => a - b).join('|');
+        p.watch_region = region;
+        p.with_watch_monetization_types = 'flatrate|free|ads';
+      }
+      if (runtimeMax) { p['with_runtime.lte'] = runtimeMax; p['with_runtime.gte'] = 40; }
       if (mediaType === 'movie') {
         if (from) p['primary_release_date.gte'] = from;
         if (to) p['primary_release_date.lte'] = to;
@@ -177,6 +281,18 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
         : 'aggregate_credits,keywords,videos,watch/providers,content_ratings';
       const d = await get(`/${mediaType}/${id}`, { append_to_response: append, include_video_language: 'en,null' }, 3 * DAY);
       return fromTmdbDetail(d, mediaType, region);
+    },
+    async providers(mediaType) {
+      const json = await get(`/watch/providers/${mediaType}`, { watch_region: region }, 7 * DAY);
+      return fromTmdbProviders(json, region);
+    },
+    // id: the number from 'tmdb:p:<n>'.
+    async person(id) {
+      return fromTmdbPerson(await get(`/person/${id}`, { append_to_response: 'combined_credits' }, 3 * DAY));
+    },
+    // id: the number from 'tmdb:collection:<n>'.
+    async collection(id) {
+      return fromTmdbCollection(await get(`/collection/${id}`, {}, 7 * DAY));
     },
     async search(query) {
       const q = String(query || '').trim();

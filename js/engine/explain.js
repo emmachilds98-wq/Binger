@@ -14,7 +14,7 @@ function monthYear(ms) {
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
-export function explain(title, scored, profile, { now = Date.now(), max = 3 } = {}) {
+export function explain(title, scored, profile, { now = Date.now(), max = 3, services = null } = {}) {
   const out = [];
   const push = (kind, text) => {
     if (text && !out.some((r) => r.text === text)) out.push({ kind, text });
@@ -55,6 +55,7 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3 } = 
     else if (c.group === 'cast' && from) push('cast', `Stars ${c.label}, from ${from}`);
     else if (c.group === 'studio' && from) push('studio', `By ${c.label}, the studio behind ${from}`);
     else if (c.group === 'keyword' && c.a >= 0.35) push('keyword', `${cap(c.label)}: a theme you rate highly`);
+    else if (c.group === 'length' && c.a >= 0.35) push('length', `${c.label}: your sweet spot`);
   }
   if (genreReason) {
     const l = genreReason.labels.slice(0, 3);
@@ -67,6 +68,10 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3 } = 
     if (title.airing) push('fresh', 'Airing now');
     else if (at != null && at > now && at - now < 120 * DAY) push('fresh', `Coming ${monthYear(at)}`);
     else if (at != null && at <= now && now - at < 90 * DAY) push('fresh', `New: out ${monthYear(at)}`);
+  }
+  if (out.length < max && scored.onServices && services && services.length) {
+    const on = (title.streaming || []).filter((x) => services.includes(x));
+    push('stream', on.length ? `On ${on.slice(0, 2).join(' and ')}` : 'On one of your services');
   }
   if (out.length < max && viaOf(title, 'trending')) push('trending', 'Trending this week');
   if (!out.length) push('quality', scored.quality > 0.3 ? 'Highly rated' : 'Popular right now');

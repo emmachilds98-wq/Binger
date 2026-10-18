@@ -1,0 +1,3079 @@
+{
+ "data": {
+  "filtered": {
+   "media": [
+    {
+     "id": 32,
+     "title": {
+      "romaji": "Shin Seiki Evangelion Movie: Air / Magokoro wo, Kimi ni",
+      "english": "Neon Genesis Evangelion: The End of Evangelion"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 87,
+     "season": "SUMMER",
+     "seasonYear": 1997,
+     "startDate": {
+      "year": 1997,
+      "month": 7,
+      "day": 19
+     },
+     "endDate": {
+      "year": 1997,
+      "month": 7,
+      "day": 19
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "NERV faces a brutal attack from SEELE, but with Asuka in a coma, and Shinji in a nervous breakdown, things soon turn into the surreal. This movie provides a concurrent ending to the final two episodes of the show <b>Neon Genesis Evangelion</b>.<br>\n<br>\n(Source: IMDb)",
+     "genres": [
+      "Action",
+      "Drama",
+      "Mecha",
+      "Psychological",
+      "Sci-Fi"
+     ],
+     "averageScore": 86,
+     "popularity": 256449,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx32-5JYsv0wc122I.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx32-5JYsv0wc122I.jpg",
+      "color": "#e46b50"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/n32-BH9yHJBQqeOa.jpg",
+     "trailer": {
+      "id": "v1pWyWIu8x4",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Philosophy",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tragedy",
+       "rank": 93,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Coming of Age",
+       "rank": 89,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Post-Apocalyptic",
+       "rank": 89,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dystopian",
+       "rank": 89,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Denpa",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Meta",
+       "rank": 88,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 82,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gods",
+       "rank": 82,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Body Horror",
+       "rank": 80,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Psychosexual",
+       "rank": 80,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Conspiracy",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Super Robot",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 78,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Primarily Teen Cast",
+       "rank": 75,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cosmic Horror",
+       "rank": 75,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Afterlife",
+       "rank": 74,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Kaiju",
+       "rank": 71,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Mythology",
+       "rank": 71,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Robots",
+       "rank": 69,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Religion",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 64,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Nudity",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Mixed Media",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Clone",
+       "rank": 58,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Masturbation",
+       "rank": 57,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rape",
+       "rank": 56,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Tsundere",
+       "rank": 51,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Guns",
+       "rank": 51,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Politics",
+       "rank": 48,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Space",
+       "rank": 45,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Kuudere",
+       "rank": 45,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Boys' Love",
+       "rank": 28,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Angels",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "LGBTQ+ Themes",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Bisexual",
+       "rank": 20,
+       "isMediaSpoiler": true
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 6,
+        "name": "GAINAX"
+       },
+       {
+        "id": 10,
+        "name": "Production I.G"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 100111,
+         "name": {
+          "full": "Hideaki Anno"
+         }
+        }
+       },
+       {
+        "role": "Chief Director",
+        "node": {
+         "id": 100111,
+         "name": {
+          "full": "Hideaki Anno"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 101076,
+         "name": {
+          "full": "Kazuya Tsurumaki"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 100111,
+         "name": {
+          "full": "Hideaki Anno"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 107646,
+         "name": {
+          "full": "Shinji Higuchi"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 98158,
+         "name": {
+          "full": "Yoshiyuki Sadamoto"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Shinji Ikari"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95287,
+          "name": {
+           "full": "Megumi Ogata"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95287-3moX16xmYedv.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Misato Katsuragi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95009,
+          "name": {
+           "full": "Kotono Mitsuishi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95009-d01Dg8mMwcg6.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Rei Ayanami"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95014,
+          "name": {
+           "full": "Megumi Hayashibara"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95014-tFYQYYhlVOF0.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Asuka Langley Souryuu"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95458,
+          "name": {
+           "full": "Yuuko Miyamura"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95458-u1OCiMNqiswq.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Ritsuko Akagi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95130,
+          "name": {
+           "full": "Yuriko Yamaguchi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95130-GoO41ve3YWQw.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Shigeru Aoba"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95160,
+          "name": {
+           "full": "Takehito Koyasu"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95160-jWevcH7BmfE1.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 30,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 2759,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SUMMARY",
+        "node": {
+         "id": 31,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "externalLinks": [
+      {
+       "site": "Netflix",
+       "type": "STREAMING",
+       "url": "https://www.netflix.com/title/60024788",
+       "isDisabled": false
+      },
+      {
+       "site": "Criterion Channel",
+       "type": "STREAMING",
+       "url": "https://www.criterionchannel.com/films/0RcqmbNL/neon-genesis-evangelion-the-end-of-evangelion",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/32"
+    },
+    {
+     "id": 437,
+     "title": {
+      "romaji": "PERFECT BLUE",
+      "english": "Perfect Blue"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 82,
+     "season": "WINTER",
+     "seasonYear": 1998,
+     "startDate": {
+      "year": 1998,
+      "month": 2,
+      "day": 28
+     },
+     "endDate": {
+      "year": 1998,
+      "month": 2,
+      "day": 28
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "Rising pop star Mima has quit singing to pursue a career as an actress and model, but her fans aren’t ready to see her go... Encouraged by her managers, Mima takes on a recurring role on a popular TV show, when suddenly her handlers and collaborators begin turning up murdered. Harboring feelings of guilt and haunted by visions of her former self, Mima’s reality and fantasy meld into a frenzied paranoia. As her stalker closes in, in person and online, the threat he poses is more real than even Mima knows, in this iconic psychological thriller that has frequently been hailed as one of the most important animated films of all time.<br>\n<br>\n(Source: Shout! Factory)<br>\n<br>\n<i>Note: The film received an early premiere at the Fantasia Film Festival on August 5, 1997.</i>",
+     "genres": [
+      "Drama",
+      "Horror",
+      "Psychological",
+      "Thriller"
+     ],
+     "averageScore": 85,
+     "popularity": 248393,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx437-69NMlXKFeuse.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx437-69NMlXKFeuse.jpg",
+      "color": "#1a356b"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/437-3yMVTyN7gl2A.jpg",
+     "trailer": {
+      "id": "UXQraSkOOGs",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Dissociative Identities",
+       "rank": 97,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Denpa",
+       "rank": 95,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Acting",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Idol",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Work",
+       "rank": 78,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Meta",
+       "rank": 78,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Filmmaking",
+       "rank": 78,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rape",
+       "rank": 77,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Philosophy",
+       "rank": 75,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tragedy",
+       "rank": 74,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 71,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Nudity",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Noir",
+       "rank": 55,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Feet",
+       "rank": 55,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Modeling",
+       "rank": 40,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 11,
+        "name": "MADHOUSE"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 136353,
+         "name": {
+          "full": "Yoshikazu Takeuchi "
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 113237,
+         "name": {
+          "full": "Hisashi Eguchi"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 99580,
+         "name": {
+          "full": "Satoshi Kon"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 99580,
+         "name": {
+          "full": "Satoshi Kon"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 125820,
+         "name": {
+          "full": "Hideki Hamasu"
+         }
+        }
+       },
+       {
+        "role": "Art Director",
+        "node": {
+         "id": 120020,
+         "name": {
+          "full": "Nobutaka Ike"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Mima Kirigoe"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95289,
+          "name": {
+           "full": "Junko Iwao"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95289-B5RApCeWP4xk.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Rumi Hidaka"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95678,
+          "name": {
+           "full": "Rica Matsumoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95678-U0iKFbhteND6.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Uchida"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 103765,
+          "name": {
+           "full": "Masaaki Ookura"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n103765-m6FlZoCiNk7F.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Rei"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95724,
+          "name": {
+           "full": "Shiho Niiyama"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/724.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Murano"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95179,
+          "name": {
+           "full": "Masashi Ebara"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95179-ZXxATX9muGcD.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Tejima"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95634,
+          "name": {
+           "full": "Yousuke Akimoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95634-q6SacvhRo9Pq.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": []
+     },
+     "externalLinks": [
+      {
+       "site": "Crunchyroll",
+       "type": "STREAMING",
+       "url": "https://www.crunchyroll.com/fr/series/GZJH3D8V3/perfect-blue",
+       "isDisabled": false
+      },
+      {
+       "site": "Max",
+       "type": "STREAMING",
+       "url": "https://play.hbomax.com/movie/d6f89801-dca7-48d3-9fb7-f4f8c70793af",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/437"
+    },
+    {
+     "id": 164,
+     "title": {
+      "romaji": "Mononoke-hime",
+      "english": "Princess Mononoke"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 134,
+     "season": "SUMMER",
+     "seasonYear": 1997,
+     "startDate": {
+      "year": 1997,
+      "month": 7,
+      "day": 12
+     },
+     "endDate": {
+      "year": 1997,
+      "month": 7,
+      "day": 12
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "A calm village residing in the mountains comes under attack from a demon-possessed boar one day.<br><br>\nAshitaka, a young man and prince of the tribe, engages the creature in an attempt to save his village. During the battle, the boar bites him on the arm, leaving it blackened and cursed. Following his village's traditions, Ashitaka is exiled and becomes a wanderer, looking for a solution to the curse before it engulfs him.<br><br>\nIron Town is a fortress under the leadership of Lady Eboshi. Through the clearing of the surrounding forests, Iron Town produces large amounts of Ironsand, used for gunpowder and other machinery. However, because of the forests destruction, nearby animal clans seek revenge led by a human girl of the Wolf clan called San.<br><br>\nWhen Ashitaka comes to Iron Town, he discovers the area consumed in battle. Horrified, he attempts to create peace and befriend the Wolf Clan. However, after the forest's eradication and the ongoing war between Human and Beast, will the Spirit of the Forest be forgiving and accept Ashitaka's request to expel his curse?<br><br>\n[Written by MAL Rewrite]",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Drama",
+      "Fantasy"
+     ],
+     "averageScore": 85,
+     "popularity": 305493,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx164-ySuGzCWVw2cL.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx164-ySuGzCWVw2cL.jpg",
+      "color": null
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/164-Aj6MINy7VTfs.jpg",
+     "trailer": {
+      "id": "4OiMOHRDs14",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Environmental",
+       "rank": 95,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Mythology",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Animals",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 89,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "War",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Eco-Horror",
+       "rank": 86,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Gods",
+       "rank": 80,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Exiled",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rural",
+       "rank": 77,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Youkai",
+       "rank": 76,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Demons",
+       "rank": 72,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Revenge",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Wilderness",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 69,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Curses",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Historical",
+       "rank": 67,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Guns",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 63,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban Fantasy",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Travel",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Samurai",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Archery",
+       "rank": 59,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Disability",
+       "rank": 56,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Body Horror",
+       "rank": 53,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tomboy",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Outdoor Activities",
+       "rank": 51,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Indigenous Cultures",
+       "rank": 46,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Swordplay",
+       "rank": 45,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Kaiju",
+       "rank": 41,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Slavery",
+       "rank": 36,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 21,
+        "name": "Studio Ghibli"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 96870,
+         "name": {
+          "full": "Hayao Miyazaki"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 96870,
+         "name": {
+          "full": "Hayao Miyazaki"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 171223,
+         "name": {
+          "full": "Hiroyuki Itou"
+         }
+        }
+       },
+       {
+        "role": "Title Logo Design",
+        "node": {
+         "id": 212695,
+         "name": {
+          "full": "Kaoru Mano"
+         }
+        }
+       },
+       {
+        "role": "Title Logo Design",
+        "node": {
+         "id": 217659,
+         "name": {
+          "full": "Yukari Yoshida"
+         }
+        }
+       },
+       {
+        "role": "Art Director",
+        "node": {
+         "id": 102573,
+         "name": {
+          "full": "Naoya Tanaka"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "San"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95641,
+          "name": {
+           "full": "Yuriko Ishida"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/641.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Ashitaka"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95951,
+          "name": {
+           "full": "Youji Matsuda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95951-3C4f2Buow7mp.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Eboshi Gozen"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95950,
+          "name": {
+           "full": "Yuko Tanaka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95950-bqKQA9bv8C6d.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Bou Jiko"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95949,
+          "name": {
+           "full": "Kaoru Kobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95949-bUC9058vzYre.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Moro no Kimi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96134,
+          "name": {
+           "full": "Akihiro Miwa"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96134-H5tuVznKCden.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Toki"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95425,
+          "name": {
+           "full": "Sumi Shimamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95425-wEl09IWpLxIA.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": []
+     },
+     "externalLinks": [
+      {
+       "site": "Netflix",
+       "type": "STREAMING",
+       "url": "https://www.netflix.com/title/28630857",
+       "isDisabled": false
+      },
+      {
+       "site": "Max",
+       "type": "STREAMING",
+       "url": "https://www.max.com/movies/e31c2dc2-cb8b-416e-9eda-769be3bb3a6b",
+       "isDisabled": false
+      },
+      {
+       "site": "Max",
+       "type": "STREAMING",
+       "url": "https://www.max.com/movies/792d242d-33e5-4e85-8637-1b859d1b3dcf",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/164"
+    },
+    {
+     "id": 1096,
+     "title": {
+      "romaji": "Kidou Keisatsu Patlabor 2: the Movie",
+      "english": "Mobile Police Patlabor 2: The Movie"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 114,
+     "season": "SUMMER",
+     "seasonYear": 1993,
+     "startDate": {
+      "year": 1993,
+      "month": 8,
+      "day": 7
+     },
+     "endDate": {
+      "year": 1993,
+      "month": 8,
+      "day": 7
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "The date is 2002, three years after the events of PATLABOR 1 &ndash; Mobile Police. The destruction of a United Nations Labor team in South East Asia begins the build-up to a deadly terrorist plan that threatens to send shockwaves throughout Japan's military. With evidence of an impending military takeover, the scattered members of the original SVD (Special Vehicle Division) must gather to defend the city against danger. To make matters worse, the mastermind behind the operation is none other than Nagumo's former teacher and ex-lover Tsuge. <br><br>\n(Source: Anime News Network)",
+     "genres": [
+      "Drama",
+      "Mecha",
+      "Mystery",
+      "Sci-Fi"
+     ],
+     "averageScore": 81,
+     "popularity": 15967,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1096-O4Nz0aBmMSxH.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1096-O4Nz0aBmMSxH.jpg",
+      "color": "#ae5d1a"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1096-itEd3O4eF4de.jpg",
+     "trailer": null,
+     "tags": [
+      {
+       "name": "Terrorism",
+       "rank": 97,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Noir",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Conspiracy",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Police",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Military",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Politics",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban",
+       "rank": 80,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 78,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Real Robot",
+       "rank": 73,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 57,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cyberpunk",
+       "rank": 20,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 10,
+        "name": "Production I.G"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 133256,
+         "name": {
+          "full": "HEADGEAR"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 99097,
+         "name": {
+          "full": "Mamoru Oshii"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 97011,
+         "name": {
+          "full": "Masami Yuuki"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 100559,
+         "name": {
+          "full": "Akemi Takada"
+         }
+        }
+       },
+       {
+        "role": "Mechanical Design",
+        "node": {
+         "id": 97501,
+         "name": {
+          "full": "Shouji Kawamori"
+         }
+        }
+       },
+       {
+        "role": "Mechanical Design",
+        "node": {
+         "id": 99075,
+         "name": {
+          "full": "Yutaka Izubuchi"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Kiichi Gotou"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96424,
+          "name": {
+           "full": "Ryuusuke Oobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/1424.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Shinobu Nagumo"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95362,
+          "name": {
+           "full": "Yoshiko Sakakibara"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95362-OdfKlvHimh3b.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Shigeki Arakawa"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 103631,
+          "name": {
+           "full": "Naoto Takenaka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n103631-OL6vuS65q6Sv.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Noa Izumi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95637,
+          "name": {
+           "full": "Miina Tominaga"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95637-LT2PGGiw1HSB.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Isao Oota"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96075,
+          "name": {
+           "full": "Michihiro Ikemizu"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96075-pKIYt8gerJmJ.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Asuma Shinohara"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95673,
+          "name": {
+           "full": "Toshio Furukawa"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95673-jNN4GqGgpssj.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 1290,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "OTHER",
+        "node": {
+         "id": 2733,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "externalLinks": [],
+     "siteUrl": "https://anilist.co/anime/1096"
+    },
+    {
+     "id": 585,
+     "title": {
+      "romaji": "Mimi wo Sumaseba",
+      "english": "Whisper of the Heart"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 111,
+     "season": "SUMMER",
+     "seasonYear": 1995,
+     "startDate": {
+      "year": 1995,
+      "month": 7,
+      "day": 15
+     },
+     "endDate": {
+      "year": 1995,
+      "month": 7,
+      "day": 15
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "During summer vacation, a schoolgirl named Shizuku, who longs to discover her true talents, observes an ordinary-looking cat riding by himself on the train. Intrigued, she decides to follow him. This chance encounter leads her to the mysterious Seiji, a boy who is determined to follow his dreams, and The Baron, a magical cat figurine who helps her listen to the whispers in her heart. Soon, Shizuku's exciting adventures carry her far beyond the boundaries of her imagination.<br><br>\n(Source: Disney)",
+     "genres": [
+      "Adventure",
+      "Drama",
+      "Romance",
+      "Slice of Life"
+     ],
+     "averageScore": 81,
+     "popularity": 110740,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/nx585-5uq7j2xNNVmN.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/nx585-5uq7j2xNNVmN.jpg",
+      "color": "#f15d35"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/585-GowCYxa1c8WR.jpg",
+     "trailer": {
+      "id": "0pVkiod6V0U",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Coming of Age",
+       "rank": 98,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Writing",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shoujo",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Animals",
+       "rank": 61,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Fairy Tale",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Teen Cast",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "School",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tsundere",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Crossover",
+       "rank": 47,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cycling",
+       "rank": 46,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Love Triangle",
+       "rank": 40,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Kemonomimi",
+       "rank": 40,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Band",
+       "rank": 40,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Nekomimi",
+       "rank": 34,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Unrequited Love",
+       "rank": 23,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 21,
+        "name": "Studio Ghibli"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 97964,
+         "name": {
+          "full": "Aoi Hiiragi"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 101820,
+         "name": {
+          "full": "Yoshifumi Kondou"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 108023,
+         "name": {
+          "full": "Masahiko Ootsuka"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 171223,
+         "name": {
+          "full": "Hiroyuki Itou"
+         }
+        }
+       },
+       {
+        "role": "Title Logo Design",
+        "node": {
+         "id": 192653,
+         "name": {
+          "full": "Akira Michikawa"
+         }
+        }
+       },
+       {
+        "role": "Title Logo Design",
+        "node": {
+         "id": 212695,
+         "name": {
+          "full": "Kaoru Mano"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Shizuku Tsukishima"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95769,
+          "name": {
+           "full": "Youko Honna"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95769-nR18ewc78vzz.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Seiji Amasawa"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95432,
+          "name": {
+           "full": "Issei Takahashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95432-GCvdUSwovvy4.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Yuko Harada"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95433,
+          "name": {
+           "full": "Maiko Yoshiyama"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/default.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Seiya Tsukishima"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 143164,
+          "name": {
+           "full": "Takashi Tachibana"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n143164-xSPNCLlZlSUx.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Asako Tsukishima"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 143163,
+          "name": {
+           "full": "Shigeru Muroi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n143163-tANrmRWK9mNq.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Shiho Tsukishima"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 143165,
+          "name": {
+           "full": "Yorie Yamashita"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n143165-lTYqBqClnTBC.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 35228,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "CHARACTER",
+        "node": {
+         "id": 597,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "externalLinks": [
+      {
+       "site": "Netflix",
+       "type": "STREAMING",
+       "url": "https://www.netflix.com/title/70045021",
+       "isDisabled": false
+      },
+      {
+       "site": "Max",
+       "type": "STREAMING",
+       "url": "https://www.max.com/movies/a6f09773-9e6c-43ee-9930-6e98da95dc94",
+       "isDisabled": false
+      },
+      {
+       "site": "Max",
+       "type": "STREAMING",
+       "url": "https://www.max.com/movies/89352fe1-965e-43a1-99b5-55250f55e073",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/585"
+    },
+    {
+     "id": 186,
+     "title": {
+      "romaji": "Initial D SECOND STAGE",
+      "english": "Initial D 2nd Stage"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 13,
+     "duration": 23,
+     "season": "FALL",
+     "seasonYear": 1999,
+     "startDate": {
+      "year": 1999,
+      "month": 10,
+      "day": 15
+     },
+     "endDate": {
+      "year": 2000,
+      "month": 1,
+      "day": 21
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "Following his victory over RedSuns leader Ryosuke Takahashi, AE86 driver Takumi Fujiwara is challenged by the Lancer EVO-based \"Emperor,\" a group known for taking decals of racing teams they defeat, cutting them up and placing them on their cars like a fighter plane kill board. Takumi's undefeated streak is on the line as his AE86 is virtually no match against the more powerful and more agile four-wheel-drive EVOs of the Emperor team. <br><br>\n(Source: Anime News Network)",
+     "genres": [
+      "Action",
+      "Drama",
+      "Sports"
+     ],
+     "averageScore": 81,
+     "popularity": 61179,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b186-eygBSoYwLCYt.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b186-eygBSoYwLCYt.jpg",
+      "color": "#f1c935"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/n186-R2K9rwXRPhi9.jpg",
+     "trailer": {
+      "id": "-F3WCRKYYgI",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Cars",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Seinen",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Male Cast",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rural",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 69,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "CGI",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Work",
+       "rank": 48,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 413,
+        "name": "Pastel"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 97357,
+         "name": {
+          "full": "Shuuichi Shigeno"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 147904,
+         "name": {
+          "full": "Shinichi Masaki"
+         }
+        }
+       },
+       {
+        "role": "Supervisor",
+        "node": {
+         "id": 108047,
+         "name": {
+          "full": "Keiichi Tsuchiya"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 152963,
+         "name": {
+          "full": "Masaki Satou"
+         }
+        }
+       },
+       {
+        "role": "Mechanical Design",
+        "node": {
+         "id": 152778,
+         "name": {
+          "full": "Shouhei Kohara"
+         }
+        }
+       },
+       {
+        "role": "Art Director",
+        "node": {
+         "id": 219450,
+         "name": {
+          "full": "Minoru Maeda"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Takumi Fujiwara"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95022,
+          "name": {
+           "full": "Shinichirou Miki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95022-BXggjIr4KHqd.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Itsuki Takeuchi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95399,
+          "name": {
+           "full": "Mitsuo Iwata"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/95399-HGKWUmKmZ1el.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Bunta Fujiwara"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95357,
+          "name": {
+           "full": "Unshou Ishizuka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95357-umndcceko65h.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Ryousuke Takahashi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95160,
+          "name": {
+           "full": "Takehito Koyasu"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95160-jWevcH7BmfE1.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Keisuke Takahashi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95001,
+          "name": {
+           "full": "Tomokazu Seki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95001-vm0RtZhmlzhK.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Kyouichi Sudou"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96414,
+          "name": {
+           "full": "Masahiko Tanaka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96414-0dvcgzJwFZO4.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 185,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 187,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 30375,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "SUMMARY",
+        "node": {
+         "id": 821,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SUMMARY",
+        "node": {
+         "id": 12725,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 822,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "externalLinks": [
+      {
+       "site": "Twitter",
+       "type": "SOCIAL",
+       "url": "https://x.com/initialD_PR",
+       "isDisabled": false
+      },
+      {
+       "site": "YouTube",
+       "type": "STREAMING",
+       "url": "https://www.youtube.com/playlist?list=PLxSscENEp7Jg_IjS0KTi62YpVqxFFtl2t",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/186"
+    },
+    {
+     "id": 43,
+     "title": {
+      "romaji": "GHOST IN THE SHELL: Koukaku Kidoutai",
+      "english": "Ghost in the Shell"
+     },
+     "format": "MOVIE",
+     "status": "FINISHED",
+     "episodes": 1,
+     "duration": 83,
+     "season": "FALL",
+     "seasonYear": 1995,
+     "startDate": {
+      "year": 1995,
+      "month": 11,
+      "day": 18
+     },
+     "endDate": {
+      "year": 1995,
+      "month": 11,
+      "day": 18
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "2029: A female cybernetic government agent, Major Motoko Kusanagi, and the Internal Bureau of Investigations are hot on the trail of “The Puppet Master,” a mysterious and threatening computer virus capable of infiltrating human hosts. Together with her fellow agents from Section 9, Kusanagi embarks on a high-tech race against time to capture the omnipresent entity.<br>\n<br>\n(Source: Lionsgate Films)",
+     "genres": [
+      "Action",
+      "Psychological",
+      "Sci-Fi"
+     ],
+     "averageScore": 80,
+     "popularity": 178873,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx43-Y6EjeEMM14dj.png",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx43-Y6EjeEMM14dj.png",
+      "color": null
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/43-uDbk1jrG9yod.jpg",
+     "trailer": {
+      "id": "8RF09G8Ymqg",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Cyberpunk",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Artificial Intelligence",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cyborg",
+       "rank": 86,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Robots",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Seinen",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Police",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Male Cast",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cosmic Horror",
+       "rank": 79,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Noir",
+       "rank": 76,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dystopian",
+       "rank": 72,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Crime",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Guns",
+       "rank": 65,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Espionage",
+       "rank": 64,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Nudity",
+       "rank": 64,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 57,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "CGI",
+       "rank": 40,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 10,
+        "name": "Production I.G"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 97609,
+         "name": {
+          "full": "Masamune Shirow"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 99097,
+         "name": {
+          "full": "Mamoru Oshii"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 103502,
+         "name": {
+          "full": "Hiroyuki Okiura"
+         }
+        }
+       },
+       {
+        "role": "Mechanical Design",
+        "node": {
+         "id": 115627,
+         "name": {
+          "full": "Atsushi Takeuchi"
+         }
+        }
+       },
+       {
+        "role": "Mechanical Design",
+        "node": {
+         "id": 97501,
+         "name": {
+          "full": "Shouji Kawamori"
+         }
+        }
+       },
+       {
+        "role": "Weapon Design",
+        "node": {
+         "id": 100151,
+         "name": {
+          "full": "Mitsuo Iso"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Motoko Kusanagi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95100,
+          "name": {
+           "full": "Atsuko Tanaka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95100-v07xvA8V2Yeh.png"
+          }
+         },
+         {
+          "id": 95090,
+          "name": {
+           "full": "Maaya Sakamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95090-oARRP42NEhu0.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Batou"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95146,
+          "name": {
+           "full": "Akio Ootsuka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95146-T6IEmqXW3xUN.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Togusa"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95011,
+          "name": {
+           "full": "Kouichi Yamadera"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95011-2RfLzncNyvbR.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Ishikawa"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 102260,
+          "name": {
+           "full": "Yutaka Nakano"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n102260-OSLwIM0iBKFa.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Daisuke Aramaki"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95892,
+          "name": {
+           "full": "Tamio Ooki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95892-hARexeaqvxfo.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Ningyoutsukai"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96485,
+          "name": {
+           "full": "Iemasa Kayumi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/1485.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 468,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 31023,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 4672,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 467,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 17187,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 177699,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "externalLinks": [
+      {
+       "site": "Netflix",
+       "type": "STREAMING",
+       "url": "https://www.netflix.com/title/540533",
+       "isDisabled": false
+      },
+      {
+       "site": "YouTube",
+       "type": "STREAMING",
+       "url": "https://www.youtube.com/watch?v=iHil4Y4r3Wk",
+       "isDisabled": false
+      },
+      {
+       "site": "Criterion Channel",
+       "type": "STREAMING",
+       "url": "https://www.criterionchannel.com/ghost-in-the-shell/videos/ghost-in-the-shell-english-dubbed-version",
+       "isDisabled": false
+      },
+      {
+       "site": "Criterion Channel",
+       "type": "STREAMING",
+       "url": "https://www.criterionchannel.com/ghost-in-the-shell/videos/ghost-in-the-shell",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/43"
+    },
+    {
+     "id": 339,
+     "title": {
+      "romaji": "serial experiments lain",
+      "english": "Serial Experiments Lain"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 13,
+     "duration": 23,
+     "season": "SUMMER",
+     "seasonYear": 1998,
+     "startDate": {
+      "year": 1998,
+      "month": 7,
+      "day": 6
+     },
+     "endDate": {
+      "year": 1998,
+      "month": 9,
+      "day": 28
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "We're all connected... There is the world around us, a world of people, tactile sensation, and culture. There is the wired world, inside the computer, of images, personalities, virtual experiences, and a culture all of its own. The day after a classmate commits suicide, Lain, a 14-year-old girl, discovers how closely the two worlds are linked when she receives an e-mail from the dead girl: I just abandoned my body. I still live here...<br>\n<br>\nHas the line between the real world and the wired world begun to blur?<br>\n<br>\n(Source: Geneon Entertainment)",
+     "genres": [
+      "Drama",
+      "Mystery",
+      "Psychological",
+      "Sci-Fi",
+      "Supernatural"
+     ],
+     "averageScore": 80,
+     "popularity": 256637,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx339-xF2wp1NQuQ4r.png",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx339-xF2wp1NQuQ4r.png",
+      "color": "#e4a1d6"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/339-Lh0tuuwRLRgI.jpg",
+     "trailer": {
+      "id": "lpv7Wv-sDAo",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Denpa",
+       "rank": 97,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Virtual World",
+       "rank": 94,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Philosophy",
+       "rank": 94,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dissociative Identities",
+       "rank": 90,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Augmented Reality",
+       "rank": 89,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Memory Manipulation",
+       "rank": 84,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Artificial Intelligence",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cyberpunk",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Software Development",
+       "rank": 82,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Conspiracy",
+       "rank": 77,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gods",
+       "rank": 77,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Cosmic Horror",
+       "rank": 77,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Cult",
+       "rank": 72,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Suicide",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Religion",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Meta",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tragedy",
+       "rank": 62,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Video Games",
+       "rank": 62,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Primarily Female Cast",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Orphan",
+       "rank": 60,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Amnesia",
+       "rank": 59,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Adoption",
+       "rank": 58,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Afterlife",
+       "rank": 53,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "POV",
+       "rank": 48,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Yuri",
+       "rank": 46,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Drugs",
+       "rank": 41,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Trains",
+       "rank": 40,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "School",
+       "rank": 36,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Aliens",
+       "rank": 33,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Death Game",
+       "rank": 28,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Zombie",
+       "rank": 24,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Age Gap",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Bullying",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Anachronism",
+       "rank": 20,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 110,
+        "name": "Triangle Staff"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 96991,
+         "name": {
+          "full": "Yoshitoshi ABe"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 100359,
+         "name": {
+          "full": "Ryuutarou Nakamura"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 101160,
+         "name": {
+          "full": "Chiaki Konaka"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 101403,
+         "name": {
+          "full": "Takahiro Kishida"
+         }
+        }
+       },
+       {
+        "role": "Design Assistance",
+        "node": {
+         "id": 143407,
+         "name": {
+          "full": "Hitoshi Kagiyama"
+         }
+        }
+       },
+       {
+        "role": "Art Director",
+        "node": {
+         "id": 115881,
+         "name": {
+          "full": "Masaru Satou"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Lain Iwakura"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95169,
+          "name": {
+           "full": "Kaori Shimizu"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95169-EfU6qQdPxHRv.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Masami Eiri"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95137,
+          "name": {
+           "full": "Shou Hayami"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95137-2Q5l3Br9G7sk.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Arisu Mizuki"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 100648,
+          "name": {
+           "full": "Youko Asada"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n100648-HiUbu2t8GSUX.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Mika Iwakura"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95013,
+          "name": {
+           "full": "Ayako Kawasumi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95013-854sZdHTaabG.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Yasuo Iwakura"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96424,
+          "name": {
+           "full": "Ryuusuke Oobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/1424.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Tarou"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 134541,
+          "name": {
+           "full": "Keito Takimoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/default.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 35461,
+         "type": "MANGA"
+        }
+       }
+      ]
+     },
+     "externalLinks": [
+      {
+       "site": "Official Site",
+       "type": "INFO",
+       "url": "https://www.nbcuni.co.jp/rondorobe/anime/lain/",
+       "isDisabled": false
+      },
+      {
+       "site": "Twitter",
+       "type": "SOCIAL",
+       "url": "https://twitter.com/1998_lain",
+       "isDisabled": false
+      },
+      {
+       "site": "Crunchyroll",
+       "type": "STREAMING",
+       "url": "https://www.crunchyroll.com/series/G649DWXJY/serial-experiments-lain?srsltid=AfmBOoqy4RNm5F9R6_w2RqfN8fH-pB9qJMPHJcqZaU8eCP5WAWXKHaGe",
+       "isDisabled": false
+      },
+      {
+       "site": "Twitter",
+       "type": "SOCIAL",
+       "url": "https://x.com/1998_lain_en",
+       "isDisabled": false
+      }
+     ],
+     "siteUrl": "https://anilist.co/anime/339"
+    }
+   ]
+  }
+ }
+}

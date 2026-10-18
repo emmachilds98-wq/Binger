@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   emptyState, setStatus, logWatch, updateWatch, deleteWatch, removeItem, restoreItem, forgetPasses,
   watchlist, diary, migrate, exportState, importState, snapshot, updateSettings, DEFAULT_SETTINGS,
+  hideFranchise, unhideFranchise, dismissAlert,
 } from '../js/state/library.js';
 import { createStore } from '../js/state/store.js';
 
@@ -126,4 +127,40 @@ test('passes keep a slim snapshot so a long history fits in browser storage', ()
   assert.equal(passed.via, undefined);
   assert.deepEqual(passed.title.cast[0], { id: 0, name: 'n0' });
   assert.ok(JSON.stringify(passed).length < wantSize / 2, `${JSON.stringify(passed).length} vs ${wantSize}`);
+});
+
+test('hiding a series: one entry per franchise, and it can be undone', () => {
+  let s = emptyState(NOW);
+  s = hideFranchise(s, { key: 'tmdb:collection:1', name: 'Dune', ids: ['tmdb:movie:1', 'tmdb:movie:1', 'tmdb:movie:2'] });
+  s = hideFranchise(s, { key: 'tmdb:collection:1', name: 'Dune', ids: ['tmdb:movie:1', 'tmdb:movie:2', 'tmdb:movie:3'] });
+  assert.equal(s.settings.hiddenFranchises.length, 1);
+  assert.deepEqual(s.settings.hiddenFranchises[0].ids, ['tmdb:movie:1', 'tmdb:movie:2', 'tmdb:movie:3']);
+  assert.equal(hideFranchise(s, null), s);
+  s = unhideFranchise(s, 'tmdb:collection:1');
+  assert.deepEqual(s.settings.hiddenFranchises, []);
+});
+
+test('dismissing a new-season alert is remembered on the item', () => {
+  let s = logWatch(emptyState(NOW), t('tv1', { kind: 'tv' }), { rating: 5 }, NOW);
+  s = dismissAlert(s, 'tv1', 's3', NOW);
+  assert.deepEqual(s.items.tv1.dismissed, ['s3']);
+  assert.equal(dismissAlert(s, 'tv1', 's3', NOW), s, 'no-op the second time');
+  assert.equal(dismissAlert(s, 'missing', 's3', NOW), s);
+  assert.deepEqual(migrate(JSON.parse(JSON.stringify(s)), NOW).items.tv1.dismissed, ['s3'], 'survives a reload');
+});
+
+test('snapshots keep what "Not this franchise" needs', () => {
+  const snap = snapshot(t('a', { collection: { id: 'tmdb:collection:1', name: 'Dune' }, franchiseIds: [2, 3], streaming: ['Netflix'] }));
+  assert.deepEqual(snap.collection, { id: 'tmdb:collection:1', name: 'Dune' });
+  assert.deepEqual(snap.franchiseIds, [2, 3]);
+  assert.equal(snap.streaming, undefined, 'where it streams changes too often to keep');
+});
+
+test('migrate fills and repairs the Phase 2 settings', () => {
+  const fresh = migrate({ settings: {} }, NOW).settings;
+  assert.deepEqual([fresh.services, fresh.streamOnly, fresh.hiddenFranchises], [[], false, []]);
+  const junk = migrate({ settings: { services: ['Netflix', 7, null], streamOnly: 'yes', hiddenFranchises: [{ key: 'k', ids: ['a'] }, { name: 'no key' }, 'x'] } }, NOW).settings;
+  assert.deepEqual(junk.services, ['Netflix']);
+  assert.equal(junk.streamOnly, true);
+  assert.deepEqual(junk.hiddenFranchises.map((f) => f.key), ['k']);
 });

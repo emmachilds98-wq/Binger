@@ -88,18 +88,42 @@ export function warmth(profile) {
   return clamp((profile.stats.strength || 0) / 4, 0, 1);
 }
 
-export function scoreTitle(title, profile, { now = Date.now(), preferFresh = true } = {}) {
+// Each recent "Overhyped" tag makes "Trending this week" count for less.
+export function hypeTrust(profile) {
+  return 1 / (1 + 0.6 * ((profile.stats && profile.stats.hype) || 0));
+}
+
+// Is this title included with one of your streaming services?
+//   true  - yes (or it came from a search for exactly your services)
+//   false - we know where it streams, and it isn't on yours
+//   null  - not known yet (film/TV list data, before details are fetched)
+export function onServices(title, services) {
+  if (!services || !services.length) return null;
+  if (Array.isArray(title.streaming) && (title.detailed || title.source === 'anilist')) {
+    if (title.streaming.some((s) => services.includes(s))) return true;
+    // A title found by asking TMDB for your services' catalogue is on one of
+    // them even if its details came back without that region's data.
+    return title.streamHint ? true : false;
+  }
+  return title.streamHint ? true : null;
+}
+
+export const SERVICE_BOOST = 0.06;
+
+export function scoreTitle(title, profile, { now = Date.now(), preferFresh = true, services = null } = {}) {
   const aff = affinityOf(title, profile);
   const q = quality(title);
   const fr = freshness(title, now);
   const seed = seedBoost(title);
   const trend = viaOf(title, 'trending') ? 1 : 0;
   const warm = warmth(profile);
+  const onSvc = onServices(title, services);
   const score =
     (0.15 + 0.5 * warm) * aff.value +
     (0.35 - 0.15 * warm) * q +
     (preferFresh ? 0.1 : 0.02) * fr +
     0.12 * seed +
-    (0.1 - 0.06 * warm) * trend;
-  return { score, affinity: aff.value, quality: q, fresh: fr, contributions: aff.contributions };
+    (0.1 - 0.06 * warm) * hypeTrust(profile) * trend +
+    (onSvc ? SERVICE_BOOST : 0);
+  return { score, affinity: aff.value, quality: q, fresh: fr, onServices: onSvc, contributions: aff.contributions };
 }
