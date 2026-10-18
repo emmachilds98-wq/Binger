@@ -5,12 +5,40 @@ loses its thread, start here: what Binger is for, what's built, what's next,
 and the decisions that shouldn't be quietly undone. Update the
 [status log](#status-log) at the end of every working session.
 
-- Design canvas (6 screens, clickable): https://claude.ai/artifact/LDWPjbsS8nxv55dmhy3SjW
-  (private to the owner's claude.ai account; use Share on the canvas to show anyone else)
+- Design canvas (12 screens, clickable): https://claude.ai/artifact/LDWPjbsS8nxv55dmhy3SjW
+  (private to the owner's claude.ai account; use Share on the canvas to show anyone else).
+  **A copy of every artboard is in [design/canvas/](design/canvas/)**, so you can
+  build to the design without canvas access ([design/README.md](design/README.md)).
 - How it works inside: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Look and feel: [DESIGN.md](DESIGN.md)
 - Rules for anyone (human or agent) changing the code: [../CLAUDE.md](../CLAUDE.md)
 - Screenshots from the last end-to-end run: [screenshots/](screenshots/)
+
+---
+
+## Start here (next session)
+
+Where things stand on 2026-10-18:
+
+- **Phase 1 (MVP) is live on `main`.** The first build's PR was merged by
+  fast-forward; `main` holds the whole app.
+- **Phase 2 is half built.** All of its logic is done and unit-tested: the
+  engine, both API adapters, and the library rules. Two items are finished
+  end to end: **deck filters** and **feeling tags in scoring**. The other five
+  are **designed** (canvas row 3) and need only their screens built and wired.
+  Each one is a self-contained step in [Phase 2: build order](#phase-2-build-order).
+- **Checks:** `npm test` 90 passing, `npm run e2e` 32/32.
+
+Do these in order:
+
+1. Run `npm run check && npm test && npm run e2e` to confirm a green start.
+2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
+   It has been blocked twice for want of a key, and Phase 2 adds four TMDB
+   endpoints that are still tested only against hand-written responses.
+3. Build Phase 2 steps 1 to 5 below, one PR each (or one PR with one commit
+   each). Every step lists the design artboard, the functions that already
+   exist, the files to touch and the checks to add.
+4. Tick the boxes here and add a [status log](#status-log) entry.
 
 ---
 
@@ -30,13 +58,13 @@ and the decisions that shouldn't be quietly undone. Update the
 |---|---|
 | Tinder-style swiping across films, TV and anime | Discover tab: right = want, left = pass, up = seen it (`js/ui/deck.js`) |
 | Artwork, synopsis | Card front + detail sheet, from TMDB / AniList |
-| Key actors *I might know* | Card shows people first who appear in things **you've** watched or saved ("You loved Little Women"), then top billing (`keyPeople` in `js/ui/card.js`) |
+| Key actors *I might know* | Card shows people first who appear in things **you've** watched or saved ("You loved Little Women"), then top billing (`keyPeople` in `js/ui/card.js`). Phase 2: tap anyone to see their other work, ranked for you |
 | Short trailer clip | ▶ on the card plays a muted 30-second YouTube clip inline; length set in Settings (`js/ui/trailer.js`) |
 | Track what I've watched, review it | Library → Diary: half-star rating, feeling tags, written review, date, rewatches (`js/ui/rate.js`, `js/state/library.js`) |
-| Steer it | Taste tab: Films/TV/Anime mix, favour new releases, surprise me, never-show genres; plus every swipe and rating |
+| Steer it | Taste tab: Films/TV/Anime mix, favour new releases, surprise me, never-show genres; Discover → Filters: quick watches, decade; plus every swipe, rating and feeling tag |
 | Effortlessly use that for the next best suggestion | The engine re-ranks the deck after **every** swipe or rating; each card says why it was picked (`js/engine/`) |
-| Easily updatable as new media comes out | No hand-kept catalogue: every refill pulls this week's trending, recent releases, shows airing now and the current anime season, live (`js/sources/candidates.js`) |
-| Grows with the user | Recent opinions outweigh old ones (time decay), ratings are read relative to your own average, and seeds rotate so recommendations widen as your library grows |
+| Easily updatable as new media comes out | No hand-kept catalogue: every refill pulls this week's trending, recent releases, shows airing now and the current anime season, live (`js/sources/candidates.js`). Phase 2: new seasons of TV you've watched |
+| Grows with the user | Recent opinions outweigh old ones (time decay), ratings are read relative to your own average, and seeds rotate so recommendations widen as your library grows. Phase 2: see your taste move over time |
 
 ---
 
@@ -59,17 +87,44 @@ and the decisions that shouldn't be quietly undone. Update the
    sync is Phase 3.
 6. **The engine is pure and explainable.** No ML model or server. A weighted
    feature profile (genres, themes, directors, cast, studios, kind, language,
-   era) with evidence shrinkage and time decay, plus quality, freshness, seed
-   and trending terms. Every card carries plain-English reasons. All of it is
-   unit-tested in Node. Maths in [ARCHITECTURE.md](ARCHITECTURE.md#the-engine).
+   era, length) with evidence shrinkage and time decay, plus quality,
+   freshness, seed, trending and streaming terms. Every card carries
+   plain-English reasons. All of it is unit-tested in Node. Maths in
+   [ARCHITECTURE.md](ARCHITECTURE.md#the-engine).
 7. **Network-first service worker.** Online, every open runs the latest code:
    no "update available" step and no version to keep in sync with the worker
    (the drift that broke another app in this account). Offline, it falls back
    to the cached copy.
 8. **One combined AniList request per deck refill.** AniList allows about 30
    requests a minute, so trending, the current season, genre picks,
-   "recommended because you liked X" and next seasons all come back in a
-   single GraphQL call.
+   "recommended because you liked X", next seasons and (with a deck filter
+   on) the filtered page all come back in a single GraphQL call.
+9. **Streaming services are stored as one canonical name each**
+   (`js/sources/services.js`): "Netflix", never "Netflix Standard with Ads".
+   TMDB (via JustWatch) and AniList name services differently; this is where
+   they meet. Only subscription and free count as "on your service"; rent and
+   buy don't. AniList's streaming links aren't per country, TMDB's are.
+10. **"Only what I can stream" hides what's known not to be on your
+    services, and keeps what isn't known yet.** Film/TV list data has no
+    availability; the app fetches details for the next few cards and re-ranks,
+    up to three rounds (`ensureDetails` in `js/app.js`), so a film that turns
+    out not to be on your services drops out before you see it. Your services'
+    own catalogues are also searched directly so the deck never runs dry.
+11. **Deck filters (length, decade) last for the session**, like the
+    Films/TV/Anime pills. "Only what I can stream" is a saved setting.
+12. **Feeling tags fine-tune a rating; they never override it.** Each tag
+    nudges the item's signal (capped at ±0.25 overall). "Slow" also counts
+    against that title's length bucket; "Overhyped" makes "Trending this week"
+    count for less (`TAG_NUDGE`, `stats.hype` in `js/engine/profile.js`).
+13. **"Not this franchise" is resolved once, when you hide it**, into
+    `{ key, name, ids }` in `settings.hiddenFranchises`: every film in the TMDB
+    collection, or every anime related to it (via its source manga's
+    adaptations, which is the most reliable thread through a long franchise).
+    It hides suggestions only; a person's page still lists everything they made.
+14. **New-season alerts are for TV only.** An anime sequel is its own AniList
+    entry and already arrives in the deck ("Next part of…"); a TV show keeps one
+    TMDB id across seasons, so it can't. A season is "new" if it premieres after
+    the latest date in your diary for that show; logging it clears the alert.
 
 ---
 
@@ -79,8 +134,9 @@ and the decisions that shouldn't be quietly undone. Update the
 - [x] Six-screen design canvas: first run, Discover deck, detail + trailer,
       rate/review sheet, Library (watchlist + diary), Taste.
 - [x] Look committed: "late-night cinema" (DESIGN.md).
+- [x] Phase 2 screens designed: canvas row 3, artboards 7 to 12.
 
-### Phase 1: MVP ✅ (first PR)
+### Phase 1: MVP ✅ (first PR, merged)
 - [x] Swipe deck with gesture + button + keyboard twins, undo
 - [x] Cards: artwork, kind badge, match %, why-picked reason, synopsis, key people you know
 - [x] Inline trailer clips (muted, trimmed); full trailer link
@@ -93,31 +149,121 @@ and the decisions that shouldn't be quietly undone. Update the
 - [x] Settings: TMDB key test-and-save, region, clip length, autoplay, anime voice language, export/import, erase
 - [x] Recommendation engine + candidate gathering + caching (IndexedDB, stale-on-error)
 - [x] PWA: manifest, icons, offline shell
-- [x] Tests: 51 unit tests (engine, adapters on real AniList responses, library, shell), 27-check browser run including offline (`npm run e2e`)
-- [x] CI on every push / PR
+- [x] Tests and CI on every push / PR
 
 ### Phase 1.1: Go live (needs the owner) ⏳
-- [ ] Merge the first PR into `main`
+- [x] Merge the first PR into `main`
 - [ ] Switch on GitHub Pages: repo **Settings → Pages → Build and deployment →
       Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
       The app appears at `https://emmachilds98-wq.github.io/Binger/`
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
 - [ ] Add to Home Screen (Safari: Share → Add to Home Screen). On iPhone this
       also stops Safari clearing the library after 7 days unused.
-- [ ] **Verify films and TV against the live TMDB API.** The owner has added
-      `TMDB_API_KEY` as a cloud-environment secret; a new session can run the
-      checks in [Verifying TMDB live](#verifying-tmdb-live). So far TMDB is
-      tested only against hand-written responses that follow TMDB's documented
-      format.
+- [ ] **Verify films and TV against the live TMDB API.** Still not done: the
+      `TMDB_API_KEY` secret wasn't present in either session so far. Steps in
+      [Verifying TMDB live](#verifying-tmdb-live).
 
-### Phase 2: Smarter suggestions
-- [ ] "Only show what I can stream": pick your services, filter/boost by TMDB watch providers
-- [ ] New-season alerts for TV you've watched (TMDB `next_episode_to_air`), as anime already has
-- [ ] Use feeling tags in scoring (e.g. many "Slow" tags → lower long-runtime dramas)
-- [ ] Tap a person → their other work, ranked for you
-- [ ] "Not this franchise" pass (collection-level dislike)
-- [ ] Taste-over-time view (how the profile has shifted)
-- [ ] Deck filters: runtime ("under 2 hours"), episodes ("under 13"), decade
+### Phase 2: Smarter suggestions ◐
+
+Logic (engine, sources, library) is done and tested for every item. Status of
+each item end to end:
+
+- [x] **Deck filters**: "Quick watches" (films ≤ 2 h, series ≤ 13 episodes)
+      and decade, from the Filters button on Discover (canvas 7).
+- [x] **Feeling tags in scoring**: tags nudge ratings; "Slow" lowers that
+      length, "Overhyped" trusts trending less. (Showing this on Taste is step 5.)
+- [ ] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8)
+- [ ] **Step 2. Tap a person → their other work, ranked for you** (canvas 9)
+- [ ] **Step 3. "Not this franchise"** (canvas 10)
+- [ ] **Step 4. New-season alerts for TV you've watched** (canvas 11)
+- [ ] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
+
+#### Phase 2: build order
+
+Each step: read the artboard in `docs/design/canvas/`, build the screen in
+`js/ui/`, wire it in `js/app.js`, add CSS to `css/app.css`, add the new module
+to `SHELL` in `service-worker.js` (the shell test fails otherwise), add e2e
+checks + a screenshot to `scripts/e2e.mjs`, then `npm run check && npm test && npm run e2e`.
+Fixtures for every API call below already exist in `tests/fixtures/`.
+
+**Step 1. Streaming services picker** · artboard `Services.dc.html` (8)
+- New `js/ui/services.js`: `openServices(ctx)`, a full sheet with a 3-column
+  grid of toggle tiles, the "Only show what I can stream" switch, and a Done button.
+- Choices: `serviceChoices({ tmdb, picked })` (`js/sources/lookups.js`). Show
+  `COMMON_SERVICES` at once, then the region's list (with logos) when TMDB answers.
+- Save: `store.update(L.updateSettings, { services, streamOnly })`. The store
+  subscriber in `app.js` already clears the pool and refills when either changes.
+- Entry points: Settings → "Where you watch" (beside Region); Taste → "Steer the
+  deck"; and the Filters sheet: in `showFilters()` (`app.js`) replace
+  `onPickServices: null` with a function that opens the picker ("Where" then appears).
+- Detail sheet: ring your services in "Where to watch"; for anime, list
+  `title.watchLinks` as links instead of the "AniList lists…" sentence.
+- Already done: `onServices`, `SERVICE_BOOST` (score.js), stream-only in
+  `eligible` (rank.js), the "On Netflix" reason (explain.js), searching your
+  services' catalogues (`providerIdsFor`, `gatherCandidates`).
+- e2e: mock `/watch/providers/` with `tmdb-providers-movie.json`; pick Netflix,
+  turn on "only": Dune shows (its GB providers include "Netflix Standard with
+  Ads") with the reason "On Netflix"; anime from `anilist-deck.json` has no
+  streaming links, so it's hidden. Screenshot `08-services`.
+
+**Step 2. A person's work** · artboard `Person.dc.html` (9)
+- New `js/ui/person.js`: `openPerson(stub, ctx)`, a full sheet: photo, name,
+  `known`, a "You know them from…" line (from `profile.people`), kind pills
+  when there's more than one kind, rows "best for you first".
+- Data: `loadPerson(personId, { tmdb, anilist })` (lookups.js) returns
+  `{ person, credits }`; rank with `rankForYou(credits, profile, { services })`
+  (engine). Each credit has `role` and `major`. A TMDB person needs a key:
+  without one, say "Add a TMDB key to see their films and TV".
+- Rows reuse the search-row pattern (eye → `logSeen`, bookmark →
+  `addToWatchlist`, tap → `showDetail`).
+- Entry points: cast items in `js/ui/detail.js` become buttons; directors and
+  creators in the crew line; Taste "People you rate highly" chips for
+  creator/cast (their keys are `c:<personId>` / `p:<personId>`; studios aren't people).
+- e2e: mock TMDB `/person/1190668` → `tmdb-person.json`; AniList body
+  containing `Staff(id` → `anilist-staff-tanezaki.json`. Check ranked rows,
+  merged roles, no talk-show credits. Screenshot `09-person`.
+
+**Step 3. "Not this franchise"** · artboard `HideSeries.dc.html` (10)
+- `hasFranchise(title)` and `loadFranchise(title, { tmdb, anilist })`
+  (lookups.js); save with `store.update(L.hideFranchise, f)`, undo with
+  `L.unhideFranchise`.
+- Pass toast: in `deckAction` (`app.js`), for a left swipe on a title where
+  `hasFranchise(t)`, show `toast('Passed', { action: { label: 'Hide all <name> films', fn } })`
+  (anime: "Hide this whole series"). Then the toast "<name> is hidden" with Undo.
+- Detail sheet: a link button "Hide the whole series" when `hasFranchise`.
+- Taste → "Never show me": hidden series as removable pills before the genres.
+- Already done: `isBlocked` / `franchiseBlock` in rank.js, by id, by TMDB
+  collection, and by AniList relation; snapshots keep `collection` and `franchiseIds`.
+- e2e: mock `/collection/726871` → `tmdb-collection.json`; pass Dune, tap
+  "Hide all Dune films"; `settings.hiddenFranchises[0].ids` has 3 ids; Taste
+  shows "Dune"; tapping it unhides. Screenshot `10-hide-series`.
+
+**Step 4. New seasons** · artboard `Seasons.dc.html` (11)
+- `checkNewSeasons({ tmdb, items })` (lookups.js) returns alerts
+  `{ id, key, season, date, state: 'airing' | 'out' | 'soon', title }` via the
+  engine's `seasonAlerts`. Run it after `init()` (when there's a TMDB key) and
+  after a TV watch is logged; keep the result in `app.js` state.
+- Library → Watchlist: "Back with new episodes" section above the list.
+  "Watched it" → `logSeen(item.title)` (a new diary entry clears the alert);
+  ✕ → `store.update(L.dismissAlert, id, alert.key)`.
+- Library tab dot: an amber dot on the Library tab's icon while alerts wait
+  (artboard 11). `.has-dot` in `css/app.css` draws one for 44px icon buttons;
+  the tab needs its own placement, on the icon rather than the tab's corner.
+- e2e: mock `/tv/95396` with `next_episode_to_air` = season 3 episode 1 in the
+  future; log Severance with a 2025 date; Library shows "Season 3 · starts …".
+  Screenshot `11-new-seasons`.
+
+**Step 5. Taste over time + how you like to watch** · artboard `TasteTime.dc.html` (12)
+- `tasteTimeline(items, { now })` (engine/timeline.js) returns
+  `{ at, series: [{ label, values, trend }], enough }`. Render only when
+  `enough`. Chart spec in [DESIGN.md](DESIGN.md#taste-over-time-chart): small
+  multiples, 2px grey line, amber end dot, zero baseline, trend in words, tap
+  for the numbers, plus a table view.
+- "How you like to watch": sweet spot = `topFeatures(profile, 'length', { limit: 1 })`;
+  tag counts = `profile.stats.tags`; one line each for "Slow" (when the long
+  bucket's affinity is negative) and "Overhyped" (`profile.stats.hype > 0`).
+- e2e: write a library with past-dated ratings into localStorage, reload,
+  check rows and trend words. Screenshot `12-taste-time`.
 
 ### Phase 3: Grows with you everywhere
 - [ ] Optional sync across devices (Firebase Auth + Firestore, as in the owner's other apps)
@@ -135,6 +281,37 @@ and the decisions that shouldn't be quietly undone. Update the
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
 
+### 2026-10-18 (second session): Phase 2 logic, design, deck filters
+- `main` held only a README; the first build was waiting in an unmerged draft
+  PR. Verified it here (51 tests, 27/27 e2e), then fast-forwarded `main` to it.
+  This session's environment was set up to push straight to `main`;
+  `CLAUDE.md`'s "branch + PR" rule still stands for normal work.
+- Designed the Phase 2 screens on the canvas (row 3, artboards 7 to 12, plus a
+  "Phase 2 rules" note) and copied all 12 artboards to `docs/design/canvas/`.
+- Built every Phase 2 piece of logic, with tests:
+  - engine: length features; feeling-tag nudges ("Slow" → length,
+    "Overhyped" → less trending); streaming-service matching, boost and
+    stream-only; deck filters; hidden franchises; `rankForYou`;
+    `seasonAlert(s)`; `tasteTimeline`.
+  - sources: one service vocabulary (`services.js`); TMDB providers, discover
+    by provider / runtime / dates, person credits, collections, TV seasons and
+    next episode; AniList streaming links, franchise relations, Staff (person)
+    query, franchise graph, filtered deck page; `lookups.js` for person,
+    franchise, service choices and new-season checks.
+  - library: `services`, `streamOnly`, `hiddenFranchises` settings (migrated),
+    `hideFranchise`, `unhideFranchise`, `dismissAlert`.
+- Built the Deck filters screen end to end (Filters button, sheet, summary
+  line with Clear, filtered fetching from both sources).
+- Real AniList captures added for a voice actor, a director, the Frieren
+  franchise graph and a "short 1990s" page. TMDB fixtures for providers,
+  person, collection and TV seasons are hand-written to TMDB's documented format.
+- Fixed: the native `Element.append` writes `null` as text (caught by eye on
+  the filters screenshot); the filters sheet, search and choice sheet now use
+  `dom.js` `append()`. An e2e check guards the filters sheet.
+- Tests: 90 unit (was 51), e2e 32/32 (was 27).
+- **Blocking:** live TMDB verification still needs `TMDB_API_KEY` in the session.
+- **Next:** Phase 2 build order, steps 1 to 5.
+
 ### 2026-10-18: Design + MVP build (Claude Code session)
 - Designed six screens on a Claude design canvas (link at top).
 - Built the whole Phase 1 MVP in this repo (it was empty). Unit tests: 51
@@ -149,10 +326,8 @@ Newest first. One entry per working session: what changed, what's next, what's b
 - Bug found and fixed by the e2e run: dragging a card from the middle of the
   poster hit the play button and started the clip instead of swiping. Drags
   can now start anywhere on the card; a tap still plays.
-- **Not yet verified:** live TMDB responses (no key in that session; the
-  owner has since added `TMDB_API_KEY` as an environment secret for the next
-  session). AniList was verified live.
-- **Next:** Phase 1.1 (merge, Pages, key on phone, live TMDB check), then Phase 2.
+- **Not yet verified:** live TMDB responses (no key in that session). AniList
+  was verified live.
 
 ---
 
@@ -163,15 +338,21 @@ In a session where `TMDB_API_KEY` is set:
 ```bash
 # 1. The key works
 curl -s "https://api.themoviedb.org/3/configuration?api_key=$TMDB_API_KEY" | head -c 200
-# 2. The adapter normalises real responses (prints a few titles with cast + trailer)
+# 2. The adapter normalises real responses: details, providers, a person, a
+#    collection and a TV show's seasons (prints a short summary of each)
 node -e "
 import('./js/sources/tmdb.js').then(async ({ createTmdb }) => {
   const t = createTmdb({ key: process.env.TMDB_API_KEY, region: 'GB' });
   const list = await t.trending('movie');
   const d = await t.details('movie', list[0].sourceId);
-  console.log(d.title, d.year, d.cast.slice(0,3).map(c=>c.name), d.trailer, d.providers && d.providers.stream.map(p=>p.name));
+  console.log(d.title, d.year, d.cast.slice(0,3).map(c=>c.name), d.trailer, d.streaming, d.collection);
   const tv = await t.details('tv', (await t.trending('tv'))[0].sourceId);
-  console.log(tv.title, tv.seasons, tv.crew, tv.trailer);
+  console.log(tv.title, tv.seasons, tv.seasonList, tv.nextEpisode, tv.lastEpisode, tv.streaming);
+  console.log((await t.providers('movie')).slice(0, 8).map(p => p.service + ' ' + p.ids));
+  const p = await t.person(1190668);
+  console.log(p.person, p.credits.slice(0, 5).map(c => c.title + ' / ' + c.role + (c.major ? ' *' : '')));
+  console.log(await t.collection(726871));
+  console.log((await t.discover('movie', { providerIds: [8], runtimeMax: 120, from: '1990-01-01', to: '1999-12-31' })).slice(0, 5).map(x => x.title + ' ' + x.year));
 });"
 ```
 
@@ -190,8 +371,10 @@ real captures and keep the tests green.
   and the detail sheet links to the full trailer.
 - AniList rate limits (about 30 requests a minute). Normal use is about 1
   request per refill plus searches; responses are cached for 6 hours.
-- "Where to watch" covers films/TV (TMDB + JustWatch). For anime, the detail
-  sheet points to AniList's streaming links.
+- "Where to watch" covers films/TV (TMDB + JustWatch, per region). AniList's
+  streaming links for anime are worldwide, not per region.
+- TMDB details are cached for 3 days, so a new season can show up to 3 days late.
+  The region's provider list is cached for a week.
 
 ## Resuming work: the 60-second version
 

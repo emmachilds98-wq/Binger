@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Binger · New seasons</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0F0E13; color: #F4F1EA; font-family: 'Instrument Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 22px 16px 12px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 30px; letter-spacing: -0.5px">Library</h1>
+      <button style="min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid #34303D; background: #1A1820; color: #F4F1EA; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        Log a watch
+      </button>
+    </div>
+    <div role="tablist" aria-label="Library sections" style="display: flex; padding: 4px; border-radius: 14px; background: #1A1820">
+      <button role="tab" aria-selected="true" style="flex: 1; min-height: 40px; border: 0; border-radius: 10px; font-size: 14px; font-weight: 600; background: #34303D; color: #F4F1EA">Watchlist · 18</button>
+      <button role="tab" aria-selected="false" style="flex: 1; min-height: 40px; border: 0; border-radius: 10px; font-size: 14px; font-weight: 600; background: transparent; color: #ABA5B6">Diary · 42</button>
+    </div>
+  </header>
+
+  <div style="flex: 1; overflow: hidden; padding: 0 16px; display: flex; flex-direction: column; gap: 10px">
+    <sc-if value="{{hasAlerts}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="back" style="display: flex; flex-direction: column; gap: 8px; padding-bottom: 8px">
+        <h2 id="back" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #ABA5B6">Back with new episodes</h2>
+        <sc-for list="{{alerts}}" as="a" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 16px; background: #1A1820; border: 1px solid #34303D">
+            <a href="Detail.dc.html" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; color: #F4F1EA; text-decoration: none">
+              <span aria-hidden="true" style="{{a.thumb}}"></span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                <span style="font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{a.title}}</span>
+                <span style="{{a.stateStyle}}">{{a.state}}</span>
+                <span style="font-size: 12px; color: #ABA5B6">You watched {{a.when}}</span>
+              </span>
+            </a>
+            <a href="Rate.dc.html" style="min-height: 40px; padding: 0 12px; border-radius: 20px; background: #24212C; color: #7CC4FF; display: flex; align-items: center; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap">Watched it</a>
+            <button onClick="{{a.dismiss}}" aria-label="Not interested in {{a.title}}'s new season" style="width: 36px; height: 44px; border: 0; background: transparent; color: #ABA5B6; display: flex; align-items: center; justify-content: center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+            </button>
+          </div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #ABA5B6; padding: 2px 2px 0">
+      <span>Best match for you first</span>
+      <span style="color: #F5B83D; font-weight: 600; text-decoration: underline; text-underline-offset: 3px">Sort by recently added</span>
+    </div>
+    <sc-for list="{{watchlist}}" as="w" hint-placeholder-count="3">
+      <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 16px; background: #1A1820">
+        <div aria-hidden="true" style="{{w.thumb}}"></div>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{w.title}}</div>
+          <div style="font-size: 13px; color: #ABA5B6">{{w.meta}}</div>
+          <div style="font-size: 12px; color: #F5B83D; margin-top: 2px">{{w.reason}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <nav aria-label="Main" style="display: flex; border-top: 1px solid #24212C; padding: 6px 8px 20px; background: #0F0E13">
+    <a href="HideSeries.dc.html" style="flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #ABA5B6; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"></rect><path d="M9 8l6 4-6 4z"></path></svg>
+      Discover
+    </a>
+    <a href="Seasons.dc.html" aria-current="page" style="position: relative; flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #F5B83D; text-decoration: none; font-size: 12px; font-weight: 600">
+      <span style="position: relative; display: flex">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4z"></path><path d="M16.5 5l3.8 1-4 15-3.8-1"></path></svg>
+        <sc-if value="{{hasAlerts}}" hint-placeholder-val="{{ true }}">
+          <span aria-hidden="true" style="position: absolute; top: -2px; right: -4px; width: 8px; height: 8px; border-radius: 4px; background: #F5B83D; box-shadow: 0 0 0 2px #0F0E13"></span>
+        </sc-if>
+      </span>
+      Library
+    </a>
+    <a href="TasteTime.dc.html" style="flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #ABA5B6; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>
+      Taste
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { dismissed: [] };
+  }
+  renderVals() {
+    const thumb = (c) => 'width: 48px; height: 70px; border-radius: 8px; flex-shrink: 0; display: block; background: ' + c;
+    const tone = { airing: '#F5B83D', out: '#F5B83D', soon: '#7CC4FF' };
+    const alerts = [
+      { id: 'bear', title: 'The Bear', state: 'Season 4 · airing now', kind: 'airing', when: 'season 3 in July', c: '#5C3A2B' },
+      { id: 'andor', title: 'Andor', state: 'Season 2 · out now', kind: 'out', when: 'it in March 2024', c: '#3A3F4A' },
+      { id: 'sev', title: 'Severance', state: 'Season 3 · starts 16 Jan', kind: 'soon', when: 'it in April', c: '#2B3F5C' }
+    ].filter((a) => !this.state.dismissed.includes(a.id)).map((a) => Object.assign({}, a, {
+      thumb: thumb(a.c),
+      stateStyle: 'font-size: 13px; font-weight: 600; color: ' + tone[a.kind],
+      dismiss: () => this.setState({ dismissed: this.state.dismissed.concat([a.id]) })
+    }));
+    const watchlist = [
+      { title: 'Dune: Part Two', meta: 'Film · 2h 46m', reason: 'Same director as Arrival', c: '#7A4A26' },
+      { title: 'Frieren: Beyond Journey’s End', meta: 'Anime · 28 episodes', reason: 'On Crunchyroll · Fantasy + Slice of Life', c: '#2F5E5A' },
+      { title: 'Past Lives', meta: 'Film · 1h 46m', reason: 'Moving, a tag you use often', c: '#4A4A6B' }
+    ].map((w) => Object.assign({}, w, { thumb: thumb(w.c).replace('48px', '52px').replace('70px', '74px') }));
+    return { alerts, hasAlerts: alerts.length > 0, watchlist };
+  }
+}
+</script>
+</body>
+</html>

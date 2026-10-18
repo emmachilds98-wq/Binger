@@ -1,8 +1,13 @@
 # Rules for this repo
 
-Read **docs/PLAN.md** first: the brief, decisions, roadmap and status log.
+Read **docs/PLAN.md** first, starting at "Start here (next session)": the
+brief, decisions, roadmap, the Phase 2 build order and the status log.
 At the end of every working session, add a dated entry to its status log and
 tick off what's done. That file is how work survives a lost thread or a handover.
+
+Build screens to the design: the canvas link is in docs/PLAN.md, and a copy
+of every artboard is in `docs/design/canvas/`. If you change the canvas,
+copy its files there again in the same PR.
 
 ## Shipping a change
 
@@ -26,7 +31,8 @@ tick off what's done. That file is how work survives a lost thread or a handover
   re-implement scoring in the UI.
 - **API knowledge** lives only in `js/sources/`. Each adapter turns raw
   responses into the Title shape (docs/ARCHITECTURE.md). Nothing else touches
-  raw TMDB / AniList JSON.
+  raw TMDB / AniList JSON. Streaming-service names go through
+  `js/sources/services.js`, genres through `js/sources/genres.js`.
 - **Library rules** live only in `js/state/library.js` (pure). The store just persists.
 - **The version** lives only in `js/version.js`. The service worker
   deliberately has no app version (it's network-first), so there is nothing
@@ -48,6 +54,8 @@ a top-level call it's reachable from throws a TDZ `ReferenceError` at load.
   secret (`TMDB_API_KEY`).
 - Put API text into the page with `h()` / `textContent`, never `innerHTML`.
   `icon()` is the one `innerHTML` use, and it only takes this repo's static SVG paths.
+- Add optional children with `h()` or `dom.js` `append(el, [...])`, never the
+  DOM's own `el.append(a, maybe ? b : null)`: that writes the text "null".
 - If something looks stuck or looping, find the cause. Don't disable a
   feature to hide the symptom.
 

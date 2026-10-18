@@ -14,11 +14,16 @@ teaches Binger your taste, and every card tells you why it was picked:
   from your own history come first.
 - **Track and review.** Diary with half-star ratings, feeling tags, reviews and rewatches.
 - **Steer it.** Films/TV/Anime mix, favour new releases, surprise me, hide genres.
+  Filter the deck to quick watches (films under 2 hours, series up to 13
+  episodes) or a decade. Feeling tags count too: call a few long films "Slow"
+  and Binger lifts shorter ones.
 - **Always current.** Live data from TMDB (films, TV) and AniList (anime):
   this week's trending, new releases, shows airing now, the current anime season.
 - **Yours.** Your library stays on your device. Export/import backups anytime.
 
 **Plan, status and handover: [docs/PLAN.md](docs/PLAN.md)**. Start there.
+Phase 2 (streaming services, people, "not this franchise", new seasons, taste
+over time) is designed and its logic is built; the screens are next.
 
 ## Use it
 
@@ -43,7 +48,8 @@ npm run bump    # set version + build time from the real UTC clock
 ```
 
 How it's put together: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-Look and feel: [docs/DESIGN.md](docs/DESIGN.md).
+Look and feel: [docs/DESIGN.md](docs/DESIGN.md); the screens to build to:
+[docs/design/canvas/](docs/design/canvas/).
 Rules for changing it: [CLAUDE.md](CLAUDE.md).
 
 ## Deploy

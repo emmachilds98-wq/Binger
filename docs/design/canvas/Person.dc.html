@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Binger · Person</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0F0E13; color: #F4F1EA; font-family: 'Instrument Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="padding: 12px 12px 0">
+    <a href="Detail.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; background: #1A1820; color: #F4F1EA; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </a>
+  </div>
+
+  <header style="padding: 4px 16px 14px; display: flex; gap: 16px; align-items: center">
+    <div aria-hidden="true" style="width: 88px; height: 88px; flex-shrink: 0; border-radius: 44px; background: #34303D; box-shadow: 0 0 0 3px #F5B83D; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px">TC</div>
+    <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px; line-height: 1.05; letter-spacing: -0.5px">Timothée Chalamet</h1>
+      <div style="font-size: 14px; color: #ABA5B6">Actor · 24 films and shows</div>
+      <div style="font-size: 14px; color: #F5B83D; font-weight: 600">In Little Women, which you loved</div>
+    </div>
+  </header>
+
+  <div style="padding: 0 16px 10px; display: flex; flex-direction: column; gap: 10px">
+    <div role="group" aria-label="Show" style="display: flex; gap: 8px">
+      <sc-for list="{{kinds}}" as="k" hint-placeholder-count="3">
+        <button aria-pressed="{{k.pressed}}" onClick="{{k.pick}}" style="{{k.style}}">{{k.label}}</button>
+      </sc-for>
+    </div>
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #ABA5B6">Best for you first</div>
+  </div>
+
+  <ul style="flex: 1; overflow: hidden; margin: 0; padding: 0 16px; list-style: none; display: flex; flex-direction: column; gap: 10px">
+    <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+      <li style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 16px; background: #1A1820">
+        <a href="Detail.dc.html" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; color: #F4F1EA; text-decoration: none">
+          <span aria-hidden="true" style="{{r.thumb}}"></span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+            <span style="font-size: 13px; color: #ABA5B6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.meta}}</span>
+            <span style="{{r.noteStyle}}">{{r.note}}</span>
+          </span>
+        </a>
+        <sc-if value="{{r.canAct}}" hint-placeholder-val="{{ true }}">
+          <span style="display: flex">
+            <a href="Rate.dc.html" aria-label="Seen {{r.title}}: rate it" style="width: 40px; height: 44px; display: flex; align-items: center; justify-content: center; color: #7CC4FF">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </a>
+            <button aria-label="Add {{r.title}} to watchlist" style="width: 40px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #F5B83D">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
+            </button>
+          </span>
+        </sc-if>
+      </li>
+    </sc-for>
+  </ul>
+
+  <p style="margin: 0; padding: 10px 16px 20px; font-size: 13px; color: #ABA5B6">Lead roles rank above cameos. Data: TMDB (people in films and TV) or AniList (voice actors and anime staff).</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { kind: 'All' };
+  }
+  renderVals() {
+    const work = [
+      { title: 'Dune', kind: 'Film', year: 2021, role: 'Paul Atreides', note: '94% match · From Denis Villeneuve, who made Arrival', c: '#6B4A2E' },
+      { title: 'Interstellar', kind: 'Film', year: 2014, role: 'Young Tom', note: '88% match · Science fiction is your favourite', c: '#2E3B4A' },
+      { title: 'Dune: Part Two', kind: 'Film', year: 2024, role: 'Paul Atreides', note: 'On your watchlist', status: true, c: '#7A4A26' },
+      { title: 'Little Women', kind: 'Film', year: 2019, role: 'Laurie', note: '★★★★½ in your diary', status: true, c: '#6A4B3A' },
+      { title: 'Homeland', kind: 'TV', year: 2011, role: 'Finn Walden', note: '67% match', c: '#3A3F33' },
+      { title: 'Wonka', kind: 'Film', year: 2023, role: 'Willy Wonka', note: '61% match', c: '#5C3A5A' }
+    ];
+    const k = this.state.kind;
+    const rows = work.filter((w) => k === 'All' || (k === 'Films' ? w.kind === 'Film' : w.kind === k)).map((w) => Object.assign({}, w, {
+      meta: w.kind + ' · ' + w.year + ' · as ' + w.role,
+      canAct: !w.status,
+      thumb: 'width: 48px; height: 70px; border-radius: 8px; flex-shrink: 0; display: block; background: ' + w.c,
+      noteStyle: 'font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + (w.status ? '#F5B83D' : '#D4CFDB')
+    }));
+    const kinds = ['All', 'Films', 'TV'].map((label) => {
+      const on = k === label;
+      return {
+        label, pressed: on ? 'true' : 'false', pick: () => this.setState({ kind: label }),
+        style: 'min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid ' + (on ? '#F4F1EA' : '#34303D') + '; background: ' + (on ? '#F4F1EA' : 'transparent') + '; color: ' + (on ? '#0F0E13' : '#D4CFDB')
+      };
+    });
+    return { rows, kinds };
+  }
+}
+</script>
+</body>
+</html>

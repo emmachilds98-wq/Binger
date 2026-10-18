@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Binger · Not this franchise</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0F0E13; color: #F4F1EA; font-family: 'Instrument Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <header style="padding: 18px 16px 10px; display: flex; align-items: center; gap: 8px">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="8" fill="#F5B83D"></rect><path d="M10 8 L18 13 L10 18 Z" fill="#0F0E13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.5px">binger</span>
+  </header>
+
+  <main style="flex: 1; padding: 8px 16px 0; display: flex; flex-direction: column; min-height: 0">
+    <article style="{{cardStyle}}">
+      <div style="position: absolute; top: 14px; left: 14px"><span style="{{badgeStyle}}">{{card.kind}}</span></div>
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 70px 18px 18px; background: linear-gradient(180deg, rgba(26,24,32,0) 0%, rgba(26,24,32,0.92) 55%, #1A1820 100%); display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05">{{card.title}}</h2>
+        <div style="font-size: 14px; color: #D4CFDB">{{card.meta}}</div>
+        <div style="align-self: flex-start; background: rgba(245,184,61,0.12); color: #F5B83D; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 999px">{{card.reason}}</div>
+      </div>
+    </article>
+  </main>
+
+  <div style="padding: 14px 16px 10px; display: flex; align-items: center; justify-content: center; gap: 18px">
+    <button onClick="{{pass}}" aria-label="Pass" style="width: 64px; height: 64px; border-radius: 32px; border: 1px solid #34303D; background: #24212C; color: #F4F1EA; display: flex; align-items: center; justify-content: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <button aria-label="Seen it: rate it" style="width: 56px; height: 56px; border-radius: 28px; border: 1px solid #34303D; background: #24212C; color: #7CC4FF; display: flex; align-items: center; justify-content: center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    </button>
+    <button aria-label="Want to watch" style="width: 64px; height: 64px; border-radius: 32px; border: 0; background: #F5B83D; color: #1A1407; display: flex; align-items: center; justify-content: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
+    </button>
+  </div>
+
+  <sc-if value="{{showOffer}}" hint-placeholder-val="{{ true }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 116px; display: flex; justify-content: center">
+      <div style="display: flex; align-items: center; gap: 12px; background: #F4F1EA; color: #0F0E13; font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 999px">
+        <span>Passed</span>
+        <button onClick="{{hide}}" style="border: 0; background: transparent; color: #8A5A00; font-size: 14px; font-weight: 800; padding: 4px 2px; text-decoration: underline">Hide all Dune films</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{showHidden}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 116px; display: flex; justify-content: center">
+      <div style="display: flex; align-items: center; gap: 12px; background: #F4F1EA; color: #0F0E13; font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 999px">
+        <span>Dune is hidden. Undo it on Taste.</span>
+        <button onClick="{{undo}}" style="border: 0; background: transparent; color: #8A5A00; font-size: 14px; font-weight: 800; padding: 4px 2px; text-decoration: underline">Undo</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <nav aria-label="Main" style="display: flex; border-top: 1px solid #24212C; padding: 6px 8px 20px; background: #0F0E13">
+    <a href="Main.dc.html" aria-current="page" style="flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #F5B83D; text-decoration: none; font-size: 12px; font-weight: 600">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"></rect><path d="M9 8l6 4-6 4z"></path></svg>
+      Discover
+    </a>
+    <a href="Seasons.dc.html" style="flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #ABA5B6; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4z"></path><path d="M16.5 5l3.8 1-4 15-3.8-1"></path></svg>
+      Library
+    </a>
+    <a href="TasteTime.dc.html" style="flex: 1; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #ABA5B6; text-decoration: none; font-size: 12px; font-weight: 500">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>
+      Taste
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'offer' };
+  }
+  renderVals() {
+    // The card after the passed Dune film: the deck has moved on.
+    const card = { title: 'Arcane', kind: 'TV', meta: '2021– · 2 seasons · Animation, Drama', reason: 'Because you loved Spider-Verse', c: '#3A2B4A', badge: '#7CC4FF' };
+    return {
+      card,
+      cardStyle: 'flex: 1; border-radius: 28px; overflow: hidden; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.45); background: ' + card.c,
+      badgeStyle: 'background: ' + card.badge + '; color: #0F0E13; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 6px 10px; border-radius: 999px',
+      showOffer: this.state.step === 'offer',
+      showHidden: this.state.step === 'hidden',
+      hide: () => this.setState({ step: 'hidden' }),
+      undo: () => this.setState({ step: 'offer' }),
+      pass: () => this.setState({ step: 'offer' })
+    };
+  }
+}
+</script>
+</body>
+</html>

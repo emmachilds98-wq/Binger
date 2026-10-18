@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Binger · First run</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+button,input{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0F0E13; color: #F4F1EA; font-family: 'Instrument Sans', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 28px 20px 8px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="8" fill="#F5B83D"></rect><path d="M10 8 L18 13 L10 18 Z" fill="#0F0E13"></path></svg>
+      <span style="font-size: 13px; font-weight: 600; color: #ABA5B6">Step 1 of 2</span>
+    </div>
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 32px; line-height: 1.05; letter-spacing: -0.5px">What have you loved?</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #D4CFDB">Tap anything you've watched and enjoyed. Three is enough to start. Binger keeps learning every time you swipe or rate.</p>
+  </header>
+
+  <div style="padding: 8px 20px 12px">
+    <label for="seed-search" style="display: block; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #ABA5B6; margin-bottom: 6px">Find a favourite</label>
+    <div style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 14px; border-radius: 14px; background: #1A1820; border: 1px solid #34303D">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ABA5B6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+      <input id="seed-search" type="search" placeholder="Films, shows, anime…" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: #F4F1EA; font-size: 15px">
+    </div>
+  </div>
+
+  <div style="flex: 1; padding: 0 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-content: start">
+    <sc-for list="{{tiles}}" as="t" hint-placeholder-count="9">
+      <button onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}" aria-label="{{t.title}}" style="{{t.style}}">
+        <span style="position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #0F0E13; background: rgba(244,241,234,0.85); padding: 3px 6px; border-radius: 999px">{{t.type}}</span>
+        <sc-if value="{{t.on}}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 12px; background: #F5B83D; color: #1A1407; display: flex; align-items: center; justify-content: center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+          </span>
+        </sc-if>
+        <span style="position: absolute; left: 8px; right: 8px; bottom: 8px; text-align: left; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.1; color: #F4F1EA">{{t.title}}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="margin: 12px 20px 0; padding: 12px 14px; border-radius: 14px; background: #1A1820; border: 1px solid #34303D; display: flex; gap: 10px; align-items: flex-start">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round" style="flex-shrink: 0; margin-top: 1px" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg>
+    <p style="margin: 0; font-size: 13px; line-height: 1.4; color: #D4CFDB">Anime works straight away. Films and TV need a free TMDB key, which takes two minutes. <a href="#">Add it in Settings</a>.</p>
+  </div>
+
+  <footer style="padding: 14px 20px 28px; display: flex; align-items: center; gap: 14px">
+    <span style="flex: 1; font-size: 14px; color: #ABA5B6">{{countLabel}}</span>
+    <a href="Main.dc.html" style="{{ctaStyle}}">Start swiping</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { picked: { 0: true, 4: true } };
+  }
+  renderVals() {
+    const items = [
+      { title: 'Arrival', type: 'Film', color: '#3C4A57' },
+      { title: 'Breaking Bad', type: 'TV', color: '#4F5A2A' },
+      { title: 'Spirited Away', type: 'Anime', color: '#6B3A4A' },
+      { title: 'Parks and Recreation', type: 'TV', color: '#2F5B4A' },
+      { title: 'Little Women', type: 'Film', color: '#6A4B3A' },
+      { title: 'Attack on Titan', type: 'Anime', color: '#5A3A2E' },
+      { title: 'Black Mirror', type: 'TV', color: '#2E3340' },
+      { title: 'Paddington 2', type: 'Film', color: '#6B2E2E' },
+      { title: 'Mushishi', type: 'Anime', color: '#3A5A47' }
+    ];
+    const picked = this.state.picked;
+    const tiles = items.map((it, i) => {
+      const on = !!picked[i];
+      return Object.assign({}, it, {
+        on,
+        pressed: on ? 'true' : 'false',
+        toggle: () => {
+          const next = Object.assign({}, this.state.picked);
+          if (next[i]) delete next[i]; else next[i] = true;
+          this.setState({ picked: next });
+        },
+        style: 'position: relative; height: 128px; border-radius: 14px; cursor: pointer; padding: 0; background: ' + it.color + '; border: 0; box-shadow: ' + (on ? '0 0 0 3px #F5B83D' : 'inset 0 0 0 1px rgba(244,241,234,0.08)')
+      });
+    });
+    const n = Object.keys(picked).length;
+    const ready = n >= 3;
+    return {
+      tiles,
+      countLabel: n === 0 ? 'Nothing picked yet' : (n + ' picked' + (ready ? '' : ' · ' + (3 - n) + ' more')),
+      ctaStyle: 'min-height: 52px; padding: 0 22px; border-radius: 26px; display: flex; align-items: center; font-size: 16px; font-weight: 700; text-decoration: none; background: ' + (ready ? '#F5B83D' : '#24212C') + '; color: ' + (ready ? '#1A1407' : '#ABA5B6')
+    };
+  }
+}
+</script>
+</body>
+</html>

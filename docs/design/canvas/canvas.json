@@ -1,0 +1,163 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-18T08:40:53Z"
+  },
+  "title": "Binger App Design",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Onboarding.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "1 · First run: seed your taste",
+      "is_interactive": true
+    },
+    "Main.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "2 · Discover deck",
+      "is_interactive": true
+    },
+    "Detail.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "3 · Card detail + trailer clip"
+    },
+    "Rate.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "4 · Seen it: rate + review",
+      "is_interactive": true
+    },
+    "Library.dc.html": {
+      "x": 0,
+      "y": 1264,
+      "w": 390,
+      "h": 844,
+      "title": "5 · Library: watchlist + diary",
+      "is_interactive": true
+    },
+    "Taste.dc.html": {
+      "x": 470,
+      "y": 1264,
+      "w": 390,
+      "h": 844,
+      "title": "6 · Taste: what Binger has learned",
+      "is_interactive": true
+    },
+    "Filters.dc.html": {
+      "x": 0,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "7 · Deck filters: length, decade, streaming",
+      "is_interactive": true
+    },
+    "Services.dc.html": {
+      "x": 470,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "8 · Your streaming services",
+      "is_interactive": true
+    },
+    "Person.dc.html": {
+      "x": 940,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "9 · A person's work, best for you first",
+      "is_interactive": true
+    },
+    "HideSeries.dc.html": {
+      "x": 1410,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "10 · Not this franchise",
+      "is_interactive": true
+    },
+    "Seasons.dc.html": {
+      "x": 1880,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "11 · Library: new seasons of shows you watched",
+      "is_interactive": true
+    },
+    "TasteTime.dc.html": {
+      "x": 2350,
+      "y": 2528,
+      "w": 390,
+      "h": 844,
+      "title": "12 · Taste over time + your words",
+      "is_interactive": true
+    }
+  },
+  "order": [
+    "Onboarding.dc.html",
+    "Main.dc.html",
+    "Detail.dc.html",
+    "Rate.dc.html",
+    "Library.dc.html",
+    "Taste.dc.html",
+    "Filters.dc.html",
+    "Services.dc.html",
+    "Person.dc.html",
+    "HideSeries.dc.html",
+    "Seasons.dc.html",
+    "TasteTime.dc.html"
+  ],
+  "notes": {
+    "row1": {
+      "x": 0,
+      "y": -300,
+      "text": "Binger · find it, swipe it, rate it",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "row2": {
+      "x": 0,
+      "y": 964,
+      "text": "Binger · track it, steer it",
+      "kind": "title1",
+      "maxW": 860
+    },
+    "system": {
+      "x": 940,
+      "y": 1264,
+      "w": 380,
+      "maxH": 520,
+      "fill": "gray",
+      "text": "Look: late-night cinema.\n\nGround #0F0E13 · surfaces #1A1820 / #24212C · text #F4F1EA / #ABA5B6.\nAccent: marquee amber #F5B83D (Want, primary actions).\nType badges: Film amber, TV sky #7CC4FF, Anime pink #FF9BC2 — always labelled, never colour alone.\n\nType: Bricolage Grotesque (display) + Instrument Sans (body).\n\nGestures: swipe right = Want to watch, left = Pass, up = Seen it (opens rating). Every gesture has a button twin.\n\nArtwork, synopsis, cast and trailer come live from TMDB (film/TV) and AniList (anime)."
+    },
+    "row3": {
+      "x": 0,
+      "y": 2228,
+      "text": "Binger · Phase 2: smarter suggestions",
+      "kind": "title1",
+      "maxW": 2740
+    },
+    "phase2": {
+      "x": 2820,
+      "y": 2528,
+      "w": 380,
+      "maxH": 760,
+      "fill": "orange",
+      "text": "Phase 2 rules.\n\nStreaming: services are stored as one name each (Netflix, never ‘Netflix Standard with Ads’). Off: titles on your services are lifted. ‘Only what I can stream’: everything else is hidden; a title whose availability isn’t known yet stays until its details load.\n\nFilters: length and decade last for the session, like the Films/TV/Anime pills. The filter button wears an amber dot while any are on; a summary line with Clear sits under the pills.\n\nPeople: tap anyone in a cast row, the crew line, or Taste. Their work is ranked for you; lead roles rank above cameos.\n\nNot this franchise: offered on the Pass toast and in detail when a title belongs to a series (a TMDB collection, or related anime). Undo lives on Taste → Never show me.\n\nNew seasons: TV you’ve watched whose next season premieres after your last diary entry. Logging it clears the alert; ✕ dismisses it. The Library tab wears a dot.\n\nTaste over time: one row per genre on one shared scale, the current month as the amber dot. Trends are named in words, never colour alone; tap a row for its numbers."
+    }
+  },
+  "designSystems": []
+}

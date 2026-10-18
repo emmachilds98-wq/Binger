@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Binger · Rate what you watched</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F5B83D}a:hover{color:#FFD27A}
+button,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #07060A; color: #F4F1EA; font-family: 'Instrument Sans', system-ui, sans-serif; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; position: relative">
+
+  <div aria-hidden="true" style="position: absolute; top: 72px; left: 16px; right: 16px; height: 520px; border-radius: 28px; background: #3B2716; opacity: 0.45"></div>
+
+  <section role="dialog" aria-labelledby="rate-title" style="position: relative; background: #1A1820; border-radius: 28px 28px 0 0; padding: 10px 20px 26px; display: flex; flex-direction: column; gap: 16px">
+    <div aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #34303D"></div>
+
+    <div style="display: flex; gap: 12px; align-items: center">
+      <div aria-hidden="true" style="width: 48px; height: 68px; border-radius: 8px; background: #7A4A26; flex-shrink: 0"></div>
+      <div style="flex: 1; min-width: 0">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #7CC4FF">Seen it</div>
+        <h1 id="rate-title" style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 22px; line-height: 1.1">Dune: Part Two</h1>
+        <div style="font-size: 13px; color: #ABA5B6">Film · 2024</div>
+      </div>
+      <a href="Main.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; background: #24212C; color: #F4F1EA; display: flex; align-items: center; justify-content: center; text-decoration: none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+      <div role="radiogroup" aria-label="Your rating" style="display: flex; gap: 6px">
+        <sc-for list="{{stars}}" as="s" hint-placeholder-count="5">
+          <button role="radio" aria-checked="{{s.checked}}" aria-label="{{s.label}}" onClick="{{s.pick}}" style="width: 52px; height: 52px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0">
+            <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" style="{{s.fill}}" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+      <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px">{{ratingWord}}</div>
+      <div style="font-size: 13px; color: #ABA5B6; text-align: center">{{steer}}</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #ABA5B6">How did it feel?</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{tags}}" as="t" hint-placeholder-count="9">
+          <button onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}" style="{{t.style}}">{{t.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="review" style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #ABA5B6">Your thoughts (optional)</label>
+      <textarea id="review" rows="3" placeholder="What stuck with you?" style="resize: none; border-radius: 14px; border: 1px solid #34303D; background: #0F0E13; color: #F4F1EA; padding: 12px 14px; font-size: 15px; line-height: 1.4">The sandworm ride. Need the third one now.</textarea>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center">
+      <button style="min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid #34303D; background: transparent; color: #D4CFDB; font-size: 14px; display: flex; align-items: center; gap: 6px; cursor: pointer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+        Watched today
+      </button>
+      <a href="Library.dc.html" style="flex: 1; min-height: 52px; border-radius: 26px; background: #F5B83D; color: #1A1407; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; font-size: 16px">Save to diary</a>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { rating: 5, tags: { Gripping: true, Beautiful: true } };
+  }
+  renderVals() {
+    const words = ['Tap to rate', 'Not for me', 'Meh', 'Decent', 'Really good', 'Loved it'];
+    const r = this.state.rating;
+    const stars = [1, 2, 3, 4, 5].map((n) => ({
+      label: n + (n === 1 ? ' star' : ' stars') + ': ' + words[n],
+      checked: r === n ? 'true' : 'false',
+      pick: () => this.setState({ rating: n }),
+      fill: n <= r ? 'fill: #F5B83D; stroke: #F5B83D' : 'fill: none; stroke: #5A5566'
+    }));
+    const steer = r >= 4 ? 'Binger will look for more by Denis Villeneuve, more sci-fi, more of this cast.'
+      : r === 3 ? 'Noted. A middling score barely moves your taste.'
+      : r > 0 ? 'Binger will steer away from titles like this.'
+      : 'Your rating is the strongest signal Binger has.';
+    const names = ['Gripping', 'Funny', 'Moving', 'Beautiful', 'Clever', 'Comfort watch', 'Slow', 'Confusing', 'Overhyped'];
+    const tags = names.map((label) => {
+      const on = !!this.state.tags[label];
+      return {
+        label,
+        pressed: on ? 'true' : 'false',
+        toggle: () => {
+          const next = Object.assign({}, this.state.tags);
+          if (next[label]) delete next[label]; else next[label] = true;
+          this.setState({ tags: next });
+        },
+        style: 'min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 14px; cursor: pointer; border: 1px solid ' + (on ? '#F5B83D' : '#34303D') + '; background: ' + (on ? 'rgba(245,184,61,0.14)' : 'transparent') + '; color: ' + (on ? '#F5B83D' : '#D4CFDB')
+      };
+    });
+    return { stars, ratingWord: words[r], steer, tags };
+  }
+}
+</script>
+</body>
+</html>
