@@ -5,6 +5,7 @@ import { h, icon, clear, KIND_NAME, metaLine, publicScore, avatar, starsText, sh
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
 import { knownFrom } from './card.js';
+import { canonicalService } from '../sources/services.js';
 
 export function openDetail(initial, ctx) {
   const sheet = openSheet({ label: initial.title, variant: 'full', className: 'detail' });
@@ -99,9 +100,16 @@ function body(t, ctx) {
 }
 
 function whereToWatch(t, ctx) {
+  const mine = ctx.settings.services || [];
   if (t.source === 'anilist') {
+    const links = t.watchLinks || [];
     return h('section', { class: 'where' }, h('h2', { class: 'eyebrow' }, 'Where to watch'),
-      h('p', { class: 'small muted' }, 'AniList lists official streaming links on its page for this show.'));
+      links.length
+        ? h('ul', { class: 'providers' }, links.map((l) => h('li', null,
+          h('a', { class: `provider provider-link${mine.includes(l.name) ? ' provider-yours' : ''}`, href: l.url, target: '_blank', rel: 'noopener' },
+            h('span', null, l.name), mine.includes(l.name) ? h('span', { class: 'sr-only' }, ' (one of your services)') : null))))
+        : h('p', { class: 'small muted' }, 'No official streaming links listed on AniList yet.'),
+      links.length ? h('p', { class: 'small muted' }, 'Official links from AniList. They aren\u2019t per country, so check yours carries it.') : null);
   }
   if (!t.detailed) return null;
   const region = ctx.settings.region;
@@ -112,8 +120,12 @@ function whereToWatch(t, ctx) {
     rows.length
       ? h('div', { class: 'provider-rows' }, rows.map(([label, list]) => h('div', { class: 'provider-row' },
         h('span', { class: 'provider-label' }, label),
-        h('ul', { class: 'providers' }, list.slice(0, 6).map((x) => h('li', { class: 'provider', title: x.name },
-          x.logo ? h('img', { src: x.logo, alt: '', loading: 'lazy' }) : null, h('span', null, x.name)))))))
+        h('ul', { class: 'providers' }, list.slice(0, 6).map((x) => {
+          const yours = label !== 'Rent' && label !== 'Buy' && mine.includes(canonicalService(x.name));
+          return h('li', { class: `provider${yours ? ' provider-yours' : ''}`, title: x.name },
+            x.logo ? h('img', { src: x.logo, alt: '', loading: 'lazy' }) : null, h('span', null, x.name),
+            yours ? h('span', { class: 'sr-only' }, ' (one of your services)') : null);
+        })))))
       : h('p', { class: 'small muted' }, `Not streaming in ${region} right now, as far as TMDB knows.`),
     rows.length && p.link ? h('p', { class: 'small muted' }, 'Availability data from ', h('a', { href: p.link, target: '_blank', rel: 'noopener' }, 'JustWatch via TMDB'), '.') : null);
 }

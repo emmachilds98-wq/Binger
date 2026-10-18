@@ -42,7 +42,7 @@ Kind badges are always labelled (FILM / TV / ANIME), never colour alone.
    2020s … 1980s, Older) and Where ("Only what I can stream", once you've
    picked services). While any filter is on, the button wears an amber dot and
    a summary line with **Clear** sits under the pills.
-8. **Your streaming services**: a 3-column grid of toggle tiles (monogram,
+8. **Your streaming services** (built): a 3-column grid of toggle tiles (monogram,
    name, amber ring and tick when picked; no brand logos drawn by us, TMDB's
    logos when available), the "Only show what I can stream" switch, and a
    plain note on where availability comes from.

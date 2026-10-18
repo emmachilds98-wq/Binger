@@ -20,6 +20,9 @@ import { openSearch } from './ui/search.js';
 import { openSettings } from './ui/settings.js';
 import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
+import { openServices, servicesSummary } from './ui/services.js';
+import { regionName } from './ui/settings.js';
+import { serviceChoices } from './sources/lookups.js';
 import { toast, anySheetOpen } from './ui/sheet.js';
 
 // ---- state -----------------------------------------------------------------
@@ -252,8 +255,27 @@ function showFilters() {
     filters: deck.filters,
     streamOnly: s.streamOnly,
     services: s.services,
-    onPickServices: null, // the services picker is the next screen to build (docs/PLAN.md)
+    onPickServices: () => showServices(),
     onApply: applyDeckFilters,
+  });
+}
+
+// "Your services". Saved on Done; the store subscriber clears the pool and
+// refills when the services or "only what I can stream" change.
+function showServices(after = null) {
+  const s = store.get().settings;
+  openServices({
+    picked: s.services,
+    streamOnly: s.streamOnly,
+    hasKey: tmdb.hasKey,
+    regionName: regionName(s.region),
+    loadChoices: (picked) => serviceChoices({ tmdb, picked }),
+    onDone: ({ services, streamOnly }) => {
+      // "Only what I can stream" with nothing picked would empty the deck.
+      store.update(L.updateSettings, { services, streamOnly: services.length ? streamOnly : false });
+      toast(services.length ? `Your services: ${servicesSummary(services)}` : 'No services picked');
+      if (after) after();
+    },
   });
 }
 
@@ -334,6 +356,7 @@ function showSettings() {
     getState: store.get,
     keySource: () => (store.get().settings.tmdbKey ? 'Using your key.' : CONFIG.tmdbKey ? 'Using the key built into this deployment.' : 'No key yet: films and TV are off.'),
     saveKey,
+    onServices: showServices,
     updateSettings: (patch) => store.update(L.updateSettings, patch),
     exportBackup: () => {
       const blob = new Blob([L.exportState(store.get())], { type: 'application/json' });
@@ -440,6 +463,7 @@ function render() {
       getState: store.get,
       updateSettings: (patch) => store.update(L.updateSettings, patch),
       onSettings: showSettings,
+      onServices: () => showServices(),
       onForgetPasses: () => { store.update(L.forgetPasses); toast('Passed titles can come back now'); refill({ force: true }); },
     });
   }

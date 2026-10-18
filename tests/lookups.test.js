@@ -48,6 +48,8 @@ test('TMDB region providers: one entry per service, most common first', () => {
   assert.deepEqual(list.slice(0, 3).map((p) => p.service), ['BBC iPlayer', 'Netflix', 'Amazon Prime Video']);
   assert.deepEqual(list.find((p) => p.service === 'Netflix').ids, [8, 1796]);
   assert.equal(list.find((p) => p.service === 'Crunchyroll').ids[0], 1968);
+  assert.ok(!list.some((p) => p.service === 'Example US Only'), 'services not in your region are left out');
+  assert.ok(fromTmdbProviders(fx('tmdb-providers-movie.json'), 'US').some((p) => p.service === 'Example US Only'));
 });
 
 // --- TMDB details, people, collections ---------------------------------

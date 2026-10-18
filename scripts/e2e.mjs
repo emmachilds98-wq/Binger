@@ -26,6 +26,7 @@ const filtered90s = fx('anilist-filtered-90s.json');
 const movieDetail = fx('tmdb-movie-detail.json');
 const tvDetail = fx('tmdb-tv-detail.json');
 const trending = fx('tmdb-trending-movie.json');
+const providersList = fx('tmdb-providers-movie.json');
 const tvList = { results: [{ ...tvDetail, genre_ids: tvDetail.genres.map((g) => g.id), media_type: 'tv' }] };
 const allAnime = Object.values(deckFx.data).flatMap((p) => p.media.flatMap((m) => (m.recommendations ? m.recommendations.nodes.map((n) => n.mediaRecommendation) : [m])));
 
@@ -71,11 +72,23 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   const json = (o) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(o) });
   if (url.searchParams.get('api_key') !== 'e2e-test-key') return route.fulfill({ status: 401, contentType: 'application/json', body: '{"status_message":"Invalid API key"}' });
   if (p === '/configuration') return json({ images: {} });
+  if (p.startsWith('/watch/providers/')) return json(providersList);
+  // "What's on these services": like real TMDB, only titles actually on them.
+  // In the fixtures that's Dune (on "Netflix Standard with Ads" in GB) and nothing else.
+  if (p.startsWith('/discover/') && url.searchParams.has('with_watch_providers')) {
+    return json({ results: p === '/discover/movie' ? trending.results.filter((r) => r.id === 693134) : [] });
+  }
   if (p === '/trending/movie/week' || p === '/movie/popular' || p === '/discover/movie') return json(trending);
   if (p === '/trending/tv/week' || p === '/tv/popular' || p === '/discover/tv') return json(tvList);
   if (p === '/movie/693134') return json(movieDetail);
   if (p === '/tv/95396') return json(tvDetail);
   if (p === '/search/multi') return json({ results: [...trending.results, ...tvList.results] });
+  // Details for any other listed title: its list entry, with no streaming in GB.
+  const other = p.match(/^\/(movie|tv)\/(\d+)$/);
+  if (other) {
+    const hit = [...trending.results, ...tvList.results].find((r) => String(r.id) === other[2]);
+    if (hit) return json({ ...hit, genres: (hit.genre_ids || []).map((id) => ({ id, name: '' })), 'watch/providers': { results: {} } });
+  }
   return json({ results: [] });
 });
 await context.route(/youtube-nocookie\.com/, (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<body style="margin:0;background:#000;color:#888;font:14px sans-serif;display:grid;place-items:center;height:100vh">[YouTube trailer clip]</body>' }));
@@ -223,6 +236,38 @@ check(await page.getByRole('button', { name: 'Filters (on)' }).count() === 1, 't
 await page.getByRole('button', { name: 'Clear', exact: true }).click();
 await page.waitForTimeout(300);
 check(await page.locator('.filter-line').count() === 0, 'Clear turns the filters off');
+
+console.log('Streaming services');
+await page.goto(base + '#taste');
+await page.getByRole('button', { name: /Your streaming services/ }).click();
+await page.waitForSelector('.services .service-tile');
+await page.waitForFunction(() => [...document.querySelectorAll('.services .service-name')].some((e) => e.textContent === 'Disney+'), null, { timeout: 8000 }).catch(() => {});
+const serviceNames = await page.locator(".services .service-name").allInnerTexts();
+check(serviceNames.includes("Disney+") && !serviceNames.includes("Disney Plus"), 'the region\u2019s services load from TMDB, under one name each ("Disney Plus" shows as "Disney+")');
+check(new Set(serviceNames).size === serviceNames.length, "no service appears twice");
+await page.locator('.services .service-tile', { hasText: /^Netflix$/ }).first().click();
+await page.locator('.services [role=switch]').click();
+check(await page.locator('.services .service-tile[aria-pressed="true"]').count() === 1, 'tapping a tile picks it');
+check(!serviceNames.includes('Example US Only'), 'services only available in other countries are left out');
+await page.locator('.services .page-scroll').evaluate((el) => { el.scrollTop = 0; });
+await page.waitForTimeout(250);
+await shot('08-services');
+await page.getByRole('button', { name: 'Done' }).click();
+const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).settings);
+check(JSON.stringify(saved.services) === '["Netflix"]' && saved.streamOnly === true, 'Done saves your services and "only what I can stream"');
+check(/Netflix · only these/.test(await page.locator('.taste').innerText()), 'Taste shows your services');
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+await page.waitForFunction(() => [...document.querySelectorAll('.deck .card h2')].every((e) => e.textContent === 'Dune: Part Two'), null, { timeout: 10000 }).catch(() => {});
+const streamTitles = await page.locator('.deck .card h2').allInnerTexts();
+check(streamTitles.length > 0 && streamTitles.every((t) => t === 'Dune: Part Two'), `only what's on Netflix is left (${streamTitles.join(', ')})`);
+check(await page.locator('.deck .badge-anime').count() === 0, 'anime with no Netflix link is hidden');
+await page.getByRole('button', { name: 'More about this title' }).click();
+await page.waitForSelector('.detail .where');
+check(await page.locator('.detail .provider-yours', { hasText: 'Netflix' }).count() === 1, 'the detail sheet rings your service under "Where to watch"');
+const why = await page.locator('.detail .why').innerText().catch(() => '');
+console.log(`    (why it was picked: ${why.replace(/\s+/g, ' ').trim()})`);
+await page.keyboard.press('Escape');
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

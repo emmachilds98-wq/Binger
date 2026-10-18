@@ -30,7 +30,7 @@ export function isAnimeLike(r) {
 }
 
 export function fromTmdbList(r, mediaType = r.media_type) {
-  if (!r || (mediaType !== 'movie' && mediaType !== 'tv') || r.adult) return null;
+  if (!r || r.id == null || (mediaType !== 'movie' && mediaType !== 'tv') || r.adult) return null;
   const date = (mediaType === 'movie' ? r.release_date : r.first_air_date) || null;
   return {
     id: `tmdb:${mediaType}:${r.id}`,
@@ -146,7 +146,9 @@ export function collectionName(name) {
 // several times: "Netflix", "Netflix Standard with Ads"...), most common first.
 export function fromTmdbProviders(json, region = 'GB') {
   const rank = (p) => (p.display_priorities && p.display_priorities[region]) ?? p.display_priority ?? 999;
-  const list = ((json && json.results) || []).filter((p) => p && p.provider_id && p.provider_name).sort((a, b) => rank(a) - rank(b));
+  // A service that lists the countries it's in, without yours, isn't offered.
+  const here = (p) => !p.display_priorities || p.display_priorities[region] != null;
+  const list = ((json && json.results) || []).filter((p) => p && p.provider_id && p.provider_name && here(p)).sort((a, b) => rank(a) - rank(b));
   const out = [];
   for (const p of list) {
     const service = canonicalService(p.provider_name);

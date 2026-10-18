@@ -22,13 +22,15 @@ Where things stand on 2026-10-18:
 
 - **Phase 1 (MVP) is live on `main`.** The first build's PR was merged by
   fast-forward; `main` holds the whole app.
-- **Phase 2 is half built.** All of its logic is done and unit-tested: the
-  engine, both API adapters, and the library rules. Two items are finished
-  end to end: **deck filters** and **feeling tags in scoring**. The other five
-  are **designed** (canvas row 3) and need only their screens built and wired.
-  Each one is a self-contained step in [Phase 2: build order](#phase-2-build-order).
-- **Checks:** `npm test` 90 passing, `npm run e2e` 32/32. Re-run and
-  confirmed on `main` at `e86c79f` (2026-10-18 14:20 UTC), and CI is green there.
+- **Phase 2 is more than half built.** All of its logic is done and
+  unit-tested: the engine, both API adapters, and the library rules. Three
+  items are finished end to end: **deck filters**, **feeling tags in scoring**
+  and **step 1, streaming services** (on PR #2's branch until it merges).
+  The other four are **designed** (canvas row 3) and need only their screens
+  built and wired. Each one is a self-contained step in
+  [Phase 2: build order](#phase-2-build-order). **Next: step 2, a person's work.**
+- **Checks:** `npm test` 91 passing, `npm run e2e` 40/40 on the PR #2 branch
+  (`main` at `e86c79f`: 90 and 32/32, CI green).
 - **Not live yet:** GitHub Pages is still off (the site URL returned 404 at
   14:20 UTC). The repo is public, so Pages is free; turning it on is in
   [Phase 1.1](#phase-11-go-live-needs-the-owner-).
@@ -43,7 +45,7 @@ Do these in order:
 2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
    It has been blocked three times for want of a key, and Phase 2 adds four TMDB
    endpoints that are still tested only against hand-written responses.
-3. Build Phase 2 steps 1 to 5 below, one PR each (or one PR with one commit
+3. Build the remaining Phase 2 steps (2 to 5) below, one PR each (or one PR with one commit
    each). Every step lists the design artboard, the functions that already
    exist, the files to touch and the checks to add.
 4. Tick the boxes here and add a [status log](#status-log) entry.
@@ -219,7 +221,9 @@ each item end to end:
       and decade, from the Filters button on Discover (canvas 7).
 - [x] **Feeling tags in scoring**: tags nudge ratings; "Slow" lowers that
       length, "Overhyped" trusts trending less. (Showing this on Taste is step 5.)
-- [ ] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8)
+- [x] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8),
+      from Settings, Taste and the Filters sheet; your services ringed in "Where to watch";
+      anime shows AniList's official streaming links
 - [ ] **Step 2. Tap a person → their other work, ranked for you** (canvas 9)
 - [ ] **Step 3. "Not this franchise"** (canvas 10)
 - [ ] **Step 4. New-season alerts for TV you've watched** (canvas 11)
@@ -233,7 +237,7 @@ to `SHELL` in `service-worker.js` (the shell test fails otherwise), add e2e
 checks + a screenshot to `scripts/e2e.mjs`, then `npm run check && npm test && npm run e2e`.
 Fixtures for every API call below already exist in `tests/fixtures/`.
 
-**Step 1. Streaming services picker** · artboard `Services.dc.html` (8)
+**Step 1. Streaming services picker** · artboard `Services.dc.html` (8) · ✅ built (`js/ui/services.js`)
 - New `js/ui/services.js`: `openServices(ctx)`, a full sheet with a 3-column
   grid of toggle tiles, the "Only show what I can stream" switch, and a Done button.
 - Choices: `serviceChoices({ tmdb, picked })` (`js/sources/lookups.js`). Show
@@ -327,6 +331,28 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-18 (fourth session): Phase 2 step 1, streaming services
+- Picked up from PR #2 (this session's own handover PR, still open).
+  `main` unchanged since `e86c79f`.
+- Built the services picker to artboard 8 (`js/ui/services.js`): tiles for
+  your region's services from TMDB (common ones first, before or without a
+  key), the "Only show what I can stream" switch, saved on Done. Opened from
+  Settings → Where you watch, Taste → Steer the deck, and the Filters sheet
+  ("Pick your services"). Picking none turns "only" off, so the deck can't empty.
+- Detail sheet: your services are ringed in "Where to watch" (subscription
+  and free only); anime lists AniList's official streaming links instead of
+  a sentence.
+- Fixed, found while building: TMDB's region provider list offered services
+  only available in other countries (now left out); a TMDB response with no
+  `id` became a `tmdb:movie:undefined` title (now refused, and the card keeps
+  its list data).
+- The e2e TMDB mock now answers "what's on these services" and details
+  requests the way TMDB does; before, it claimed every title was on every
+  service.
+- Tests: 91 unit (was 90), e2e 40/40 (was 32). New screenshot `08-services`.
+- **Blocking (unchanged):** live TMDB verification needs `TMDB_API_KEY`.
+- **Next:** step 2, a person's work (artboard 9).
 
 ### 2026-10-18 (third session): handover check for a new engineer
 - The owner asked for the handover to be ready in GitHub for a new engineer.

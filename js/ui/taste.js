@@ -4,6 +4,7 @@
 
 import { h, icon, clear, KIND_NAME, titleCase } from './dom.js';
 import { topFeatures } from '../engine/index.js';
+import { servicesSummary } from './services.js';
 
 const ALL_GENRES = [
   'Action', 'Adventure', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror',
@@ -72,6 +73,13 @@ export function renderTaste(root, ctx) {
     h('h2', { class: 'eyebrow' }, 'Steer the deck'),
     sliders,
     !ctx.hasKey ? h('p', { class: 'small muted' }, 'Films and TV need a TMDB key (Settings). Until then the deck is all anime.') : null,
+    h('button', { type: 'button', class: 'row-btn', onClick: ctx.onServices },
+      h('span', { class: 'switch-text' },
+        h('span', { class: 'switch-label' }, 'Your streaming services'),
+        h('span', { class: 'small muted' }, s.services && s.services.length
+          ? `${servicesSummary(s.services)}${s.streamOnly ? ' · only these' : ''}`
+          : 'Pick yours to lift what you can watch tonight')),
+      icon('forward', 18)),
     toggle('Favour new releases', 'Lift films, shows and seasons from the last few months', s.preferFresh, (v) => ctx.updateSettings({ preferFresh: v })),
     toggle('Surprise me sometimes', 'About 1 card in 7 is a well-rated title outside your usual taste', s.surprise, (v) => ctx.updateSettings({ surprise: v }))));
 
