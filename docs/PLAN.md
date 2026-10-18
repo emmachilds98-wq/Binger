@@ -23,13 +23,14 @@ Where things stand on 2026-10-18:
 - **Phase 1 (MVP) is live on `main`.** The first build's PR was merged by
   fast-forward; `main` holds the whole app.
 - **Phase 2 is more than half built.** All of its logic is done and
-  unit-tested: the engine, both API adapters, and the library rules. Three
-  items are finished end to end: **deck filters**, **feeling tags in scoring**
-  and **step 1, streaming services** (on PR #2's branch until it merges).
-  The other four are **designed** (canvas row 3) and need only their screens
-  built and wired. Each one is a self-contained step in
-  [Phase 2: build order](#phase-2-build-order). **Next: step 2, a person's work.**
-- **Checks:** `npm test` 91 passing, `npm run e2e` 40/40 on the PR #2 branch
+  unit-tested: the engine, both API adapters, and the library rules. Four
+  items are finished end to end: **deck filters**, **feeling tags in scoring**,
+  **step 1, streaming services** and **step 2, a person's work** (both on
+  PR #2's branch until it merges). The other three are **designed** (canvas
+  row 3) and need only their screens built and wired. Each one is a
+  self-contained step in [Phase 2: build order](#phase-2-build-order).
+  **Next: step 3, "Not this franchise".**
+- **Checks:** `npm test` 94 passing, `npm run e2e` 49/49 on the PR #2 branch
   (`main` at `e86c79f`: 90 and 32/32, CI green).
 - **Not live yet:** GitHub Pages is still off (the site URL returned 404 at
   14:20 UTC). The repo is public, so Pages is free; turning it on is in
@@ -45,7 +46,7 @@ Do these in order:
 2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
    It has been blocked three times for want of a key, and Phase 2 adds four TMDB
    endpoints that are still tested only against hand-written responses.
-3. Build the remaining Phase 2 steps (2 to 5) below, one PR each (or one PR with one commit
+3. Build the remaining Phase 2 steps (3 to 5) below, one PR each (or one PR with one commit
    each). Every step lists the design artboard, the functions that already
    exist, the files to touch and the checks to add.
 4. Tick the boxes here and add a [status log](#status-log) entry.
@@ -224,7 +225,8 @@ each item end to end:
 - [x] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8),
       from Settings, Taste and the Filters sheet; your services ringed in "Where to watch";
       anime shows AniList's official streaming links
-- [ ] **Step 2. Tap a person → their other work, ranked for you** (canvas 9)
+- [x] **Step 2. Tap a person → their other work, ranked for you** (canvas 9), from the
+      detail sheet's cast row and crew line, and Taste's "People you rate highly"
 - [ ] **Step 3. "Not this franchise"** (canvas 10)
 - [ ] **Step 4. New-season alerts for TV you've watched** (canvas 11)
 - [ ] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
@@ -257,7 +259,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
   Ads") with the reason "On Netflix"; anime from `anilist-deck.json` has no
   streaming links, so it's hidden. Screenshot `08-services`.
 
-**Step 2. A person's work** · artboard `Person.dc.html` (9)
+**Step 2. A person's work** · artboard `Person.dc.html` (9) · ✅ built (`js/ui/person.js`)
 - New `js/ui/person.js`: `openPerson(stub, ctx)`, a full sheet: photo, name,
   `known`, a "You know them from…" line (from `profile.people`), kind pills
   when there's more than one kind, rows "best for you first".
@@ -332,7 +334,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
 
-### 2026-10-18 (fourth session): Phase 2 step 1, streaming services
+### 2026-10-18 (fourth session): Phase 2 steps 1 and 2, services and people
 - Picked up from PR #2 (this session's own handover PR, still open).
   `main` unchanged since `e86c79f`.
 - Built the services picker to artboard 8 (`js/ui/services.js`): tiles for
@@ -350,9 +352,20 @@ Newest first. One entry per working session: what changed, what's next, what's b
 - The e2e TMDB mock now answers "what's on these services" and details
   requests the way TMDB does; before, it claimed every title was on every
   service.
-- Tests: 91 unit (was 90), e2e 40/40 (was 32). New screenshot `08-services`.
+- Built a person's work to artboard 9 (`js/ui/person.js`): photo (ringed
+  if you know them), what they're known for, "In Little Women, which you
+  loved", kind pills, rows best for you first with match % and why (or your
+  diary / watchlist status), Seen it and Watchlist buttons. Opened from cast
+  and crew in the detail sheet and from Taste's "People you rate highly"
+  (directors and cast; studios aren't people). TMDB people need a key;
+  AniList voice actors and staff don't.
+- Fixed before it shipped: the sheet's class name `person` clashed with the
+  cards' `.person` (each face in "Starring"), which laid the whole sheet
+  out as one row. Renamed to `person-sheet`; an e2e check now fails if
+  anything on the page is wider than the screen.
+- Tests: 94 unit (was 90), e2e 49/49 (was 32). New screenshots `08-services`, `09-person`.
 - **Blocking (unchanged):** live TMDB verification needs `TMDB_API_KEY`.
-- **Next:** step 2, a person's work (artboard 9).
+- **Next:** step 3, "Not this franchise" (artboard 10).
 
 ### 2026-10-18 (third session): handover check for a new engineer
 - The owner asked for the handover to be ready in GitHub for a new engineer.

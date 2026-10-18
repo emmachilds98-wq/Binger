@@ -46,8 +46,13 @@ export function renderTaste(root, ctx) {
   const people = [...topFeatures(profile, 'creator', { limit: 4 }), ...topFeatures(profile, 'cast', { limit: 6, minN: 2 }), ...topFeatures(profile, 'studio', { limit: 3, minN: 2 })]
     .sort((a, b) => b.affinity - a.affinity).slice(0, 8);
   if (people.length) {
-    page.append(section('People you rate highly', h('ul', { class: 'chips' }, people.map((p) => h('li', { class: 'chip chip-solid' },
-      h('span', null, p.group === 'studio' ? titleCase(p.label) : p.label), p.best ? h('span', { class: 'muted' }, ` · ${p.best.title}`) : null)))));
+    // Directors and cast open their other work; studios aren't people.
+    page.append(section('People you rate highly', h('ul', { class: 'chips' }, people.map((p) => {
+      const inner = [h('span', null, p.group === 'studio' ? titleCase(p.label) : p.label), p.best ? h('span', { class: 'muted' }, ` · ${p.best.title}`) : null];
+      return p.group === 'studio' || !ctx.onPerson
+        ? h('li', { class: 'chip chip-solid' }, inner)
+        : h('li', null, h('button', { type: 'button', class: 'chip chip-solid chip-btn', onClick: () => ctx.onPerson({ id: p.key.slice(2), name: p.label }) }, inner));
+    }))));
   }
 
   const dislikes = [...topFeatures(profile, 'genre', { limit: 4, sign: -1 }), ...topFeatures(profile, 'keyword', { limit: 4, sign: -1 })];

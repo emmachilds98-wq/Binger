@@ -53,16 +53,23 @@ function media(t, ctx, sheet) {
   return box;
 }
 
-function crewLine(t) {
-  const by = (job) => (t.crew || []).filter((c) => c.job === job).map((c) => c.name);
+// "Studio Madhouse · Created by … · Directed by …", with each person a link
+// to their other work.
+function crewLine(t, ctx) {
+  const by = (job) => {
+    const seen = new Set();
+    return (t.crew || []).filter((c) => c.job === job && !seen.has(c.id) && seen.add(c.id));
+  };
+  const people = (list) => list.flatMap((c, i) => [i ? ', ' : null,
+    ctx.onPerson ? h('button', { type: 'button', class: 'link-btn inline', onClick: () => ctx.onPerson(c) }, c.name) : c.name]);
   const bits = [];
   const directors = by('Director');
   const creators = by('Creator');
-  if (t.kind === 'anime' && t.studios && t.studios.length) bits.push(`Studio ${t.studios.map(titleCase).join(', ')}`);
-  if (creators.length) bits.push(`Created by ${creators.join(', ')}`);
-  if (directors.length) bits.push(`Directed by ${[...new Set(directors)].join(', ')}`);
-  if (t.networks && t.networks.length) bits.push(t.networks.join(', '));
-  return bits.join(' · ');
+  if (t.kind === 'anime' && t.studios && t.studios.length) bits.push([`Studio ${t.studios.map(titleCase).join(', ')}`]);
+  if (creators.length) bits.push(['Created by ', ...people(creators)]);
+  if (directors.length) bits.push(['Directed by ', ...people(directors)]);
+  if (t.networks && t.networks.length) bits.push([t.networks.join(', ')]);
+  return bits.length ? bits.flatMap((b, i) => [i ? ' \u00b7 ' : null, ...b]) : null;
 }
 
 function body(t, ctx) {
@@ -77,7 +84,7 @@ function body(t, ctx) {
       h('div', { class: 'row-gap' }, h('span', { class: `badge badge-${t.kind}` }, KIND_NAME[t.kind]), h('span', { class: 'muted small' }, facts)),
       h('h1', { class: 'detail-title' }, t.title),
       t.tagline ? h('p', { class: 'tagline' }, t.tagline) : null,
-      crewLine(t) ? h('p', { class: 'muted small' }, crewLine(t)) : null),
+      crewLine(t, ctx) ? h('p', { class: 'muted small' }, crewLine(t, ctx)) : null),
     chips.length ? h('ul', { class: 'chips', 'aria-label': 'Genres and themes' }, chips.map((c) => h('li', { class: 'chip' }, c))) : null,
     reasons.length ? h('section', { class: 'why', 'aria-label': 'Why Binger picked this' },
       h('h2', { class: 'eyebrow accent' }, 'Why Binger picked this'),
@@ -87,10 +94,11 @@ function body(t, ctx) {
       h('h2', { class: 'eyebrow' }, t.kind === 'anime' ? `Voice cast${ctx.settings.voiceLanguage === 'ENGLISH' ? ' (English dub)' : ''}` : 'Cast'),
       h('ul', { class: 'cast-row' }, people.map((p) => {
         const known = knownFrom(p, ctx.profile, t.id);
-        return h('li', { class: 'cast-item' },
+        // Each person opens their other work (Phase 2 step 2).
+        return h('li', null, h('button', { type: 'button', class: 'cast-item', 'aria-label': `${p.name}: see their other work`, onClick: () => ctx.onPerson && ctx.onPerson(p) },
           avatar(p, 'lg', !!known),
           h('span', { class: 'cast-name' }, p.name),
-          h('span', { class: `cast-role${known ? ' is-known' : ''}` }, known || p.character || ''));
+          h('span', { class: `cast-role${known ? ' is-known' : ''}` }, known || p.character || '')));
       }))) : null,
     whereToWatch(t, ctx),
     history(t, ctx),

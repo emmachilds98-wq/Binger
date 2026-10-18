@@ -22,7 +22,8 @@ import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices } from './sources/lookups.js';
+import { serviceChoices, loadPerson } from './sources/lookups.js';
+import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen } from './ui/sheet.js';
 
 // ---- state -----------------------------------------------------------------
@@ -279,6 +280,20 @@ function showServices(after = null) {
   });
 }
 
+// A person's other work, best for you first.
+function showPerson(stub) {
+  openPerson(stub, {
+    profile,
+    services: store.get().settings.services,
+    hasKey: tmdb.hasKey,
+    load: (id) => loadPerson(id, { tmdb, anilist }),
+    itemOf: (id) => store.get().items[id] || null,
+    onOpen: (t) => showDetail(t),
+    onSeen: (t) => logSeen(t),
+    onWant: (t) => addToWatchlist(t),
+  });
+}
+
 // ---- actions shared by every screen ----------------------------------------
 
 function showDetail(title, { card = null } = {}) {
@@ -296,6 +311,7 @@ function showDetail(title, { card = null } = {}) {
     onPass: card ? (t) => deckAction('left', { ...card, title: { ...t, via: card.title.via } }) : null,
     onSeen: (t) => (card ? deckAction('up', { ...card, title: { ...t, via: card.title.via } }) : logSeen(t)),
     onRemove: (t) => { store.update(L.removeItem, t.id); toast('Removed from your Watchlist'); },
+    onPerson: showPerson,
     onEditWatch: editWatch,
   });
 }
@@ -464,6 +480,7 @@ function render() {
       updateSettings: (patch) => store.update(L.updateSettings, patch),
       onSettings: showSettings,
       onServices: () => showServices(),
+      onPerson: showPerson,
       onForgetPasses: () => { store.update(L.forgetPasses); toast('Passed titles can come back now'); refill({ force: true }); },
     });
   }

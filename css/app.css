@@ -404,3 +404,23 @@ input[type="range"] { accent-color: var(--accent); }
 .row-btn > svg { flex: none; color: var(--muted); }
 .provider-yours { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .provider-link { color: var(--text); text-decoration: none; padding: 8px 12px; }
+
+/* a person's work (Phase 2 step 2; design: Person.dc.html) */
+.person-back { padding: 12px 12px 0; }
+.icon-btn.on-surface { background: var(--surface); }
+.icon-btn.sky { color: var(--sky); }
+.person-head { padding: 4px 16px 14px; display: flex; gap: 16px; align-items: center; }
+.person-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.person-text .detail-title { font-size: 26px; }
+.avatar-xl { width: 88px; height: 88px; font-size: 28px; font-family: var(--font-display); font-weight: 800; }
+.avatar-xl.avatar-known { box-shadow: 0 0 0 3px var(--accent); }
+.person-tools { display: flex; flex-direction: column; gap: 10px; padding: 0 0 10px; }
+.person-foot { padding: 14px 2px 0; }
+.row-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); }
+.row-note.accent { color: var(--accent); }
+.strong { font-weight: 600; }
+button.cast-item { border: 0; background: transparent; color: var(--text); padding: 0; }
+button.cast-item:hover .cast-name { text-decoration: underline; }
+.link-btn.inline { padding: 0; font-weight: 600; font-size: inherit; color: var(--text-2); text-decoration-color: var(--line); }
+.chip-btn { cursor: pointer; color: var(--text); font: inherit; font-size: 13px; }
+.chip-btn:hover { border-color: var(--muted); }

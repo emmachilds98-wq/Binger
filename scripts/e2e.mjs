@@ -27,6 +27,8 @@ const movieDetail = fx('tmdb-movie-detail.json');
 const tvDetail = fx('tmdb-tv-detail.json');
 const trending = fx('tmdb-trending-movie.json');
 const providersList = fx('tmdb-providers-movie.json');
+const personChalamet = fx('tmdb-person.json');
+const staffTanezaki = fx('anilist-staff-tanezaki.json');
 const tvList = { results: [{ ...tvDetail, genre_ids: tvDetail.genres.map((g) => g.id), media_type: 'tv' }] };
 const allAnime = Object.values(deckFx.data).flatMap((p) => p.media.flatMap((m) => (m.recommendations ? m.recommendations.nodes.map((n) => n.mediaRecommendation) : [m])));
 
@@ -61,6 +63,7 @@ await context.route('https://graphql.anilist.co/**', async (route) => {
     const vars = JSON.parse(body).variables || {};
     data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
   }
+  else if (body.includes('Staff(id')) data = staffTanezaki.data;
   else if (body.includes('search:')) data = { Page: { media: allAnime.filter((m) => /frieren|attack|vinland/i.test(JSON.stringify(m.title))) } };
   else if (body.includes('Media(id')) data = frieren.data;
   else data = { Page: { media: allAnime.slice(0, 12) } };
@@ -73,6 +76,7 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (url.searchParams.get('api_key') !== 'e2e-test-key') return route.fulfill({ status: 401, contentType: 'application/json', body: '{"status_message":"Invalid API key"}' });
   if (p === '/configuration') return json({ images: {} });
   if (p.startsWith('/watch/providers/')) return json(providersList);
+  if (p === '/person/1190668') return json(personChalamet);
   // "What's on these services": like real TMDB, only titles actually on them.
   // In the fixtures that's Dune (on "Netflix Standard with Ads" in GB) and nothing else.
   if (p.startsWith('/discover/') && url.searchParams.has('with_watch_providers')) {
@@ -267,7 +271,38 @@ await page.waitForSelector('.detail .where');
 check(await page.locator('.detail .provider-yours', { hasText: 'Netflix' }).count() === 1, 'the detail sheet rings your service under "Where to watch"');
 const why = await page.locator('.detail .why').innerText().catch(() => '');
 console.log(`    (why it was picked: ${why.replace(/\s+/g, ' ').trim()})`);
+
+console.log("A person's work");
+await page.getByRole('button', { name: 'Timothée Chalamet: see their other work' }).click();
+await page.waitForSelector('.person-sheet .row-title');
+check((await page.locator('.person-sheet h1').innerText()) === 'Timothée Chalamet', 'tapping a cast member opens their page');
+const personRows = await page.locator('.person-sheet .row-title').allInnerTexts();
+check(personRows.length >= 3 && !personRows.includes('The Tonight Show Starring Jimmy Fallon'), `their work is listed, without talk-show appearances (${personRows.length} titles)`);
+check(/Willy Wonka, Screenplay/.test(await page.locator('.person-sheet .row', { hasText: 'Wonka' }).first().innerText()), 'two roles on one film are merged into one row');
+check(/\d+% match|in your diary|On your watchlist/.test(await page.locator('.person-sheet .row-note').first().innerText()), 'each row says how well it matches you, or your status');
+await page.waitForTimeout(250);
+await shot('09-person');
+check(await page.evaluate(() => [...document.querySelectorAll('.person-sheet *')].every((e) => e.getBoundingClientRect().right <= innerWidth + 1)), 'nothing on the person page is wider than the screen');
+check(await page.locator('.person-sheet .row-actions button').count() >= 2, 'rows not in your library have both Seen it and Watchlist buttons');
+const firstPerson = personRows[0];
+await page.locator('.person-sheet .row-main').first().click();
+await page.waitForSelector('.detail .detail-title');
+check((await page.locator('.detail .detail-title').last().innerText()) === firstPerson, 'a row opens that title\u2019s details');
 await page.keyboard.press('Escape');
+await page.keyboard.press('Escape');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.getByRole('button', { name: 'Search', exact: true }).click();
+await page.fill('#search-q', 'Frieren');
+await page.waitForSelector('.search .row-title');
+await page.locator('.search .row-main', { hasText: /^Frieren: Beyond Journey/ }).first().click();
+await page.waitForSelector('.detail .cast-item');
+await page.getByRole('button', { name: 'Atsumi Tanezaki: see their other work' }).click();
+await page.waitForSelector('.person-sheet .row-title');
+const vaRows = await page.locator('.person-sheet .row').allInnerTexts();
+check(vaRows.some((r) => /Frieren[\s\S]*as Frieren/.test(r)), 'a voice actor\u2019s page (AniList) lists their shows with the character they voice');
+for (let i = 0; i < 3; i++) await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

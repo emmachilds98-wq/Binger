@@ -46,7 +46,7 @@ Kind badges are always labelled (FILM / TV / ANIME), never colour alone.
    name, amber ring and tick when picked; no brand logos drawn by us, TMDB's
    logos when available), the "Only show what I can stream" switch, and a
    plain note on where availability comes from.
-9. **A person's work**: big photo with an amber ring if you know them, name,
+9. **A person's work** (built): big photo with an amber ring if you know them, name,
    what they're known for, "In Little Women, which you loved"; kind pills;
    rows best-for-you first, each with a match % or your status, and eye /
    bookmark actions.
