@@ -1,0 +1,5399 @@
+{
+ "data": {
+  "trending": {
+   "media": [
+    {
+     "id": 195604,
+     "title": {
+      "romaji": "Black Clover 2nd Season",
+      "english": "Black Clover Season 2"
+     },
+     "format": "TV",
+     "status": "RELEASING",
+     "episodes": null,
+     "duration": 24,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 3
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792850400,
+      "episode": 4
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "As tyranny engulfs the Clover Kingdom, Asta and the Magic Knights launch a desperate raid on the Spade Kingdom to rescue their squad captains from the Dark Triad. But their mission leads them into a brutal battle against forces beyond anything they’ve ever faced. Now, Asta must rise above impossible odds to protect his friends and honor the promise he made to Yuno.\n<br><br>\n(Source: Crunchyroll)",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Comedy",
+      "Fantasy"
+     ],
+     "averageScore": 86,
+     "popularity": 92128,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195604-tSZcfKbVqSEG.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195604-tSZcfKbVqSEG.jpg",
+      "color": "#f1a143"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/195604-lQpCzTziSA17.jpg",
+     "trailer": {
+      "id": "4MYo8FfiXMA",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Magic",
+       "rank": 100,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shounen",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Demons",
+       "rank": 90,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rescue",
+       "rank": 79,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "War",
+       "rank": 79,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Medieval",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Manipulation",
+       "rank": 60,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Dungeon",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tsundere",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Super Power",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Found Family",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Elf",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Class Struggle",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Skip",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Tragedy",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Royal Affairs",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Age Regression",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dissociative Identities",
+       "rank": 20,
+       "isMediaSpoiler": true
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 1,
+        "name": "Studio Pierrot"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 110063,
+         "name": {
+          "full": "Yuuki Tabata"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 142304,
+         "name": {
+          "full": "Ayataka Tanemura"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 128110,
+         "name": {
+          "full": "Keiichirou Oochi"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 102166,
+         "name": {
+          "full": "Itsuko Takeda"
+         }
+        }
+       },
+       {
+        "role": "Sub Character Design",
+        "node": {
+         "id": 158368,
+         "name": {
+          "full": "Kumiko Tokunaga"
+         }
+        }
+       },
+       {
+        "role": "Prop Design",
+        "node": {
+         "id": 155050,
+         "name": {
+          "full": "Kousei Takahashi"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Asta"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 123286,
+          "name": {
+           "full": "Gakuto Kajiwara"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n123286-TfHayiK4hqbk.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Yuno"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 105989,
+          "name": {
+           "full": "Nobunaga Shimazaki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105989-96etzH1dLNug.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Noelle Silva"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 118739,
+          "name": {
+           "full": "Kana Yuuki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118739-hIVuGI5fgL5e.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Liebe"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95270,
+          "name": {
+           "full": "Nobuhiko Okamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Nacht Faust"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95356,
+          "name": {
+           "full": "Hiro Shimono"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95356-PFaZRlI9oJ56.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Yami Sukehiro"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95095,
+          "name": {
+           "full": "Junichi Suwabe"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95095-DvSjTQnqcgXP.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 97940,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 86123,
+         "type": "MANGA"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/195604"
+    },
+    {
+     "id": 191656,
+     "title": {
+      "romaji": "Seitokai ni mo Ana wa Aru!",
+      "english": "Even the Student Council Has Its Holes!"
+     },
+     "format": "TV",
+     "status": "RELEASING",
+     "episodes": 12,
+     "duration": 24,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 4
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792855800,
+      "episode": 4
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "This is Fujinasu Academy, a private high school with top-achieving students located on the outskirts of town.\n<br><br>\nHigh School 1st-Year Ume Mizunoe has excellent grades in Japanese language class and has received multiple literary awards.\nHowever, his terrible grades in the sciences are affecting his ability to move up a grade. To avoid repeating a year, he becomes a member of the student council to improve his academic standing.\n<br><br>\nHowever, in the student council, he meets the charismatic yet sullen student council president Kotobuki Hisako, and the scary yet kind and refined treasurer, Arisu Terui. Other members include a cheeky and cute boy, Tan Otori, and Komaro Michinoku, the admin who's like a small abandoned cat. This is the start of a slapstick, heartful, rom-com about a busy student council full of cute, mismatched, and quirky students!\n<br><br>\n(Source: Even the Student Council Has Its Holes! Official Site)",
+     "genres": [
+      "Comedy",
+      "Ecchi",
+      "Slice of Life"
+     ],
+     "averageScore": 73,
+     "popularity": 38195,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx191656-xFHtxM8SUTdU.png",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx191656-xFHtxM8SUTdU.png",
+      "color": "#5dbbe4"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/191656-JQILdzh3FQxN.jpg",
+     "trailer": {
+      "id": "VTRVLnzhl90",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "School Club",
+       "rank": 100,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Slapstick",
+       "rank": 94,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "School",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Teen Cast",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Nudity",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "LGBTQ+ Themes",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 77,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Mixed Gender Harem",
+       "rank": 74,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Femboy",
+       "rank": 67,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Ensemble Cast",
+       "rank": 64,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shounen",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Meta",
+       "rank": 53,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Yuri",
+       "rank": 42,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 911,
+        "name": "Passione"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 175936,
+         "name": {
+          "full": "Muchimaro"
+         }
+        }
+       },
+       {
+        "role": "Director ",
+        "node": {
+         "id": 103584,
+         "name": {
+          "full": "Naoyuki Tatsuwa"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 114175,
+         "name": {
+          "full": "Masahiro Yokotani"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 122455,
+         "name": {
+          "full": "Ryou Imamura"
+         }
+        }
+       },
+       {
+        "role": "Title Logo Design",
+        "node": {
+         "id": 209606,
+         "name": {
+          "full": "Daiju Asami"
+         }
+        }
+       },
+       {
+        "role": "Main Animator",
+        "node": {
+         "id": 214408,
+         "name": {
+          "full": "Kay Yu"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Tan Otori"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 128640,
+          "name": {
+           "full": "Hiyori Kouno"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n128640-A4tzr5vUxui9.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Ume Mizunoe"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 158510,
+          "name": {
+           "full": "Shougo Sakata"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n158510-QDmd7dD9Rg89.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Arisu Terui"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 118738,
+          "name": {
+           "full": "Shizuka Ishigami"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118738-60gKflxjl80c.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Hisako Kotobuki"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 112629,
+          "name": {
+           "full": "Haruka Shiraishi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112629-U0y9a5Z9ogfk.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Komaro Michinoku"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 119518,
+          "name": {
+           "full": "Miyu Tomita"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119518-vZN7TPy12iuu.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Satomi Hiratsuka"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 106784,
+          "name": {
+           "full": "Yumi Uchiyama"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106784-reDoHBLWxi7J.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 147863,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 179207,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/191656"
+    },
+    {
+     "id": 202250,
+     "title": {
+      "romaji": "Kashita Maryoku wa [Revo Barai] de Kyousei Choushuu",
+      "english": "Magic Repo Man: Dumped by My Party, I’ll Cash In With a Cute Support Fairy to Become the Strongest!"
+     },
+     "format": "TV",
+     "status": "RELEASING",
+     "episodes": null,
+     "duration": 23,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 4
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792859400,
+      "episode": 4
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "If there's one thing you can never have enough of in a world of RPG-style swords and sorcery, it's magic points! Whether you're fueling spells, techniques, or showing off an incredible ability, you've gotta spend those points to do real damage. But what if you run out?\n<br><br>\nLent is part of the up-and-coming party known as the “Skypiercers,” and thanks to his unique Gift, he can loan massive amounts of magic to others. No MP? No problem with Lent around! Except, now that his companions have become formidable heroes (thanks to his skill), his usefulness is questioned. Kicked out of the group, Lent is furious…until he discovers a hidden power to his Gift. Now, with his adorably devious fairy partner, he's going to claw back every last scrap of magic from his former party—with interest!<br><br>\n(Source: Seven Seas Entertainment)",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+     ],
+     "averageScore": 60,
+     "popularity": 18752,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx202250-mpm2cvr92Au2.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202250-mpm2cvr92Au2.jpg",
+      "color": "#bbe45d"
+     },
+     "bannerImage": null,
+     "trailer": {
+      "id": "kXqx3rFSkxc",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Revenge",
+       "rank": 73,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Economics",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Magic",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Fairy",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Seinen",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Bullying",
+       "rank": 20,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 118,
+        "name": "SynergySP"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Story",
+        "node": {
+         "id": 351950,
+         "name": {
+          "full": "Masakichi"
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 119210,
+         "name": {
+          "full": "Shingou Iijima"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 155053,
+         "name": {
+          "full": "Takahiro Tamano"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 351529,
+         "name": {
+          "full": "Ryuusuke Mori"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 379683,
+         "name": {
+          "full": "Kazue Mori"
+         }
+        }
+       },
+       {
+        "role": "Art Director",
+        "node": {
+         "id": 117291,
+         "name": {
+          "full": "Kazuhiro Arai"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Empee"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95052,
+          "name": {
+           "full": "Emiri Katou"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95052-mvDPeBcLCWmX.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Lent"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 180532,
+          "name": {
+           "full": "Reiji Kawashima"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n180532-mOjlNlbvm1N4.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Guy"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 120263,
+          "name": {
+           "full": "Daiki Hamano"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n120263-wtPsq7eIaiL0.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Misa"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 119155,
+          "name": {
+           "full": "Akira Sekine"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119155-uMmkwn0L33Im.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Elle"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95034,
+          "name": {
+           "full": "Yuu Kobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95034-AwobjrcmkMi9.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Linka"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 119960,
+          "name": {
+           "full": "Risae Matsuda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119960-1b9eah3Af5f2.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 202228,
+         "type": "MANGA"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/202250"
+    }
+   ]
+  },
+  "season": {
+   "media": [
+    {
+     "id": 195516,
+     "title": {
+      "romaji": "Kusuriya no Hitorigoto 3rd Season",
+      "english": "The Apothecary Diaries Season 3"
+     },
+     "format": "TV",
+     "status": "RELEASING",
+     "episodes": 12,
+     "duration": 24,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 2
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792764000,
+      "episode": 4
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "In the aftermath of the Shi Clan’s rebellion, things have finally settled down, and Maomao has returned to her old life as a pharmacist in the pleasure district.\n<br><br>\nOne day, triggered by a breakfast served at the Verdigris House, Maomao senses an anomaly and begins investigating its true nature.\n<br><br>\nMeanwhile, Jinshi, who has revealed his true identity as the Imperial brother and begun to face his heavy responsibilities, is deeply troubled by the final message left by Loulan: a warning of an impending \"disaster that will strike the nation.\"\n<br><br>\nTo make matters worse, rumors of a mysterious shrine maiden who deceives the people begin to spread, casting a dark shadow over the country of Li once again.\n<br><br>\nFrom the depths of the inner court to the city streets, and across foreign borders—the world grows wider, and the stakes even higher for Maomao and Jinshi.\n<br><br>\n(Source: Crunchyroll)",
+     "genres": [
+      "Drama",
+      "Mystery"
+     ],
+     "averageScore": 85,
+     "popularity": 99660,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195516-MJpUZlOberqH.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195516-MJpUZlOberqH.jpg",
+      "color": "#e4a128"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/195516-B5M0cPaQbQXI.jpg",
+     "trailer": {
+      "id": "YvNvvUeCztE",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Medicine",
+       "rank": 98,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Politics",
+       "rank": 91,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Ancient China",
+       "rank": 87,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Detective",
+       "rank": 81,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Royal Affairs",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Historical",
+       "rank": 77,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 65,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Seinen",
+       "rank": 64,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Class Struggle",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Foreign",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Prostitution",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Maids",
+       "rank": 56,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Work",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 40,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Amnesia",
+       "rank": 12,
+       "isMediaSpoiler": true
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 28,
+        "name": "OLM"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Story",
+        "node": {
+         "id": 122058,
+         "name": {
+          "full": "Natsu Hyuuga"
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 122066,
+         "name": {
+          "full": "Touko Shino"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 121911,
+         "name": {
+          "full": "Akinori Fudesaka"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 238307,
+         "name": {
+          "full": "Wataru Nakagawa"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 118406,
+         "name": {
+          "full": "Norihiro Naganuma"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 104174,
+         "name": {
+          "full": "Yukiko Nakatani"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Maomao"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 101686,
+          "name": {
+           "full": "Aoi Yuuki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n101686-PTd0lQZMsmcv.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Jinshi"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 128426,
+          "name": {
+           "full": "Takeo Ootsuka"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n128426-uB8KFqVLbogF.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Lakan"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95296,
+          "name": {
+           "full": "Takuya Kirimoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95296-fYLp5Ff3eDI3.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Gaoshun"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95020,
+          "name": {
+           "full": "Katsuyuki Konishi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95020-uOJO2IlwpcX0.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Meimei"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 107961,
+          "name": {
+           "full": "Megumi Han"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n107961-aMetTdEFTi2W.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Yarite Baba"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95294,
+          "name": {
+           "full": "Kimiko Saitou"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95294-AN7KQALYLR9w.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 99026,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 176301,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 200927,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 200929,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 99022,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "OTHER",
+        "node": {
+         "id": 218387,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "OTHER",
+        "node": {
+         "id": 218390,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/195516"
+    },
+    {
+     "id": 195604,
+     "title": {
+      "romaji": "Black Clover 2nd Season",
+      "english": "Black Clover Season 2"
+     },
+     "format": "TV",
+     "status": "RELEASING",
+     "episodes": null,
+     "duration": 24,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 3
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792850400,
+      "episode": 4
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "As tyranny engulfs the Clover Kingdom, Asta and the Magic Knights launch a desperate raid on the Spade Kingdom to rescue their squad captains from the Dark Triad. But their mission leads them into a brutal battle against forces beyond anything they’ve ever faced. Now, Asta must rise above impossible odds to protect his friends and honor the promise he made to Yuno.\n<br><br>\n(Source: Crunchyroll)",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Comedy",
+      "Fantasy"
+     ],
+     "averageScore": 86,
+     "popularity": 92128,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195604-tSZcfKbVqSEG.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195604-tSZcfKbVqSEG.jpg",
+      "color": "#f1a143"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/195604-lQpCzTziSA17.jpg",
+     "trailer": {
+      "id": "4MYo8FfiXMA",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Magic",
+       "rank": 100,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shounen",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Demons",
+       "rank": 90,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rescue",
+       "rank": 79,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "War",
+       "rank": 79,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Medieval",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Manipulation",
+       "rank": 60,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Dungeon",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tsundere",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Super Power",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Found Family",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Elf",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Class Struggle",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Skip",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Tragedy",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Royal Affairs",
+       "rank": 20,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Age Regression",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 20,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dissociative Identities",
+       "rank": 20,
+       "isMediaSpoiler": true
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 1,
+        "name": "Studio Pierrot"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 110063,
+         "name": {
+          "full": "Yuuki Tabata"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 142304,
+         "name": {
+          "full": "Ayataka Tanemura"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 128110,
+         "name": {
+          "full": "Keiichirou Oochi"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 102166,
+         "name": {
+          "full": "Itsuko Takeda"
+         }
+        }
+       },
+       {
+        "role": "Sub Character Design",
+        "node": {
+         "id": 158368,
+         "name": {
+          "full": "Kumiko Tokunaga"
+         }
+        }
+       },
+       {
+        "role": "Prop Design",
+        "node": {
+         "id": 155050,
+         "name": {
+          "full": "Kousei Takahashi"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Asta"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 123286,
+          "name": {
+           "full": "Gakuto Kajiwara"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n123286-TfHayiK4hqbk.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Yuno"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 105989,
+          "name": {
+           "full": "Nobunaga Shimazaki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105989-96etzH1dLNug.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Noelle Silva"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 118739,
+          "name": {
+           "full": "Kana Yuuki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118739-hIVuGI5fgL5e.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Liebe"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95270,
+          "name": {
+           "full": "Nobuhiko Okamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Nacht Faust"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95356,
+          "name": {
+           "full": "Hiro Shimono"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95356-PFaZRlI9oJ56.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Yami Sukehiro"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95095,
+          "name": {
+           "full": "Junichi Suwabe"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95095-DvSjTQnqcgXP.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 97940,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 86123,
+         "type": "MANGA"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/195604"
+    },
+    {
+     "id": 195539,
+     "title": {
+      "romaji": "Cyberpunk: Edgerunners 2",
+      "english": "Cyberpunk: Edgerunners 2"
+     },
+     "format": "ONA",
+     "status": "NOT_YET_RELEASED",
+     "episodes": 10,
+     "duration": null,
+     "season": "FALL",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 10,
+      "day": 20
+     },
+     "endDate": {
+      "year": null,
+      "month": null,
+      "day": null
+     },
+     "nextAiringEpisode": {
+      "airingAt": 1792479900,
+      "episode": 1
+     },
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "<i>Cyberpunk: Edgerunners 2</i> pulls you back into Night City, where lives become entangled to the extreme. Weak, a washed-up cyberpunk legend, is now forced to live without chrome as he searches for a sense of purpose in a world that’s passed him by. Meanwhile, the deadly nomad D sets out on a path to revenge that brings him close to corpo secrets never meant to be found. Across this ten-episode standalone series, uncover a story of family, obsession, legacy — and how your lens reflects the stories of the people around you..<br><br>\n\nWhen the world is blinded by spectacle, what extremes do you have to go to make your story matter?<br><br>\n(Source: Cyberpunk: Edgerunners 2 Official Site, Official Twitter)",
+     "genres": [
+      "Action",
+      "Drama",
+      "Sci-Fi"
+     ],
+     "averageScore": null,
+     "popularity": 79183,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195539-t0GQQ9J9qtBW.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195539-t0GQQ9J9qtBW.jpg",
+      "color": "#e41a5d"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/195539-lO5SUdp4SOrq.jpg",
+     "trailer": {
+      "id": "AtJMSUpG9GQ",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Cyberpunk",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cyborg",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dystopian",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Crime",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Guns",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 79,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 803,
+        "name": "TRIGGER"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 180534,
+         "name": {
+          "full": "Mike Pondsmith"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 135996,
+         "name": {
+          "full": "Kai Ikarashi"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 132692,
+         "name": {
+          "full": "Naoto Uchida"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 108023,
+         "name": {
+          "full": "Masahiko Ootsuka"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 287752,
+         "name": {
+          "full": "Bartosz Sztybor"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 156292,
+         "name": {
+          "full": "Ichigo Kanno"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Weak Kingsley"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 105571,
+          "name": {
+           "full": "Kentarou Tone"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105571-Ck9wy1fxMy3N.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "D"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96764,
+          "name": {
+           "full": "Kouki Uchiyama"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96764-yJWGrhjanDJQ.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Roman Carax"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 292760,
+          "name": {
+           "full": "Momoka Terasawa"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n292760-CnVs8Bk989Bu.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Talia Yang"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 119722,
+          "name": {
+           "full": "Akari Kitou"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119722-Ls7ORfBejJEP.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Avida Yang"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95076,
+          "name": {
+           "full": "Akemi Okamura"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95076-itRGy8F3x5Em.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Jessie"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 127666,
+          "name": {
+           "full": "Miho Okasaki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n127666-kJTHGXxNtzKU.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "OTHER",
+        "node": {
+         "id": 120377,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/195539"
+    }
+   ]
+  },
+  "genre": {
+   "media": [
+    {
+     "id": 154587,
+     "title": {
+      "romaji": "Sousou no Frieren",
+      "english": "Frieren: Beyond Journey’s End"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 28,
+     "duration": 24,
+     "season": "FALL",
+     "seasonYear": 2023,
+     "startDate": {
+      "year": 2023,
+      "month": 9,
+      "day": 29
+     },
+     "endDate": {
+      "year": 2024,
+      "month": 3,
+      "day": 22
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n<br><br>\n(Source: Crunchyroll)",
+     "genres": [
+      "Adventure",
+      "Drama",
+      "Fantasy"
+     ],
+     "averageScore": 91,
+     "popularity": 490681,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+      "color": "#bbf1a1"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg",
+     "trailer": {
+      "id": "tR8YH0G67Rk",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Travel",
+       "rank": 96,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Magic",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Elf",
+       "rank": 91,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Skip",
+       "rank": 82,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Medieval",
+       "rank": 82,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Found Family",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Kuudere",
+       "rank": 75,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Demons",
+       "rank": 71,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shounen",
+       "rank": 71,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Foreign",
+       "rank": 69,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Iyashikei",
+       "rank": 63,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Adoption",
+       "rank": 61,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rural",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 58,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Aromantic",
+       "rank": 58,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dungeon",
+       "rank": 56,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Asexual",
+       "rank": 55,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Episodic",
+       "rank": 54,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Religion",
+       "rank": 47,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rotoscoping",
+       "rank": 47,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Snowscape",
+       "rank": 43,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Spearplay",
+       "rank": 42,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dragons",
+       "rank": 38,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "CGI",
+       "rank": 37,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Food",
+       "rank": 36,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Horticulture",
+       "rank": 30,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 11,
+        "name": "MADHOUSE"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Story",
+        "node": {
+         "id": 122202,
+         "name": {
+          "full": "Kanehito Yamada"
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 170189,
+         "name": {
+          "full": "Tsukasa Abe"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 134254,
+         "name": {
+          "full": "Keiichirou Saitou"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 119119,
+         "name": {
+          "full": "Tomohiro Suzuki"
+         }
+        }
+       },
+       {
+        "role": "Action Director",
+        "node": {
+         "id": 131949,
+         "name": {
+          "full": "Tooru Iwazawa"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 140343,
+         "name": {
+          "full": "Reiko Nagasawa"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Frieren"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 112215,
+          "name": {
+           "full": "Atsumi Tanezaki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Fern"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 124390,
+          "name": {
+           "full": "Kana Ichinose"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Stark"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 133507,
+          "name": {
+           "full": "Chiaki Kobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+          }
+         },
+         {
+          "id": 115100,
+          "name": {
+           "full": "Arisa Kiyoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Himmel"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95270,
+          "name": {
+           "full": "Nobuhiko Okamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Heiter"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95236,
+          "name": {
+           "full": "Hiroki Touchi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Eisen"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95926,
+          "name": {
+           "full": "Youji Ueda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 118586,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "CHARACTER",
+        "node": {
+         "id": 169811,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 170068,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "OTHER",
+        "node": {
+         "id": 175691,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 182255,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 189513,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/154587"
+    },
+    {
+     "id": 189046,
+     "title": {
+      "romaji": "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season",
+      "english": "Re:ZERO -Starting Life in Another World- Season 4"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 19,
+     "duration": 24,
+     "season": "SPRING",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 4,
+      "day": 8
+     },
+     "endDate": {
+      "year": 2026,
+      "month": 9,
+      "day": 30
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "In the deadly battle at Priestella, Subaru and his allies emerged victorious, but at great cost. As Subaru searches for a way to save Rem, Crusch, and Julius, he learns of a \"wise woman,\" Shaula, an all-seeing being said to possess every form of knowledge, who resides at the Pleiades Watchtower. Subaru and his crew must brave the uncharted Auguria Dunes to reclaim what was lost.\n<br><br>\n(Source: Crunchyroll)\n<br><br>\n<i>Note: Lucca Comics & Games pre-screened episode 1 early on November 1, 2025, prior to the Japanese television broadcast on July 8th, 2026.",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Drama",
+      "Fantasy",
+      "Psychological",
+      "Romance",
+      "Thriller"
+     ],
+     "averageScore": 90,
+     "popularity": 151446,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx189046-yaHWtS5FII46.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx189046-yaHWtS5FII46.jpg",
+      "color": "#e49350"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/189046-MDk2CaVuRWpb.jpg",
+     "trailer": {
+      "id": "i8EjBP85cCc",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Seinen",
+       "rank": 97,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Memory Manipulation",
+       "rank": 96,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Time Loop",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dissociative Identities",
+       "rank": 91,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Amnesia",
+       "rank": 91,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Tragedy",
+       "rank": 88,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Time Manipulation",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Magic",
+       "rank": 86,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Witch",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Denpa",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Isekai",
+       "rank": 76,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cult",
+       "rank": 75,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 74,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Medieval",
+       "rank": 72,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Desert",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 68,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Travel",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Clone",
+       "rank": 65,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Elf",
+       "rank": 63,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Interspecies",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Astronomy",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Anthropomorphism",
+       "rank": 58,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Shapeshifting",
+       "rank": 56,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Dragons",
+       "rank": 54,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Creature Taming",
+       "rank": 53,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Spearplay",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Twins",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Maids",
+       "rank": 47,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gods",
+       "rank": 42,
+       "isMediaSpoiler": true
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 314,
+        "name": "WHITE FOX"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Story",
+        "node": {
+         "id": 118885,
+         "name": {
+          "full": "Tappei Nagatsuki"
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 118886,
+         "name": {
+          "full": "Shinichirou Ootsuka"
+         }
+        }
+       },
+       {
+        "role": "Director ",
+        "node": {
+         "id": 134798,
+         "name": {
+          "full": "Masahiro Shinohara"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 114175,
+         "name": {
+          "full": "Masahiro Yokotani"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 124675,
+         "name": {
+          "full": "Haruka Sagawa"
+         }
+        }
+       },
+       {
+        "role": "Prop Design",
+        "node": {
+         "id": 142284,
+         "name": {
+          "full": "Gouichi Iwahata"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Emilia"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 119331,
+          "name": {
+           "full": "Rie Takahashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119331-5dPuMCxu4RWf.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Subaru Natsuki"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 118407,
+          "name": {
+           "full": "Yuusuke Kobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118407-DMPcKY2AUSHV.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Beatrice"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95124,
+          "name": {
+           "full": "Satomi Arai"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95124-8C0BORTX7Bfd.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Anastasia Hoshin"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95116,
+          "name": {
+           "full": "Kana Ueda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95116-NvhEn6vNMiAq.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Ram"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 107212,
+          "name": {
+           "full": "Rie Murakawa"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n107212-4OHHrSs8srTU.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Julius Euclius"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 102695,
+          "name": {
+           "full": "Takuya Eguchi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n102695-dGzsJkor0KMj.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 163134,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 85737,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "SPIN_OFF",
+        "node": {
+         "id": 210687,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/189046"
+    },
+    {
+     "id": 5114,
+     "title": {
+      "romaji": "Hagane no Renkinjutsushi: FULLMETAL ALCHEMIST",
+      "english": "Fullmetal Alchemist: Brotherhood"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 64,
+     "duration": 25,
+     "season": "SPRING",
+     "seasonYear": 2009,
+     "startDate": {
+      "year": 2009,
+      "month": 4,
+      "day": 5
+     },
+     "endDate": {
+      "year": 2010,
+      "month": 7,
+      "day": 4
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "\"In order for something to be obtained, something of equal value must be lost.\"\n<br><br>\nAlchemy is bound by this Law of Equivalent Exchange—something the young brothers Edward and Alphonse Elric only realize after attempting human transmutation: the one forbidden act of alchemy. They pay a terrible price for their transgression—Edward loses his left leg, Alphonse his physical body. It is only by the desperate sacrifice of Edward's right arm that he is able to affix Alphonse's soul to a suit of armor. Devastated and alone, it is the hope that they would both eventually return to their original bodies that gives Edward the inspiration to obtain metal limbs called \"automail\" and become a state alchemist, the Fullmetal Alchemist.\n<br><br>\nThree years of searching later, the brothers seek the Philosopher's Stone, a mythical relic that allows an alchemist to overcome the Law of Equivalent Exchange. Even with military allies Colonel Roy Mustang, Lieutenant Riza Hawkeye, and Lieutenant Colonel Maes Hughes on their side, the brothers find themselves caught up in a nationwide conspiracy that leads them not only to the true nature of the elusive Philosopher's Stone, but their country's murky history as well. In between finding a serial killer and racing against time, Edward and Alphonse must ask themselves if what they are doing will make them human again... or take away their humanity.\n<br><br>\n(Source: MAL Rewrite)",
+     "genres": [
+      "Action",
+      "Adventure",
+      "Drama",
+      "Fantasy"
+     ],
+     "averageScore": 90,
+     "popularity": 737485,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5114-nSWCgQlmOMtj.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx5114-nSWCgQlmOMtj.jpg",
+      "color": "#e4c993"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/5114-q0V5URebphSG.jpg",
+     "trailer": {
+      "id": "1ac3_YdSSy0",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Alchemy",
+       "rank": 97,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Conspiracy",
+       "rank": 94,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Military",
+       "rank": 92,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "War",
+       "rank": 90,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tragedy",
+       "rank": 89,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Shounen",
+       "rank": 88,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Politics",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Male Protagonist",
+       "rank": 83,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 82,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Ensemble Cast",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Coming of Age",
+       "rank": 78,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Fugitive",
+       "rank": 74,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Super Power",
+       "rank": 74,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Foreign",
+       "rank": 72,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Gods",
+       "rank": 72,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Steampunk",
+       "rank": 72,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Disability",
+       "rank": 72,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cyborg",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Revenge",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Necromancy",
+       "rank": 70,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Travel",
+       "rank": 69,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Lost Civilization",
+       "rank": 67,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Anachronism",
+       "rank": 66,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Chimera",
+       "rank": 64,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Dissociative Identities",
+       "rank": 63,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Primarily Male Cast",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Religion",
+       "rank": 62,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Gore",
+       "rank": 60,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Slapstick",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Orphan",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Human Experimentation",
+       "rank": 60,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Body Horror",
+       "rank": 57,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban Fantasy",
+       "rank": 53,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Guns",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Kuudere",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shapeshifting",
+       "rank": 52,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Demons",
+       "rank": 51,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Chibi",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Trains",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Swordplay",
+       "rank": 49,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Adoption",
+       "rank": 49,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cannibalism",
+       "rank": 47,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 43,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Desert",
+       "rank": 42,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tanned Skin",
+       "rank": 40,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tsundere",
+       "rank": 31,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Zombie",
+       "rank": 30,
+       "isMediaSpoiler": true
+      },
+      {
+       "name": "Snowscape",
+       "rank": 28,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Crossdressing",
+       "rank": 27,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Cultivation",
+       "rank": 20,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 4,
+        "name": "bones"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Creator",
+        "node": {
+         "id": 96874,
+         "name": {
+          "full": "Hiromu Arakawa"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 101232,
+         "name": {
+          "full": "Yasuhiro Irie"
+         }
+        }
+       },
+       {
+        "role": "Supervisor",
+        "node": {
+         "id": 195240,
+         "name": {
+          "full": "Yuuichi Shimomura"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 97701,
+         "name": {
+          "full": "Hiroshi Oonogi"
+         }
+        }
+       },
+       {
+        "role": "Literary Arts",
+        "node": {
+         "id": 181322,
+         "name": {
+          "full": "Yoneki Tsumura"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 129853,
+         "name": {
+          "full": "Hiroki Kanno"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Edward Elric"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95082,
+          "name": {
+           "full": "Romi Park"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95082-pNGbnYv4cHAK.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Alphonse Elric"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95008,
+          "name": {
+           "full": "Rie Kugimiya"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95008-2y0EeuSTHIri.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Winry Rockbell"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95046,
+          "name": {
+           "full": "Megumi Takamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95046-3vW0I3zKOpfW.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Pinako Rockbell"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95571,
+          "name": {
+           "full": "Mami Koyama"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95571-QuL7zlRwRcxa.png"
+          }
+         },
+         {
+          "id": 96542,
+          "name": {
+           "full": "Miyoko Asou"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96542-nUqFdwzo1FEX.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Scar"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95720,
+          "name": {
+           "full": "Kenta Miyake"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95720-enxx6kZKuwGi.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Izumi Curtis"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 96664,
+          "name": {
+           "full": "Shouko Tsuda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96664-ct3IoFBmnyoJ.jpg"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 30025,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 6421,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 9135,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "ALTERNATIVE",
+        "node": {
+         "id": 121,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SPIN_OFF",
+        "node": {
+         "id": 7902,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "CHARACTER",
+        "node": {
+         "id": 195600,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/5114"
+    }
+   ]
+  },
+  "seeds": {
+   "media": [
+    {
+     "id": 16498,
+     "title": {
+      "romaji": "Shingeki no Kyojin",
+      "english": "Attack on Titan"
+     },
+     "recommendations": {
+      "nodes": [
+       {
+        "mediaRecommendation": {
+         "id": 101348,
+         "title": {
+          "romaji": "VINLAND SAGA",
+          "english": "Vinland Saga"
+         },
+         "format": "TV",
+         "status": "FINISHED",
+         "episodes": 24,
+         "duration": 24,
+         "season": "SUMMER",
+         "seasonYear": 2019,
+         "startDate": {
+          "year": 2019,
+          "month": 7,
+          "day": 8
+         },
+         "endDate": {
+          "year": 2019,
+          "month": 12,
+          "day": 30
+         },
+         "nextAiringEpisode": null,
+         "countryOfOrigin": "JP",
+         "isAdult": false,
+         "description": "Thorfinn is son to one of the Vikings' greatest warriors, but when his father is killed in battle by the mercenary leader Askeladd, he swears to have his revenge. Thorfinn joins Askeladd's band in order to challenge him to a duel, and ends up caught in the middle of a war for the crown of England.\n<br><br>\n(Source: Kodansha USA)",
+         "genres": [
+          "Action",
+          "Adventure",
+          "Drama"
+         ],
+         "averageScore": 87,
+         "popularity": 553694,
+         "coverImage": {
+          "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101348-2fhDFPCuMNiz.jpg",
+          "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101348-2fhDFPCuMNiz.jpg",
+          "color": "#f16b5d"
+         },
+         "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101348-pivKKffCAwAY.jpg",
+         "trailer": {
+          "id": "5xqEp7R9SYM",
+          "site": "youtube"
+         },
+         "tags": [
+          {
+           "name": "Vikings",
+           "rank": 98,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Revenge",
+           "rank": 93,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Foreign",
+           "rank": 93,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "War",
+           "rank": 91,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Historical",
+           "rank": 91,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Male Protagonist",
+           "rank": 91,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Philosophy",
+           "rank": 90,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Coming of Age",
+           "rank": 89,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Tragedy",
+           "rank": 89,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Seinen",
+           "rank": 88,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Primarily Male Cast",
+           "rank": 85,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Medieval",
+           "rank": 85,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Politics",
+           "rank": 84,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Anti-Hero",
+           "rank": 83,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Military",
+           "rank": 83,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Swordplay",
+           "rank": 82,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Primarily Adult Cast",
+           "rank": 81,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Travel",
+           "rank": 79,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Gore",
+           "rank": 78,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Survival",
+           "rank": 75,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Heterosexual",
+           "rank": 73,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Ships",
+           "rank": 71,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Orphan",
+           "rank": 71,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Conspiracy",
+           "rank": 68,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Slavery",
+           "rank": 68,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Time Skip",
+           "rank": 66,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Religion",
+           "rank": 62,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Pirates",
+           "rank": 61,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Language Barrier",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Snowscape",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Spearplay",
+           "rank": 55,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Archery",
+           "rank": 41,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "CGI",
+           "rank": 39,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Nudity",
+           "rank": 26,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Achronological Order",
+           "rank": 10,
+           "isMediaSpoiler": false
+          }
+         ],
+         "studios": {
+          "nodes": [
+           {
+            "id": 858,
+            "name": "WIT STUDIO"
+           }
+          ]
+         },
+         "staff": {
+          "edges": [
+           {
+            "role": "Original Creator",
+            "node": {
+             "id": 97034,
+             "name": {
+              "full": "Makoto Yukimura"
+             }
+            }
+           },
+           {
+            "role": "Director",
+            "node": {
+             "id": 120824,
+             "name": {
+              "full": "Shuuhei Yabuta"
+             }
+            }
+           },
+           {
+            "role": "Series Composition",
+            "node": {
+             "id": 99012,
+             "name": {
+              "full": "Hiroshi Seko"
+             }
+            }
+           },
+           {
+            "role": "Character Design",
+            "node": {
+             "id": 127038,
+             "name": {
+              "full": "Takahiko Abiru"
+             }
+            }
+           },
+           {
+            "role": "Sub Character Design",
+            "node": {
+             "id": 142745,
+             "name": {
+              "full": "Kenji Wakasa"
+             }
+            }
+           },
+           {
+            "role": "Sub Character Design",
+            "node": {
+             "id": 136111,
+             "name": {
+              "full": "Tatsumori Imoto"
+             }
+            }
+           }
+          ]
+         },
+         "characters": {
+          "edges": [
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Thorfinn Karlsefni"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 118498,
+              "name": {
+               "full": "Yuuto Uemura"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118498-6YvZZS0HM2qD.jpg"
+              }
+             },
+             {
+              "id": 118738,
+              "name": {
+               "full": "Shizuka Ishigami"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118738-60gKflxjl80c.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Askeladd"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95338,
+              "name": {
+               "full": "Naoya Uchida"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95338-hoqbedi0LHZf.png"
+              }
+             },
+             {
+              "id": 127542,
+              "name": {
+               "full": "Maki Kawase"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n127542-rHFIx0NCHfsU.png"
+              }
+             },
+             {
+              "id": 133507,
+              "name": {
+               "full": "Chiaki Kobayashi"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Canute Svenson"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95819,
+              "name": {
+               "full": "Kenshou Ono"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95819-O4fosAY0a1Ml.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Thors Snorresson"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 105273,
+              "name": {
+               "full": "Kenichirou Matsuda"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105273-asextl049B2s.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Thorkell"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95146,
+              "name": {
+               "full": "Akio Ootsuka"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95146-T6IEmqXW3xUN.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Bjorn"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95025,
+              "name": {
+               "full": "Hiroki Yasumoto"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95025-LGHr4VufmfCc.jpg"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         "relations": {
+          "edges": [
+           {
+            "relationType": "SOURCE",
+            "node": {
+             "id": 30642,
+             "type": "MANGA"
+            }
+           },
+           {
+            "relationType": "SEQUEL",
+            "node": {
+             "id": 136430,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "OTHER",
+            "node": {
+             "id": 145902,
+             "type": "ANIME"
+            }
+           }
+          ]
+         },
+         "siteUrl": "https://anilist.co/anime/101348"
+        }
+       },
+       {
+        "mediaRecommendation": {
+         "id": 101759,
+         "title": {
+          "romaji": "Yakusoku no Neverland",
+          "english": "The Promised Neverland"
+         },
+         "format": "TV",
+         "status": "FINISHED",
+         "episodes": 12,
+         "duration": 23,
+         "season": "WINTER",
+         "seasonYear": 2019,
+         "startDate": {
+          "year": 2019,
+          "month": 1,
+          "day": 10
+         },
+         "endDate": {
+          "year": 2019,
+          "month": 3,
+          "day": 29
+         },
+         "nextAiringEpisode": null,
+         "countryOfOrigin": "JP",
+         "isAdult": false,
+         "description": "Emma, Norman and Ray are the brightest kids at the Grace Field House orphanage. And under the care of the woman they refer to as “Mom,” all the kids have enjoyed a comfortable life. Good food, clean clothes and the perfect environment to learn—what more could an orphan ask for? One day, though, Emma and Norman uncover the dark truth of the outside world they are forbidden from seeing.\n<br><br>\n(Source: VIZ Media)",
+         "genres": [
+          "Drama",
+          "Fantasy",
+          "Horror",
+          "Mystery",
+          "Psychological",
+          "Thriller"
+         ],
+         "averageScore": 83,
+         "popularity": 638839,
+         "coverImage": {
+          "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101759-8UR7r9MNVpz2.jpg",
+          "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101759-8UR7r9MNVpz2.jpg",
+          "color": "#e4ae50"
+         },
+         "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101759-MhlCoeqnODso.jpg",
+         "trailer": {
+          "id": "ApLudqucq-s",
+          "site": "youtube"
+         },
+         "tags": [
+          {
+           "name": "Dystopian",
+           "rank": 97,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Survival",
+           "rank": 94,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Primarily Child Cast",
+           "rank": 92,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Orphan",
+           "rank": 90,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Tragedy",
+           "rank": 83,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Found Family",
+           "rank": 83,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Prison",
+           "rank": 79,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Demons",
+           "rank": 76,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Coming of Age",
+           "rank": 70,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Female Protagonist",
+           "rank": 68,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Ensemble Cast",
+           "rank": 63,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Gore",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Shounen",
+           "rank": 53,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Tanned Skin",
+           "rank": 52,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Male Protagonist",
+           "rank": 51,
+           "isMediaSpoiler": false
+          }
+         ],
+         "studios": {
+          "nodes": [
+           {
+            "id": 6222,
+            "name": "CloverWorks"
+           }
+          ]
+         },
+         "staff": {
+          "edges": [
+           {
+            "role": "Original Work Assistance",
+            "node": {
+             "id": 203390,
+             "name": {
+              "full": "Taku Sugita"
+             }
+            }
+           },
+           {
+            "role": "Original Story",
+            "node": {
+             "id": 120217,
+             "name": {
+              "full": "Kaiu Shirai"
+             }
+            }
+           },
+           {
+            "role": "Original Character Design",
+            "node": {
+             "id": 120216,
+             "name": {
+              "full": "Posuka Demizu"
+             }
+            }
+           },
+           {
+            "role": "Director",
+            "node": {
+             "id": 101759,
+             "name": {
+              "full": "Mamoru Kanbe"
+             }
+            }
+           },
+           {
+            "role": "Supervisor",
+            "node": {
+             "id": 147288,
+             "name": {
+              "full": "Youko Matsuzaki"
+             }
+            }
+           },
+           {
+            "role": "Series Composition",
+            "node": {
+             "id": 110745,
+             "name": {
+              "full": "Toshiya Oono"
+             }
+            }
+           }
+          ]
+         },
+         "characters": {
+          "edges": [
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Norman"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 108639,
+              "name": {
+               "full": "Maaya Uchida"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n108639-LLrR4WptCh5s.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Ray"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95655,
+              "name": {
+               "full": "Mariya Ise"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95655-cR519BXmteKA.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Emma"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 106404,
+              "name": {
+               "full": "Sumire Morohoshi"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106404-uodatsBbsnJh.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Isabella"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95428,
+              "name": {
+               "full": "Yuuko Kaida"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95428-1e4kSvr5fkmQ.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Krone"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 125129,
+              "name": {
+               "full": "Nao Fujita"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/125129-9Oci2U6RhdPm.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Don"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 129782,
+              "name": {
+               "full": "Shinei Ueki"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n129782-WKuWiktd8ZLr.png"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         "relations": {
+          "edges": [
+           {
+            "relationType": "SOURCE",
+            "node": {
+             "id": 87423,
+             "type": "MANGA"
+            }
+           },
+           {
+            "relationType": "SEQUEL",
+            "node": {
+             "id": 108725,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "OTHER",
+            "node": {
+             "id": 184876,
+             "type": "MANGA"
+            }
+           }
+          ]
+         },
+         "siteUrl": "https://anilist.co/anime/101759"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": 154587,
+     "title": {
+      "romaji": "Sousou no Frieren",
+      "english": "Frieren: Beyond Journey’s End"
+     },
+     "recommendations": {
+      "nodes": [
+       {
+        "mediaRecommendation": {
+         "id": 21827,
+         "title": {
+          "romaji": "Violet Evergarden",
+          "english": "Violet Evergarden"
+         },
+         "format": "TV",
+         "status": "FINISHED",
+         "episodes": 13,
+         "duration": 24,
+         "season": "WINTER",
+         "seasonYear": 2018,
+         "startDate": {
+          "year": 2018,
+          "month": 1,
+          "day": 11
+         },
+         "endDate": {
+          "year": 2018,
+          "month": 4,
+          "day": 5
+         },
+         "nextAiringEpisode": null,
+         "countryOfOrigin": "JP",
+         "isAdult": false,
+         "description": "A certain point in time, in the continent of Telesis. The great war which divided the continent into North and South has ended after four years, and the people are welcoming a new generation. Violet Evergarden, a young girl formerly known as “the weapon”, has left the battlefield to start a new life at CH Postal Service. There, she is deeply moved by the work of “Auto Memories Dolls”, who carry people's thoughts and convert them into words. Violet begins her journey as an Auto Memories Doll, and comes face to face with various people's emotions and differing shapes of love. There are words Violet heard on the battlefield, which she cannot forget. These words were given to her by someone she holds dear, more than anyone else. She does not yet know their meaning but she searches to find it.<br>\n<br>\n(Source: Anime News Network)",
+         "genres": [
+          "Drama",
+          "Fantasy",
+          "Slice of Life"
+         ],
+         "averageScore": 85,
+         "popularity": 553320,
+         "coverImage": {
+          "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21827-ubzq619ZA2E9.png",
+          "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21827-ubzq619ZA2E9.png",
+          "color": "#3586e4"
+         },
+         "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21827-ROucgYiiiSpR.jpg",
+         "trailer": {
+          "id": "_grmduuECm4",
+          "site": "youtube"
+         },
+         "tags": [
+          {
+           "name": "Rehabilitation",
+           "rank": 95,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Writing",
+           "rank": 95,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Tragedy",
+           "rank": 92,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Female Protagonist",
+           "rank": 88,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Coming of Age",
+           "rank": 88,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Kuudere",
+           "rank": 82,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "War",
+           "rank": 80,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Work",
+           "rank": 79,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Orphan",
+           "rank": 75,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Disability",
+           "rank": 74,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Episodic",
+           "rank": 73,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Military",
+           "rank": 72,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Philosophy",
+           "rank": 66,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Travel",
+           "rank": 66,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Historical",
+           "rank": 65,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Primarily Adult Cast",
+           "rank": 62,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Steampunk",
+           "rank": 61,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Heterosexual",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Age Gap",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Foreign",
+           "rank": 56,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Trains",
+           "rank": 46,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Assassins",
+           "rank": 44,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Guns",
+           "rank": 42,
+           "isMediaSpoiler": false
+          }
+         ],
+         "studios": {
+          "nodes": [
+           {
+            "id": 2,
+            "name": "Kyoto Animation"
+           }
+          ]
+         },
+         "staff": {
+          "edges": [
+           {
+            "role": "Original Creator",
+            "node": {
+             "id": 124666,
+             "name": {
+              "full": "Kana Akatsuki"
+             }
+            }
+           },
+           {
+            "role": "Director",
+            "node": {
+             "id": 103129,
+             "name": {
+              "full": "Taichi Ishidate"
+             }
+            }
+           },
+           {
+            "role": "Series Composition",
+            "node": {
+             "id": 97076,
+             "name": {
+              "full": "Reiko Yoshida"
+             }
+            }
+           },
+           {
+            "role": "Literary Arts",
+            "node": {
+             "id": 195164,
+             "name": {
+              "full": "Haruna Matsuda"
+             }
+            }
+           },
+           {
+            "role": "Character Design",
+            "node": {
+             "id": 122660,
+             "name": {
+              "full": "Akiko Takase"
+             }
+            }
+           },
+           {
+            "role": "Accessory Design",
+            "node": {
+             "id": 149955,
+             "name": {
+              "full": "Hiroyuki Takahashi"
+             }
+            }
+           }
+          ]
+         },
+         "characters": {
+          "edges": [
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Violet Evergarden"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 100142,
+              "name": {
+               "full": "Yui Ishikawa"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n100142-k6RP0HzXffUG.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Cattleya Baudelaire"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95054,
+              "name": {
+               "full": "Aya Endou"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95054-USmUajnl3bnT.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Benedict Blue"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 96764,
+              "name": {
+               "full": "Kouki Uchiyama"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96764-yJWGrhjanDJQ.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Dietfried Bougainvillea"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95174,
+              "name": {
+               "full": "Hidenobu Kiuchi"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95174-yTsadXRKchp7.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Gilbert Bougainvillea"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95087,
+              "name": {
+               "full": "Daisuke Namikawa"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95087-6dlBBbejsPyg.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Bridget"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 124796,
+              "name": {
+               "full": "Yurika Aizawa"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/124796-ya8TT1a9zedA.jpg"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         "relations": {
+          "edges": [
+           {
+            "relationType": "SIDE_STORY",
+            "node": {
+             "id": 101432,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "SOURCE",
+            "node": {
+             "id": 97298,
+             "type": "MANGA"
+            }
+           },
+           {
+            "relationType": "SEQUEL",
+            "node": {
+             "id": 109190,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "OTHER",
+            "node": {
+             "id": 154164,
+             "type": "ANIME"
+            }
+           }
+          ]
+         },
+         "siteUrl": "https://anilist.co/anime/21827"
+        }
+       },
+       {
+        "mediaRecommendation": {
+         "id": 153518,
+         "title": {
+          "romaji": "Dungeon Meshi",
+          "english": "Delicious in Dungeon"
+         },
+         "format": "TV",
+         "status": "FINISHED",
+         "episodes": 24,
+         "duration": 25,
+         "season": "WINTER",
+         "seasonYear": 2024,
+         "startDate": {
+          "year": 2024,
+          "month": 1,
+          "day": 4
+         },
+         "endDate": {
+          "year": 2024,
+          "month": 6,
+          "day": 13
+         },
+         "nextAiringEpisode": null,
+         "countryOfOrigin": "JP",
+         "isAdult": false,
+         "description": "When young adventurer Laios and his company are attacked and soundly thrashed by a dragon deep in a dungeon, the party loses all its money and provisions...and a member! They're eager to go back and save her, but there is just one problem: If they set out with no food or coin to speak of, they're sure to starve on the way! But Laios comes up with a brilliant idea: \"Let's eat the monsters!\" Slimes, basilisks, and even dragons...none are safe from the appetites of these dungeon-crawling gourmands! <br>\n<br>\n(Source: Yen Press)\n<br><br>\n<i>Note: A world premiere screening of Episode 1 was shown in the Studio TRIGGER panel at Anime Expo on July 1, 2023.</i>",
+         "genres": [
+          "Adventure",
+          "Comedy",
+          "Fantasy"
+         ],
+         "averageScore": 85,
+         "popularity": 229944,
+         "coverImage": {
+          "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx153518-IVXPDY5ph3kO.jpg",
+          "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx153518-IVXPDY5ph3kO.jpg",
+          "color": "#e48650"
+         },
+         "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/153518-7uRvV7SLqmHV.jpg",
+         "trailer": {
+          "id": "RtpYObV4c1Y",
+          "site": "youtube"
+         },
+         "tags": [
+          {
+           "name": "Dungeon",
+           "rank": 99,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Food",
+           "rank": 98,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Magic",
+           "rank": 85,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Primarily Adult Cast",
+           "rank": 81,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Ensemble Cast",
+           "rank": 81,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Elf",
+           "rank": 80,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Medieval",
+           "rank": 80,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Environmental",
+           "rank": 79,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Monster Girl",
+           "rank": 75,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Dragons",
+           "rank": 70,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Lost Civilization",
+           "rank": 69,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Necromancy",
+           "rank": 68,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Body Horror",
+           "rank": 68,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Female Protagonist",
+           "rank": 65,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Chimera",
+           "rank": 65,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Male Protagonist",
+           "rank": 64,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Found Family",
+           "rank": 62,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Nekomimi",
+           "rank": 61,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Tragedy",
+           "rank": 61,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Curses",
+           "rank": 60,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Anthropomorphism",
+           "rank": 58,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Episodic",
+           "rank": 57,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Kemonomimi",
+           "rank": 57,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Shapeshifting",
+           "rank": 50,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Politics",
+           "rank": 50,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Ghost",
+           "rank": 48,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Ninja",
+           "rank": 45,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Nudity",
+           "rank": 44,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Super Power",
+           "rank": 42,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Asexual",
+           "rank": 40,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Cannibalism",
+           "rank": 36,
+           "isMediaSpoiler": true
+          },
+          {
+           "name": "Zombie",
+           "rank": 24,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Gore",
+           "rank": 20,
+           "isMediaSpoiler": false
+          },
+          {
+           "name": "Goblin",
+           "rank": 20,
+           "isMediaSpoiler": false
+          }
+         ],
+         "studios": {
+          "nodes": [
+           {
+            "id": 803,
+            "name": "TRIGGER"
+           }
+          ]
+         },
+         "staff": {
+          "edges": [
+           {
+            "role": "Original Creator",
+            "node": {
+             "id": 117171,
+             "name": {
+              "full": "Ryouko Kui"
+             }
+            }
+           },
+           {
+            "role": "Director",
+            "node": {
+             "id": 136209,
+             "name": {
+              "full": "Yoshihiro Miyajima "
+             }
+            }
+           },
+           {
+            "role": "Assistant Director",
+            "node": {
+             "id": 121964,
+             "name": {
+              "full": "Hideyuki Satake"
+             }
+            }
+           },
+           {
+            "role": "Series Composition",
+            "node": {
+             "id": 118493,
+             "name": {
+              "full": "Kimiko Ueno"
+             }
+            }
+           },
+           {
+            "role": "Character Design",
+            "node": {
+             "id": 136379,
+             "name": {
+              "full": "Naoki Takeda"
+             }
+            }
+           },
+           {
+            "role": "Title Logo Design",
+            "node": {
+             "id": 323759,
+             "name": {
+              "full": "Anna Suda"
+             }
+            }
+           }
+          ]
+         },
+         "characters": {
+          "edges": [
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Laios Thorden"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 124759,
+              "name": {
+               "full": "Kentarou Kumagai"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124759-Qd1CVnWr4D8L.png"
+              }
+             },
+             {
+              "id": 142982,
+              "name": {
+               "full": "Natsu Yorita"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n142982-Sji7xpRDmCZp.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Marcille Donato"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 119616,
+              "name": {
+               "full": "Sayaka Senbongi"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119616-Dakq7gsUo2ja.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Chilchuck Tims"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 129351,
+              "name": {
+               "full": "Asuna Tomari"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n129351-XYMaAkroHj8S.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "MAIN",
+            "node": {
+             "name": {
+              "full": "Senshi"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 96174,
+              "name": {
+               "full": "Hiroshi Naka"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n96174-xESRSYS5NSwN.jpg"
+              }
+             },
+             {
+              "id": 117425,
+              "name": {
+               "full": "Kenta Ookuma"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/22425.jpg"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Falin Thorden"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 95869,
+              "name": {
+               "full": "Saori Hayami"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95869-qCQ0EaWpq1QT.png"
+              }
+             }
+            ]
+           },
+           {
+            "role": "SUPPORTING",
+            "node": {
+             "name": {
+              "full": "Izutsumi"
+             }
+            },
+            "voiceActors": [
+             {
+              "id": 147549,
+              "name": {
+               "full": "Mitsuho Kambe"
+              },
+              "image": {
+               "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n147549-7P6irh4EWR5N.png"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         "relations": {
+          "edges": [
+           {
+            "relationType": "SOURCE",
+            "node": {
+             "id": 86082,
+             "type": "MANGA"
+            }
+           },
+           {
+            "relationType": "OTHER",
+            "node": {
+             "id": 111516,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "OTHER",
+            "node": {
+             "id": 158627,
+             "type": "ANIME"
+            }
+           },
+           {
+            "relationType": "SEQUEL",
+            "node": {
+             "id": 178031,
+             "type": "ANIME"
+            }
+           }
+          ]
+         },
+         "siteUrl": "https://anilist.co/anime/153518"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "sequels": {
+   "media": [
+    {
+     "id": 182255,
+     "title": {
+      "romaji": "Sousou no Frieren 2nd Season",
+      "english": "Frieren: Beyond Journey’s End Season 2"
+     },
+     "format": "TV",
+     "status": "FINISHED",
+     "episodes": 10,
+     "duration": 24,
+     "season": "WINTER",
+     "seasonYear": 2026,
+     "startDate": {
+      "year": 2026,
+      "month": 1,
+      "day": 16
+     },
+     "endDate": {
+      "year": 2026,
+      "month": 3,
+      "day": 27
+     },
+     "nextAiringEpisode": null,
+     "countryOfOrigin": "JP",
+     "isAdult": false,
+     "description": "Following the First-Class Mage Exam, the trio—elven mage Frieren, warrior Stark, and first-class mage Fern—gains access to the dangerous Northern Plateau. As the party presses onward toward Aureole, formidable adversaries force Stark to confront his insecurities, solidifying his resolve and his role as the party's frontliner. Meanwhile, Fern continues to cherish the gifts she has been blessed with throughout her life, each a reminder of those she holds dear.<br><br>\n\nFrieren—still honoring her vow to understand humanity—revisits memories of her journey with the Hero's party and her fleeting encounter with a legendary figure. As she reflects on the passage of time, the elven mage quietly questions whether she has truly changed, yet in the small, almost subtle choices that she makes, there are signs that she might have become more human than she realizes.<br><br>\n\n(Source: MAL Rewrite)",
+     "genres": [
+      "Adventure",
+      "Drama",
+      "Fantasy"
+     ],
+     "averageScore": 87,
+     "popularity": 231658,
+     "coverImage": {
+      "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx182255-butzrqd4I0aC.jpg",
+      "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx182255-butzrqd4I0aC.jpg",
+      "color": "#5dc9f1"
+     },
+     "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/182255-wyHvp6zJbWsO.jpg",
+     "trailer": {
+      "id": "RH-FcW94z00",
+      "site": "youtube"
+     },
+     "tags": [
+      {
+       "name": "Travel",
+       "rank": 97,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Elf",
+       "rank": 95,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Magic",
+       "rank": 93,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Wilderness",
+       "rank": 91,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Female Protagonist",
+       "rank": 86,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Found Family",
+       "rank": 85,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Iyashikei",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Medieval",
+       "rank": 84,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Philosophy",
+       "rank": 80,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Episodic",
+       "rank": 79,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Demons",
+       "rank": 78,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Time Skip",
+       "rank": 77,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Primarily Adult Cast",
+       "rank": 73,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Rural",
+       "rank": 63,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Swordplay",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Snowscape",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Shounen",
+       "rank": 60,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Heterosexual",
+       "rank": 57,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Tragedy",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Dragons",
+       "rank": 50,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Urban",
+       "rank": 45,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Fishing",
+       "rank": 41,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Coastal",
+       "rank": 33,
+       "isMediaSpoiler": false
+      },
+      {
+       "name": "Economics",
+       "rank": 30,
+       "isMediaSpoiler": false
+      }
+     ],
+     "studios": {
+      "nodes": [
+       {
+        "id": 11,
+        "name": "MADHOUSE"
+       }
+      ]
+     },
+     "staff": {
+      "edges": [
+       {
+        "role": "Original Story",
+        "node": {
+         "id": 122202,
+         "name": {
+          "full": "Kanehito Yamada"
+         }
+        }
+       },
+       {
+        "role": "Original Character Design",
+        "node": {
+         "id": 170189,
+         "name": {
+          "full": "Tsukasa Abe"
+         }
+        }
+       },
+       {
+        "role": "Director",
+        "node": {
+         "id": 165996,
+         "name": {
+          "full": "Tomoya Kitagawa"
+         }
+        }
+       },
+       {
+        "role": "Assistant Director",
+        "node": {
+         "id": 153321,
+         "name": {
+          "full": "Daiki Harashina"
+         }
+        }
+       },
+       {
+        "role": "Series Composition",
+        "node": {
+         "id": 119119,
+         "name": {
+          "full": "Tomohiro Suzuki"
+         }
+        }
+       },
+       {
+        "role": "Character Design",
+        "node": {
+         "id": 122660,
+         "name": {
+          "full": "Akiko Takase"
+         }
+        }
+       }
+      ]
+     },
+     "characters": {
+      "edges": [
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Frieren"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 112215,
+          "name": {
+           "full": "Atsumi Tanezaki"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Fern"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 124390,
+          "name": {
+           "full": "Kana Ichinose"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n124390-03LHel2XSFel.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "MAIN",
+        "node": {
+         "name": {
+          "full": "Stark"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 133507,
+          "name": {
+           "full": "Chiaki Kobayashi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n133507-oT1bd4Gax1Qg.jpg"
+          }
+         },
+         {
+          "id": 115100,
+          "name": {
+           "full": "Arisa Kiyoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/20100.jpg"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Himmel"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95270,
+          "name": {
+           "full": "Nobuhiko Okamoto"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95270-LqNIF238L59u.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Heiter"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95236,
+          "name": {
+           "full": "Hiroki Touchi"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95236-nlMo4dnjdT8p.png"
+          }
+         }
+        ]
+       },
+       {
+        "role": "SUPPORTING",
+        "node": {
+         "name": {
+          "full": "Eisen"
+         }
+        },
+        "voiceActors": [
+         {
+          "id": 95926,
+          "name": {
+           "full": "Youji Ueda"
+          },
+          "image": {
+           "medium": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95926-00Pd2b8WZwQS.png"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "relations": {
+      "edges": [
+       {
+        "relationType": "SOURCE",
+        "node": {
+         "id": 118586,
+         "type": "MANGA"
+        }
+       },
+       {
+        "relationType": "PREQUEL",
+        "node": {
+         "id": 154587,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SIDE_STORY",
+        "node": {
+         "id": 206425,
+         "type": "ANIME"
+        }
+       },
+       {
+        "relationType": "SEQUEL",
+        "node": {
+         "id": 209939,
+         "type": "ANIME"
+        }
+       }
+      ]
+     },
+     "siteUrl": "https://anilist.co/anime/182255"
+    }
+   ]
+  }
+ }
+}
