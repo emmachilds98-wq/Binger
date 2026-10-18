@@ -1,19 +1,19 @@
 // Search films, TV and anime at once, to log something you've watched or save
 // something you've heard about.
 
-import { h, icon, clear, KIND_NAME, poster } from './dom.js';
+import { h, append, icon, clear, KIND_NAME, poster } from './dom.js';
 import { openSheet, closeButton } from './sheet.js';
 
 export function openSearch(ctx) {
   const sheet = openSheet({ label: ctx.label || 'Search', variant: 'full', className: 'search' });
   const input = h('input', { id: 'search-q', type: 'search', placeholder: 'Films, shows, anime…', autocomplete: 'off', enterkeyhint: 'search', autofocus: true });
   const results = h('div', { class: 'page-scroll', 'aria-live': 'polite' });
-  sheet.body.append(
+  append(sheet.body, [
     h('div', { class: 'search-head' },
       h('label', { class: 'search-box', for: 'search-q' }, icon('search', 18), h('span', { class: 'sr-only' }, 'Search'), input),
       closeButton(sheet)),
     ctx.hint ? h('p', { class: 'small muted search-hint' }, ctx.hint) : null,
-    results);
+    results]);
 
   let timer = null;
   let seq = 0;

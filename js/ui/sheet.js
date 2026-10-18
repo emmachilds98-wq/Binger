@@ -2,7 +2,7 @@
 // The phone's back button / gesture closes the top sheet: while any sheet is
 // open we hold one extra history entry and treat "back" as "close".
 
-import { h, icon } from './dom.js';
+import { h, append, icon } from './dom.js';
 
 const stack = [];
 let skipPop = 0;
@@ -112,12 +112,12 @@ export function choiceSheet({ title, message, options }) {
   return new Promise((resolve) => {
     let answered = false;
     const s = openSheet({ label: title, variant: 'bottom', className: 'confirm', onClose: () => { if (!answered) resolve(null); } });
-    s.body.append(
+    append(s.body, [
       h('h2', { class: 'sheet-title' }, title),
       message ? h('p', { class: 'muted' }, message) : null,
       h('div', { class: 'row-end' },
         h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => s.close() }, 'Cancel'),
-        options.map((o) => h('button', { type: 'button', class: `btn ${o.danger ? 'btn-danger' : 'btn-primary'}`, onClick: () => { answered = true; resolve(o.value); s.close(); } }, o.label))));
+        options.map((o) => h('button', { type: 'button', class: `btn ${o.danger ? 'btn-danger' : 'btn-primary'}`, onClick: () => { answered = true; resolve(o.value); s.close(); } }, o.label)))]);
     s.focusFirst();
   });
 }

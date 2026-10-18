@@ -84,6 +84,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .icon-btn:hover { background: var(--surface-2); }
 .icon-btn.accent { color: var(--accent); }
+.icon-btn.is-on { background: var(--surface-2); }
+.has-dot { position: relative; }
+.has-dot::after { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 2px var(--surface-2); }
 .btn {
   min-height: 48px; padding: 0 18px; border-radius: 24px; border: 1px solid transparent; font-weight: 700; font-size: 15px;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; white-space: nowrap;
@@ -163,6 +166,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .topbar { padding: 14px 16px 8px; display: flex; flex-direction: column; gap: 10px; }
 .topbar-row { display: flex; align-items: center; justify-content: space-between; }
 .topbar-actions { display: flex; gap: 2px; }
+.filter-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); margin-top: -2px; }
+.filter-line .link-btn { padding: 4px 0; font-size: 13px; }
 .brand { display: flex; align-items: center; gap: 8px; }
 .brand-mark { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; }
 .brand-word { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -0.5px; }
@@ -356,6 +361,10 @@ input[type="range"] { accent-color: var(--accent); }
 .tile[aria-pressed="true"] .tile-check { display: flex; }
 .onboard-foot { display: flex; align-items: center; gap: 14px; padding: 12px 20px calc(16px + var(--safe-bottom)); border-top: 1px solid var(--surface-2); }
 .onboard-foot .btn-primary:not(.is-ready) { background: var(--surface-2); color: var(--muted); }
+
+/* filters */
+.filters .notice { margin: 0; }
+.filters .sheet-footer .btn-quiet { flex: none; }
 
 /* toast */
 .toast-host { position: fixed; left: 0; right: 0; bottom: calc(176px + var(--safe-bottom)); z-index: 60; display: flex; justify-content: center; pointer-events: none; padding: 0 16px; }

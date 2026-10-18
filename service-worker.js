@@ -56,6 +56,7 @@ const SHELL = [
   'js/ui/search.js',
   'js/ui/settings.js',
   'js/ui/onboarding.js',
+  'js/ui/filters.js',
 ];
 
 const IMAGE_HOSTS = ['image.tmdb.org', 's4.anilist.co'];

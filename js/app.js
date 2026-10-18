@@ -19,6 +19,7 @@ import { renderTaste } from './ui/taste.js';
 import { openSearch } from './ui/search.js';
 import { openSettings } from './ui/settings.js';
 import { openOnboarding } from './ui/onboarding.js';
+import { openFilters } from './ui/filters.js';
 import { toast, anySheetOpen } from './ui/sheet.js';
 
 // ---- state -----------------------------------------------------------------
@@ -44,6 +45,7 @@ const deck = {
   queued: false,     // a forced refill asked for while one was running
   errors: [],
   filter: 'all',
+  filters: { short: false, decade: null }, // length and decade, this session only
   undo: [],          // [{ id, prev, title }]
   pendingRender: false,
   warnedKey: false,
@@ -107,8 +109,12 @@ function rerank() {
   const cards = buildDeck([...deck.pool.values()], profile, {
     exclude: new Set(Object.keys(items)),
     hiddenGenres: settings.hiddenGenres,
+    hiddenFranchises: settings.hiddenFranchises,
     kinds: deck.filter === 'all' ? null : new Set([deck.filter]),
     mix: tmdb && tmdb.hasKey ? settings.mix : { ...settings.mix, film: 0, tv: 0 },
+    filters: deck.filters,
+    services: settings.services,
+    streamOnly: settings.streamOnly,
     surprise: settings.surprise,
     preferFresh: settings.preferFresh,
     size: DECK_SIZE,
@@ -132,10 +138,14 @@ async function refill({ force = false } = {}) {
   deck.loading = true;
   renderDiscoverView();
   try {
-    const { pool, errors } = await gatherCandidates({ tmdb, anilist, items: store.get().items, profile, settings: store.get().settings });
+    const { pool, errors } = await gatherCandidates({ tmdb, anilist, items: store.get().items, profile, settings: store.get().settings, filters: deck.filters });
     for (const t of pool) {
       const had = deck.pool.get(t.id);
-      if (!had || (t.detailed && !had.detailed)) deck.pool.set(t.id, had ? { ...t, via: had.via.length ? had.via : t.via } : t);
+      if (!had) deck.pool.set(t.id, t);
+      else if ((t.detailed && !had.detailed) || (t.streamHint && !had.streamHint)) {
+        const better = t.detailed || !had.detailed ? t : had;
+        deck.pool.set(t.id, { ...better, via: had.via.length ? had.via : t.via, streamHint: had.streamHint || t.streamHint });
+      }
     }
     deck.errors = errors;
     const rejected = errors.find((e) => e.source === 'tmdb' && e.status === 401);
@@ -155,18 +165,24 @@ async function refill({ force = false } = {}) {
   }
 }
 
-// List results lack cast, keywords and trailers: fetch them for the next few cards.
+// List results lack cast, keywords, trailers, runtime and streaming info:
+// fetch them for the next few cards. With filters on ("Quick watches", "Only
+// what I can stream") some of those then drop out and others move up, so go
+// round again (a few times at most) until the next few cards are all known.
 async function ensureDetails() {
-  const need = deck.cards.slice(0, DETAIL_AHEAD).map((c) => c.title).filter((t) => t.source === 'tmdb' && !t.detailed);
-  if (!need.length) return;
-  const full = await hydrate(need, { tmdb });
-  let changed = false;
-  for (const t of full) {
-    if (!t.detailed) continue;
-    if (t.animeLike) deck.pool.delete(t.id); else deck.pool.set(t.id, t);
-    changed = true;
+  for (let round = 0; round < 3; round++) {
+    const need = deck.cards.slice(0, DETAIL_AHEAD).map((c) => c.title).filter((t) => t.source === 'tmdb' && !t.detailed);
+    if (!need.length) return;
+    const full = await hydrate(need, { tmdb });
+    let changed = false;
+    for (const t of full) {
+      if (!t.detailed) continue;
+      if (t.animeLike) deck.pool.delete(t.id); else deck.pool.set(t.id, t);
+      changed = true;
+    }
+    if (!changed) return;
+    rerank();
   }
-  if (changed) rerank();
 }
 
 function afterDeckChange() {
@@ -213,6 +229,32 @@ function setFilter(key) {
   rerank();
   renderDiscoverView({ force: true });
   if (deck.cards.length < REFILL_BELOW) refill({ force: true });
+}
+
+// Length and decade apply now and fetch titles that fit (this week's
+// trending list has no 1990s films in it). "Only what I can stream" is a
+// saved setting, so it goes through the store.
+function applyDeckFilters(filters, streamOnly) {
+  deck.filters = { short: !!filters.short, decade: filters.decade ?? null };
+  deck.topId = null;
+  if (!!store.get().settings.streamOnly !== !!streamOnly) {
+    store.update(L.updateSettings, { streamOnly: !!streamOnly }); // the subscriber refills
+    return;
+  }
+  rerank();
+  renderDiscoverView({ force: true });
+  refill({ force: true });
+}
+
+function showFilters() {
+  const s = store.get().settings;
+  openFilters({
+    filters: deck.filters,
+    streamOnly: s.streamOnly,
+    services: s.services,
+    onPickServices: null, // the services picker is the next screen to build (docs/PLAN.md)
+    onApply: applyDeckFilters,
+  });
 }
 
 // ---- actions shared by every screen ----------------------------------------
@@ -357,6 +399,11 @@ function renderDiscoverView({ force = false } = {}) {
     showMatch: warmth(profile) >= 0.25,
     clipSeconds: s.clipSeconds,
     canUndo: deck.undo.length > 0,
+    deckFilters: deck.filters,
+    streamOnly: s.streamOnly,
+    services: s.services,
+    onFilters: showFilters,
+    onClearFilters: () => applyDeckFilters({ short: false, decade: null }, false),
     setFilter,
     onAction: deckAction,
     onOpen: (card) => showDetail(card.title, { card }),
@@ -414,6 +461,11 @@ store.subscribe((next, prev) => {
   const changed = (k) => JSON.stringify(next.settings[k]) !== JSON.stringify(prev.settings[k]);
   if (changed('tmdbKey') || changed('region') || changed('voiceLanguage')) {
     makeSources();
+    deck.pool.clear();
+    deck.topId = null;
+    refill({ force: true });
+  } else if (changed('services') || changed('streamOnly')) {
+    // "Found on your services" hints belong to the old set of services.
     deck.pool.clear();
     deck.topId = null;
     refill({ force: true });

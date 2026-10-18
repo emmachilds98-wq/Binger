@@ -22,6 +22,7 @@ const { chromium } = loadPlaywright();
 const fx = (name) => JSON.parse(readFileSync(new URL(`../tests/fixtures/${name}`, import.meta.url), 'utf8'));
 const deckFx = fx('anilist-deck.json');
 const frieren = fx('anilist-frieren.json');
+const filtered90s = fx('anilist-filtered-90s.json');
 const movieDetail = fx('tmdb-movie-detail.json');
 const tvDetail = fx('tmdb-tv-detail.json');
 const trending = fx('tmdb-trending-movie.json');
@@ -54,7 +55,11 @@ page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resourc
 await context.route('https://graphql.anilist.co/**', async (route) => {
   const body = route.request().postData() || '';
   let data;
-  if (body.includes('trending: Page')) data = deckFx.data;
+  if (body.includes('trending: Page')) {
+    // The deck batch: its "filtered" page answers only when a deck filter is on.
+    const vars = JSON.parse(body).variables || {};
+    data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
+  }
   else if (body.includes('search:')) data = { Page: { media: allAnime.filter((m) => /frieren|attack|vinland/i.test(JSON.stringify(m.title))) } };
   else if (body.includes('Media(id')) data = frieren.data;
   else data = { Page: { media: allAnime.slice(0, 12) } };
@@ -197,6 +202,27 @@ await page.waitForSelector('.view');
 const persisted = await libraryCount();
 check(persisted.want === 1 && persisted.watched === 4, 'everything is still there after a reload');
 check(await page.locator('.onboarding').count() === 0, 'onboarding does not reappear');
+
+console.log('Deck filters');
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+await page.getByRole('button', { name: 'Filters', exact: true }).click();
+await page.waitForSelector('.filters .pill');
+await page.getByRole('button', { name: 'Quick watches' }).click();
+await page.getByRole('button', { name: '1990s' }).click();
+await page.waitForTimeout(250);
+await shot('07-filters');
+check(!/\bnull\b|undefined/.test(await page.locator('.filters').innerText()), 'the filter sheet shows no stray "null" or "undefined" text');
+await page.getByRole('button', { name: 'Show cards' }).click();
+await page.waitForFunction(() => /Quick watches · 1990s/.test(document.querySelector('.filter-line')?.textContent || ''));
+check(true, 'the active filters are summarised under the pills');
+await page.waitForFunction(() => /199\d/.test(document.querySelector('.deck .card:last-of-type .card-meta')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
+const metas = await page.locator('.deck .card .card-meta').allInnerTexts();
+check(metas.length > 0 && metas.every((m) => /\b199\d\b/.test(m)), `every card is from the 1990s (${metas.map((m) => m.split(' · ')[0]).join(', ')})`);
+check(await page.getByRole('button', { name: 'Filters (on)' }).count() === 1, 'the filter button shows the filters are on');
+await page.getByRole('button', { name: 'Clear', exact: true }).click();
+await page.waitForTimeout(300);
+check(await page.locator('.filter-line').count() === 0, 'Clear turns the filters off');
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

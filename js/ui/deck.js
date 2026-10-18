@@ -5,6 +5,7 @@
 
 import { h, icon, clear, prefersReducedMotion } from './dom.js';
 import { cardEl } from './card.js';
+import { filterSummary } from './filters.js';
 
 const FILTERS = [['all', 'All'], ['film', 'Films'], ['tv', 'TV'], ['anime', 'Anime']];
 const THRESHOLD_X = 110;
@@ -12,16 +13,24 @@ const THRESHOLD_UP = 120;
 
 export function renderDiscover(root, ctx) {
   clear(root);
+  const active = filterSummary(ctx.deckFilters, ctx.streamOnly, ctx.services);
   const header = h('header', { class: 'topbar' },
     h('div', { class: 'topbar-row' },
       h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
       h('div', { class: 'topbar-actions' },
         h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Search', onClick: ctx.onSearch }, icon('search')),
+        h('button', {
+          type: 'button', class: `icon-btn${active.length ? ' is-on has-dot' : ''}`,
+          'aria-label': active.length ? 'Filters (on)' : 'Filters', onClick: ctx.onFilters,
+        }, icon('sliders')),
         h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Fresh cards', onClick: ctx.onRefresh }, icon('refresh')))),
     h('div', { class: 'pills', role: 'group', 'aria-label': 'What to show' },
       FILTERS.map(([key, label]) => h('button', {
         type: 'button', class: 'pill', 'aria-pressed': String(ctx.filter === key), onClick: () => ctx.setFilter(key),
-      }, label))));
+      }, label))),
+    active.length ? h('div', { class: 'filter-line' },
+      h('span', null, active.join(' · ')),
+      h('button', { type: 'button', class: 'link-btn', onClick: ctx.onClearFilters }, 'Clear')) : null);
 
   const deckEl = h('div', { class: 'deck' });
   const cards = ctx.cards.slice(0, 3);
@@ -78,6 +87,9 @@ function emptyState(ctx) {
     blocks.push(h('h2', null, 'Films and TV need a TMDB key'), h('p', { class: 'muted' }, "It's free and takes two minutes. Anime works without one."));
     blocks.push(h('button', { type: 'button', class: 'btn btn-primary', onClick: ctx.onSettings }, 'Add a TMDB key'));
     return h('div', { class: 'deck-empty' }, blocks);
+  } else if (filterSummary(ctx.deckFilters, ctx.streamOnly, ctx.services).length) {
+    blocks.push(h('h2', null, 'Nothing matches those filters yet'), h('p', { class: 'muted' }, 'Fetch fresh cards to look further, or loosen the filters.'));
+    blocks.push(h('button', { type: 'button', class: 'btn btn-quiet', onClick: ctx.onClearFilters }, 'Clear filters'));
   } else {
     blocks.push(h('h2', null, "That's everything for now"), h('p', { class: 'muted' }, 'Try another filter, change your mix on the Taste tab, or fetch fresh cards.'));
   }
