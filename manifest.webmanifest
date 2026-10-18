@@ -1,0 +1,17 @@
+{
+  "name": "Binger",
+  "short_name": "Binger",
+  "description": "Swipe through films, TV and anime. Rate what you watch and Binger gets better at picking what's next.",
+  "start_url": "./#discover",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F0E13",
+  "theme_color": "#0F0E13",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
