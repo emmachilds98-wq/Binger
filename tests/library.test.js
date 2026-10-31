@@ -6,6 +6,7 @@ import {
   hideFranchise, unhideFranchise, dismissAlert,
 } from '../js/state/library.js';
 import { createStore } from '../js/state/store.js';
+import * as L from '../js/state/library.js';
 
 const NOW = Date.parse('2026-10-18T12:00:00Z');
 const t = (id, extra = {}) => ({ id, source: 'tmdb', kind: 'film', title: `T ${id}`, genres: ['Drama'], cast: [], crew: [], providers: { stream: [] }, ...extra });
@@ -163,4 +164,51 @@ test('migrate fills and repairs the Phase 2 settings', () => {
   assert.deepEqual(junk.services, ['Netflix']);
   assert.equal(junk.streamOnly, true);
   assert.deepEqual(junk.hiddenFranchises.map((f) => f.key), ['k']);
+});
+
+// --- sync: merging this device's library with the cloud's -------------------
+
+test('mergeStates: the most recent change to an item wins, on both sides', () => {
+  const t1 = { id: 'tmdb:movie:1', source: 'tmdb', kind: 'film', title: 'One' };
+  const t2 = { id: 'tmdb:movie:2', source: 'tmdb', kind: 'film', title: 'Two' };
+  const base = L.setStatus(L.emptyState(0), t1, 'want', 1000);
+  const phone = L.logWatch(base, t1, { rating: 4 }, 3000);              // watched it later on the phone
+  const pc = L.setStatus(L.setStatus(base, t1, 'want', 2000), t2, 'passed', 2000); // and passed something on the PC
+  const a = L.mergeStates(phone, pc, 5000);
+  const b = L.mergeStates(pc, phone, 5000);
+  assert.equal(a.items[t1.id].status, 'watched');
+  assert.equal(a.items[t2.id].status, 'passed');
+  assert.equal(L.syncText(a), L.syncText(b), 'same result whichever side merges');
+});
+
+test('mergeStates: a delete wins over an older copy, a newer re-add wins over the delete', () => {
+  const t = { id: 'anilist:1', source: 'anilist', kind: 'anime', title: 'A' };
+  const both = L.setStatus(L.emptyState(0), t, 'want', 1000);
+  const removedHere = L.removeItem(both, t.id, 2000);
+  assert.ok(removedHere.removed[t.id]);
+  assert.equal(L.mergeStates(removedHere, both, 3000).items[t.id], undefined, 'the other copy does not bring it back');
+  const readded = L.setStatus(both, t, 'want', 2500);
+  assert.equal(L.mergeStates(removedHere, readded, 3000).items[t.id].status, 'want');
+  assert.equal(L.mergeStates(removedHere, readded, 3000).removed[t.id], undefined);
+});
+
+test('mergeStates: undo beats the change it undid; forgetting passes sticks', () => {
+  const t = { id: 'anilist:2', source: 'anilist', kind: 'anime', title: 'B' };
+  const wanted = L.setStatus(L.emptyState(0), t, 'want', 1000);
+  const passed = L.setStatus(wanted, t, 'passed', 2000);
+  const undone = L.restoreItem(passed, t.id, wanted.items[t.id], 3000);
+  assert.equal(L.mergeStates(passed, undone, 4000).items[t.id].status, 'want');
+  const forgot = L.forgetPasses(passed, 3000);
+  assert.equal(L.mergeStates(passed, forgot, 4000).items[t.id], undefined);
+});
+
+test('mergeStates: newer settings win but the TMDB key stays on the device; syncText leaves the key out', () => {
+  const mine = L.updateSettings(L.emptyState(0), { tmdbKey: 'secret', region: 'GB' }, 1000);
+  const theirs = L.updateSettings(L.emptyState(0), { region: 'US', surprise: false }, 2000);
+  const m = L.mergeStates(mine, theirs, 3000);
+  assert.equal(m.settings.region, 'US');
+  assert.equal(m.settings.surprise, false);
+  assert.equal(m.settings.tmdbKey, 'secret');
+  assert.ok(!L.syncText(m).includes('secret'));
+  assert.equal(L.mergeStates(L.emptyState(0), theirs, 3000).settings.region, 'US', 'untouched defaults never beat real settings');
 });

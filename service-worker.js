@@ -53,10 +53,18 @@ const SHELL = [
   'js/ui/rate.js',
   'js/ui/library.js',
   'js/ui/taste.js',
+  'js/ui/timeline.js',
+  'js/ui/people.js',
+  'js/state/profiles.js',
+  'js/state/device.js',
+  'js/sync/firebase.js',
+  'js/sync/sync.js',
   'js/ui/search.js',
   'js/ui/settings.js',
   'js/ui/onboarding.js',
   'js/ui/filters.js',
+  'js/ui/services.js',
+  'js/ui/person.js',
 ];
 
 const IMAGE_HOSTS = ['image.tmdb.org', 's4.anilist.co'];

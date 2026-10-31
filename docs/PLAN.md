@@ -13,32 +13,76 @@ and the decisions that shouldn't be quietly undone. Update the
 - Look and feel: [DESIGN.md](DESIGN.md)
 - Rules for anyone (human or agent) changing the code: [../CLAUDE.md](../CLAUDE.md)
 - Screenshots from the last end-to-end run: [screenshots/](screenshots/)
+- Upgrade plan for PC and mobile (milestones M0 to M7, after Phase 2): [UPGRADE-PLAN.md](UPGRADE-PLAN.md)
 
 ---
 
 ## Start here (next session)
 
-Where things stand on 2026-10-18:
+Where things stand on 2026-10-31:
 
-- **Phase 1 (MVP) is live on `main`.** The first build's PR was merged by
-  fast-forward; `main` holds the whole app.
-- **Phase 2 is half built.** All of its logic is done and unit-tested: the
-  engine, both API adapters, and the library rules. Two items are finished
-  end to end: **deck filters** and **feeling tags in scoring**. The other five
-  are **designed** (canvas row 3) and need only their screens built and wired.
-  Each one is a self-contained step in [Phase 2: build order](#phase-2-build-order).
-- **Checks:** `npm test` 90 passing, `npm run e2e` 32/32.
+- **The site is live** at https://emmachilds98-wq.github.io/Binger/
+  (GitHub Pages, deployed from `main`).
+- **Phase 2 is finished** (all five steps), and **people + Firebase sync**
+  are built: separate libraries for each person (Emma, Dave…), a chip
+  showing whose library it is, "Who's watching?", and sync code for a
+  household. All on PR #3 (`claude/inspiring-ride-ieuekd`), which also
+  carries PR #2.
+- **Next, in order: [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order).**
+  1. Connect the real Firebase project (the owner has one, "binger"; steps in
+     [FIREBASE.md](FIREBASE.md)). 2. A proper PC layout. 3. Films and TV for
+     everyone (the TMDB key). 4. Mobile polish.
+- **Checks:** `npm test` 102 passing, `npm run e2e` all passing.
+- **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
+  from **`main`**.
 
 Do these in order:
 
 1. Run `npm run check && npm test && npm run e2e` to confirm a green start.
 2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
-   It has been blocked twice for want of a key, and Phase 2 adds four TMDB
+   It has been blocked three times for want of a key, and Phase 2 adds four TMDB
    endpoints that are still tested only against hand-written responses.
-3. Build Phase 2 steps 1 to 5 below, one PR each (or one PR with one commit
+3. Build the remaining Phase 2 steps (3 to 5) below, one PR each (or one PR with one commit
    each). Every step lists the design artboard, the functions that already
    exist, the files to touch and the checks to add.
 4. Tick the boxes here and add a [status log](#status-log) entry.
+
+### New to the project? (human engineers)
+
+Everything above applies to you too. This is the extra you need on day one.
+
+**The owner does these once** (repo owner: @emmachilds98-wq):
+1. **Settings → Collaborators** → add the engineer with write access.
+2. **Settings → General → Default branch** → switch to `main`, so the repo
+   page, clones and new PRs all start from current code.
+3. **Settings → Pages** → Deploy from a branch → `main` / `(root)` → Save.
+4. Optional: share the design canvas from its Share menu. Without it, the
+   copy in [design/canvas/](design/canvas/) has every screen's markup and copy.
+
+**Your setup** (about 15 minutes):
+- Node 20 or newer. There's no `npm install`: the app has no dependencies
+  and no build step.
+- `npm run check && npm test`: no network or key needed.
+- Browser run, the same way CI does it:
+  `npm i -g playwright@1.56.1 && npx playwright install chromium`, then
+  `PLAYWRIGHT_MODULE="$(npm root -g)/playwright" npm run e2e`.
+- `npm run serve`, then open http://localhost:8080. Anime works with no key.
+- Films and TV: get your own free TMDB key (themoviedb.org → Settings → API).
+  Paste it into the app (Taste → ⚙ → TMDB key → Test & save), and
+  `export TMDB_API_KEY=…` in your shell for [Verifying TMDB live](#verifying-tmdb-live).
+  **Never commit it.** The repo is public, and a test fails if
+  `js/config.js` holds a key.
+
+**How work flows:** branch from `main` → PR into `main` → CI (syntax, unit
+tests, browser run) must be green → merge. [CLAUDE.md](../CLAUDE.md) is
+written for AI agents but its rules apply to everyone, especially "one
+source of truth" and keeping `SHELL` in `service-worker.js` complete.
+Product decisions (what to build, how it should feel) go to the owner.
+Everything technical you need is in this file,
+[ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md).
+
+**Your first tasks:** the live TMDB check (once you have a key), then
+[Phase 2 step 1](#phase-2-build-order) (the streaming services picker).
 
 ---
 
@@ -153,17 +197,19 @@ Do these in order:
 
 ### Phase 1.1: Go live (needs the owner) ⏳
 - [x] Merge the first PR into `main`
-- [ ] Switch on GitHub Pages: repo **Settings → Pages → Build and deployment →
+- [ ] Set the default branch to `main`: repo **Settings → General → Default branch**
+      (it's still `claude/happy-cerf-qei1lg`, the first build's working branch)
+- [x] Switch on GitHub Pages (on by 2026-10-31, from `main`): repo **Settings → Pages → Build and deployment →
       Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
       The app appears at `https://emmachilds98-wq.github.io/Binger/`
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
 - [ ] Add to Home Screen (Safari: Share → Add to Home Screen). On iPhone this
       also stops Safari clearing the library after 7 days unused.
 - [ ] **Verify films and TV against the live TMDB API.** Still not done: the
-      `TMDB_API_KEY` secret wasn't present in either session so far. Steps in
+      `TMDB_API_KEY` secret wasn't present in any of the three sessions so far. Steps in
       [Verifying TMDB live](#verifying-tmdb-live).
 
-### Phase 2: Smarter suggestions ◐
+### Phase 2: Smarter suggestions ✅
 
 Logic (engine, sources, library) is done and tested for every item. Status of
 each item end to end:
@@ -172,11 +218,14 @@ each item end to end:
       and decade, from the Filters button on Discover (canvas 7).
 - [x] **Feeling tags in scoring**: tags nudge ratings; "Slow" lowers that
       length, "Overhyped" trusts trending less. (Showing this on Taste is step 5.)
-- [ ] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8)
-- [ ] **Step 2. Tap a person → their other work, ranked for you** (canvas 9)
-- [ ] **Step 3. "Not this franchise"** (canvas 10)
-- [ ] **Step 4. New-season alerts for TV you've watched** (canvas 11)
-- [ ] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
+- [x] **Step 1. Streaming services** ("Only show what I can stream"): picker (canvas 8),
+      from Settings, Taste and the Filters sheet; your services ringed in "Where to watch";
+      anime shows AniList's official streaming links
+- [x] **Step 2. Tap a person → their other work, ranked for you** (canvas 9), from the
+      detail sheet's cast row and crew line, and Taste's "People you rate highly"
+- [x] **Step 3. "Not this franchise"** (canvas 10)
+- [x] **Step 4. New-season alerts for TV you've watched** (canvas 11)
+- [x] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
 
 #### Phase 2: build order
 
@@ -186,7 +235,7 @@ to `SHELL` in `service-worker.js` (the shell test fails otherwise), add e2e
 checks + a screenshot to `scripts/e2e.mjs`, then `npm run check && npm test && npm run e2e`.
 Fixtures for every API call below already exist in `tests/fixtures/`.
 
-**Step 1. Streaming services picker** · artboard `Services.dc.html` (8)
+**Step 1. Streaming services picker** · artboard `Services.dc.html` (8) · ✅ built (`js/ui/services.js`)
 - New `js/ui/services.js`: `openServices(ctx)`, a full sheet with a 3-column
   grid of toggle tiles, the "Only show what I can stream" switch, and a Done button.
 - Choices: `serviceChoices({ tmdb, picked })` (`js/sources/lookups.js`). Show
@@ -206,7 +255,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
   Ads") with the reason "On Netflix"; anime from `anilist-deck.json` has no
   streaming links, so it's hidden. Screenshot `08-services`.
 
-**Step 2. A person's work** · artboard `Person.dc.html` (9)
+**Step 2. A person's work** · artboard `Person.dc.html` (9) · ✅ built (`js/ui/person.js`)
 - New `js/ui/person.js`: `openPerson(stub, ctx)`, a full sheet: photo, name,
   `known`, a "You know them from…" line (from `profile.people`), kind pills
   when there's more than one kind, rows "best for you first".
@@ -265,8 +314,17 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - e2e: write a library with past-dated ratings into localStorage, reload,
   check rows and trend words. Screenshot `12-taste-time`.
 
+### After Phase 2: PC and mobile upgrade ◐
+- [x] People: separate libraries for each person, "Who's watching?", the who chip
+- [x] Firebase sync code (household, invite, merge, shared TMDB key), unit-tested
+- [ ] Connect the real Firebase project and do the live check ([FIREBASE.md](FIREBASE.md))
+- [ ] PC layout (design first)
+- [ ] Films and TV for everyone (the TMDB key)
+- [ ] Mobile polish
+Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
+
 ### Phase 3: Grows with you everywhere
-- [ ] Optional sync across devices (Firebase Auth + Firestore, as in the owner's other apps)
+- [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
 - [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
 - [ ] Shared watchlist / "match with a friend" deck (two profiles, one deck)
 
@@ -280,6 +338,87 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (second session): Phase 2 finished, people and sync
+- The owner turned on Pages (live from `main`) and asked for: the upgrades,
+  a PC layout, Firebase, and a way for "Dave and I" to tell who is who, then
+  to merge soon and leave next steps so someone else can finish.
+- Built Phase 2 steps 3 to 5 to artboards 10 to 12. Taste over time now takes
+  one snapshot per calendar month (30-day steps gave two "Oct"s).
+- Built people and Firebase sync (see UPGRADE-PLAN.md → Done). Library state
+  gained `removed` tombstones, `settingsAt` and `changedAt` (on undo) so two
+  copies merge correctly; `mergeStates` / `syncText` are pure and tested.
+- Not done: the PC layout (next), mobile polish. Firebase not yet connected:
+  no access to the owner's project from the session; steps in FIREBASE.md.
+  `TMDB_API_KEY` was not set in this session either.
+- Tests: 102 unit (was 94), e2e all passing; screenshots 10 to 14 new.
+- **Next:** UPGRADE-PLAN.md → Next steps.
+
+### 2026-10-31: review + upgrade plan for PC and mobile
+- The owner asked for a review, the link to view the app, and a plan to make it
+  better on PC and mobile. No app code changed.
+- Checked: `npm run check` passes, `npm test` 94/94, `npm run e2e` 49/49 on
+  this branch (same code as PR #2's head, `e653bbb`).
+- Still not live: `https://emmachilds98-wq.github.io/Binger/` returns 404, the
+  default branch is still `claude/happy-cerf-qei1lg`, and PR #2 is unmerged.
+- Looked at the app at 1440×900, 1024×768 and 360×640: on a PC or tablet it
+  stays a 480 px phone column; on a small phone onboarding fits, and card cast
+  names cut off early.
+- Wrote [UPGRADE-PLAN.md](UPGRADE-PLAN.md): M0 go live, M1 finish Phase 2,
+  M2 mobile polish, M3 desktop layout (canvas first), M4 sync across devices,
+  M5 films/TV without a key, M6 import + "Tonight", M7 e2e at three sizes.
+- **Blocking (unchanged):** going live needs the owner (M0); live TMDB
+  verification needs `TMDB_API_KEY`.
+- **Next:** M0, then Phase 2 step 3, "Not this franchise".
+
+### 2026-10-18 (fourth session): Phase 2 steps 1 and 2, services and people
+- Picked up from PR #2 (this session's own handover PR, still open).
+  `main` unchanged since `e86c79f`.
+- Built the services picker to artboard 8 (`js/ui/services.js`): tiles for
+  your region's services from TMDB (common ones first, before or without a
+  key), the "Only show what I can stream" switch, saved on Done. Opened from
+  Settings → Where you watch, Taste → Steer the deck, and the Filters sheet
+  ("Pick your services"). Picking none turns "only" off, so the deck can't empty.
+- Detail sheet: your services are ringed in "Where to watch" (subscription
+  and free only); anime lists AniList's official streaming links instead of
+  a sentence.
+- Fixed, found while building: TMDB's region provider list offered services
+  only available in other countries (now left out); a TMDB response with no
+  `id` became a `tmdb:movie:undefined` title (now refused, and the card keeps
+  its list data).
+- The e2e TMDB mock now answers "what's on these services" and details
+  requests the way TMDB does; before, it claimed every title was on every
+  service.
+- Built a person's work to artboard 9 (`js/ui/person.js`): photo (ringed
+  if you know them), what they're known for, "In Little Women, which you
+  loved", kind pills, rows best for you first with match % and why (or your
+  diary / watchlist status), Seen it and Watchlist buttons. Opened from cast
+  and crew in the detail sheet and from Taste's "People you rate highly"
+  (directors and cast; studios aren't people). TMDB people need a key;
+  AniList voice actors and staff don't.
+- Fixed before it shipped: the sheet's class name `person` clashed with the
+  cards' `.person` (each face in "Starring"), which laid the whole sheet
+  out as one row. Renamed to `person-sheet`; an e2e check now fails if
+  anything on the page is wider than the screen.
+- Tests: 94 unit (was 90), e2e 49/49 (was 32). New screenshots `08-services`, `09-person`.
+- **Blocking (unchanged):** live TMDB verification needs `TMDB_API_KEY`.
+- **Next:** step 3, "Not this franchise" (artboard 10).
+
+### 2026-10-18 (third session): handover check for a new engineer
+- The owner asked for the handover to be ready in GitHub for a new engineer.
+  No code changed.
+- Verified the second session's state instead of trusting it: on `main` at
+  `e86c79f`, `npm run check` passes, `npm test` 90/90, `npm run e2e` 32/32,
+  and CI is green on that commit.
+- Found and wrote up three things a newcomer would trip on: GitHub's default
+  branch is still the first build's working branch (`claude/happy-cerf-qei1lg`,
+  which this PR brings level with `main`, but it'll fall behind again until
+  the owner switches the default to `main`); Pages is still off (404); and
+  there was no human-engineer setup. Added
+  [New to the project?](#new-to-the-project-human-engineers) and Phase 1.1 items.
+- **Blocking (unchanged):** live TMDB verification; `TMDB_API_KEY` wasn't
+  in this session either.
+- **Next:** the owner's one-time steps, then the live TMDB check, then Phase 2 step 1.
 
 ### 2026-10-18 (second session): Phase 2 logic, design, deck filters
 - `main` held only a README; the first build was waiting in an unmerged draft

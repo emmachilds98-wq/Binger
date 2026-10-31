@@ -2,6 +2,8 @@
 // should I watch tonight?") and your Diary of everything you've watched.
 
 import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel } from './dom.js';
+import { latestWatch } from '../engine/index.js';
+import { whoChip } from './people.js';
 import { watchlist, diary } from '../state/library.js';
 import { rankWatchlist } from '../engine/index.js';
 
@@ -19,13 +21,14 @@ export function renderLibrary(root, ctx) {
   root.append(h('header', { class: 'page-head' },
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Library'),
-      h('button', { type: 'button', class: 'btn btn-chip', onClick: ctx.onLog }, icon('plus', 16), 'Log a watch')),
+      h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'btn btn-chip', onClick: ctx.onLog }, icon('plus', 16), 'Log a watch'))),
     tabs));
 
   const list = h('div', { class: 'page-scroll', role: 'tabpanel' });
   root.append(list);
 
   if (tab === 'watchlist') {
+    if (ctx.alerts && ctx.alerts.length) list.append(newSeasons(ctx));
     if (!wl.length) {
       list.append(empty('Nothing saved yet', 'Swipe right on anything you fancy and it lands here, best match first.'));
       return;
@@ -78,6 +81,40 @@ export function renderLibrary(root, ctx) {
           watch.tags && watch.tags.length ? h('span', { class: 'small muted' }, watch.tags.join(' · ')) : null)),
       h('button', { type: 'button', class: 'icon-btn', 'aria-label': `More about ${t.title}`, onClick: () => ctx.onOpen(item) }, icon('info', 18))));
   }
+}
+
+// "Back with new episodes" (Phase 2 step 4; design: Seasons.dc.html).
+function newSeasons(ctx) {
+  const items = ctx.state.items;
+  return h('section', { class: 'alerts', 'aria-labelledby': 'alerts-title' },
+    h('h2', { id: 'alerts-title', class: 'eyebrow' }, 'Back with new episodes'),
+    h('ul', { class: 'rows' }, ctx.alerts.map((a) => {
+      const item = items[a.id];
+      if (!item) return null;
+      const t = item.title;
+      const last = latestWatch(item);
+      return h('li', { class: 'row row-alert' },
+        h('button', { type: 'button', class: 'row-main', onClick: () => ctx.onAlertOpen(a) },
+          poster({ ...t, poster: (a.title && a.title.poster) || t.poster }, 'thumb thumb-sm'),
+          h('span', { class: 'row-text' },
+            h('span', { class: 'row-title' }, t.title),
+            h('span', { class: `small strong ${a.state === 'soon' ? 'sky' : 'accent'}` }, seasonState(a)),
+            last && last.date ? h('span', { class: 'small muted' }, `You watched it ${monthWords(last.date)}`) : null)),
+        h('button', { type: 'button', class: 'btn btn-chip btn-seen-chip', onClick: () => ctx.onAlertWatched(a) }, 'Watched it'),
+        h('button', { type: 'button', class: 'icon-btn icon-btn-narrow', 'aria-label': `Not interested in ${t.title}'s new season`, onClick: () => ctx.onAlertDismiss(a) }, icon('x', 18)));
+    })));
+}
+
+export function seasonState(a) {
+  const when = a.state === 'soon' ? `starts ${shortDate(a.date)}` : a.state === 'airing' ? 'airing now' : 'out now';
+  return `Season ${a.season} · ${when}`;
+}
+
+// "in April" this year, "in March 2024" before that.
+function monthWords(isoDate) {
+  const label = monthLabel(isoDate);
+  const thisYear = String(new Date().getFullYear());
+  return `in ${label.endsWith(thisYear) ? label.split(' ')[0] : label}`;
 }
 
 function empty(title, text) {

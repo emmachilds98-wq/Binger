@@ -4,6 +4,9 @@
 
 import { h, icon, clear, KIND_NAME, titleCase } from './dom.js';
 import { topFeatures } from '../engine/index.js';
+import { servicesSummary } from './services.js';
+import { tasteMoved, howYouWatch } from './timeline.js';
+import { whoChip } from './people.js';
 
 const ALL_GENRES = [
   'Action', 'Adventure', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror',
@@ -20,13 +23,16 @@ export function renderTaste(root, ctx) {
   const head = h('header', { class: 'page-head' },
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Your taste'),
-      h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings'))));
+      h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings')))));
   const page = h('div', { class: 'page-scroll taste' });
   root.append(head, page);
 
   page.append(h('p', { class: 'lede' }, st.items
     ? `Learned from ${plural(st.rated, 'rating')}, ${plural(st.wants, 'save')} and ${plural(st.passes, 'pass', 'passes')}. Recent ones count most, so this shifts as your taste does.`
     : 'Nothing learned yet. Rate a few things you’ve watched (swipe up on a card, or Library → Log a watch) and this fills in.'));
+
+  const moved = tasteMoved(ctx.timeline);
+  if (moved) page.append(moved);
 
   const likes = topFeatures(profile, 'genre', { limit: 6 });
   if (likes.length) {
@@ -45,9 +51,17 @@ export function renderTaste(root, ctx) {
   const people = [...topFeatures(profile, 'creator', { limit: 4 }), ...topFeatures(profile, 'cast', { limit: 6, minN: 2 }), ...topFeatures(profile, 'studio', { limit: 3, minN: 2 })]
     .sort((a, b) => b.affinity - a.affinity).slice(0, 8);
   if (people.length) {
-    page.append(section('People you rate highly', h('ul', { class: 'chips' }, people.map((p) => h('li', { class: 'chip chip-solid' },
-      h('span', null, p.group === 'studio' ? titleCase(p.label) : p.label), p.best ? h('span', { class: 'muted' }, ` · ${p.best.title}`) : null)))));
+    // Directors and cast open their other work; studios aren't people.
+    page.append(section('People you rate highly', h('ul', { class: 'chips' }, people.map((p) => {
+      const inner = [h('span', null, p.group === 'studio' ? titleCase(p.label) : p.label), p.best ? h('span', { class: 'muted' }, ` · ${p.best.title}`) : null];
+      return p.group === 'studio' || !ctx.onPerson
+        ? h('li', { class: 'chip chip-solid' }, inner)
+        : h('li', null, h('button', { type: 'button', class: 'chip chip-solid chip-btn', onClick: () => ctx.onPerson({ id: p.key.slice(2), name: p.label }) }, inner));
+    }))));
   }
+
+  const how = howYouWatch(profile);
+  if (how) page.append(how);
 
   const dislikes = [...topFeatures(profile, 'genre', { limit: 4, sign: -1 }), ...topFeatures(profile, 'keyword', { limit: 4, sign: -1 })];
   if (dislikes.length) page.append(section('Not really your thing', chips(dislikes.map((d) => d.label))));
@@ -72,11 +86,22 @@ export function renderTaste(root, ctx) {
     h('h2', { class: 'eyebrow' }, 'Steer the deck'),
     sliders,
     !ctx.hasKey ? h('p', { class: 'small muted' }, 'Films and TV need a TMDB key (Settings). Until then the deck is all anime.') : null,
+    h('button', { type: 'button', class: 'row-btn', onClick: ctx.onServices },
+      h('span', { class: 'switch-text' },
+        h('span', { class: 'switch-label' }, 'Your streaming services'),
+        h('span', { class: 'small muted' }, s.services && s.services.length
+          ? `${servicesSummary(s.services)}${s.streamOnly ? ' · only these' : ''}`
+          : 'Pick yours to lift what you can watch tonight')),
+      icon('forward', 18)),
     toggle('Favour new releases', 'Lift films, shows and seasons from the last few months', s.preferFresh, (v) => ctx.updateSettings({ preferFresh: v })),
     toggle('Surprise me sometimes', 'About 1 card in 7 is a well-rated title outside your usual taste', s.surprise, (v) => ctx.updateSettings({ surprise: v }))));
 
   const hidden = new Set(s.hiddenGenres);
-  page.append(section('Never show me', h('div', { class: 'pill-wrap' }, ALL_GENRES.map((g) => {
+  // Hidden series first (tap to show again), then the genres.
+  const series = (s.hiddenFranchises || []).map((f) => h('button', {
+    type: 'button', class: 'pill pill-series', 'aria-label': `Show ${f.name} again`, onClick: () => ctx.onUnhideSeries && ctx.onUnhideSeries(f),
+  }, f.name, icon('x', 14)));
+  page.append(section('Never show me', h('div', { class: 'pill-wrap' }, series, ALL_GENRES.map((g) => {
     const b = h('button', { type: 'button', class: 'pill pill-hide', 'aria-pressed': String(hidden.has(g)) }, g);
     b.addEventListener('click', () => {
       const next = new Set(ctx.getState().settings.hiddenGenres);

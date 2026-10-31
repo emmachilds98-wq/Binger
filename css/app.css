@@ -382,3 +382,93 @@ input[type="range"] { accent-color: var(--accent); }
 @media (min-width: 700px) {
   .app { border-left: 1px solid var(--surface-2); border-right: 1px solid var(--surface-2); }
 }
+
+/* streaming services (Phase 2 step 1; design: Services.dc.html) */
+.services-body { display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
+.service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.service-tile {
+  position: relative; min-height: 96px; padding: 12px 6px 10px; border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--text);
+}
+.service-tile[aria-pressed="true"] { background: rgba(245, 184, 61, 0.10); border-color: var(--accent); }
+.service-mono {
+  width: 36px; height: 36px; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 17px; background: var(--line); color: var(--text);
+}
+.service-mono img { width: 100%; height: 100%; object-fit: cover; }
+.service-name { font-size: 13px; font-weight: 600; line-height: 1.2; text-align: center; }
+.service-check { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 11px; background: var(--accent); color: var(--on-accent); display: none; align-items: center; justify-content: center; }
+.service-tile[aria-pressed="true"] .service-check { display: flex; }
+.row-btn { width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 0; background: transparent; color: var(--text); padding: 4px 0; text-align: left; }
+.row-btn > svg { flex: none; color: var(--muted); }
+.provider-yours { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.provider-link { color: var(--text); text-decoration: none; padding: 8px 12px; }
+
+/* a person's work (Phase 2 step 2; design: Person.dc.html) */
+.person-back { padding: 12px 12px 0; }
+.icon-btn.on-surface { background: var(--surface); }
+.icon-btn.sky { color: var(--sky); }
+.person-head { padding: 4px 16px 14px; display: flex; gap: 16px; align-items: center; }
+.person-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.person-text .detail-title { font-size: 26px; }
+.avatar-xl { width: 88px; height: 88px; font-size: 28px; font-family: var(--font-display); font-weight: 800; }
+.avatar-xl.avatar-known { box-shadow: 0 0 0 3px var(--accent); }
+.person-tools { display: flex; flex-direction: column; gap: 10px; padding: 0 0 10px; }
+.person-foot { padding: 14px 2px 0; }
+.row-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); }
+.row-note.accent { color: var(--accent); }
+.strong { font-weight: 600; }
+button.cast-item { border: 0; background: transparent; color: var(--text); padding: 0; }
+button.cast-item:hover .cast-name { text-decoration: underline; }
+.link-btn.inline { padding: 0; font-weight: 600; font-size: inherit; color: var(--text-2); text-decoration-color: var(--line); }
+.chip-btn { cursor: pointer; color: var(--text); font: inherit; font-size: 13px; }
+.chip-btn:hover { border-color: var(--muted); }
+
+/* not this franchise (Phase 2 step 3; design: HideSeries.dc.html) */
+.pill-wrap .pill-series { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px 0 14px; background: rgba(255, 138, 122, 0.12); color: var(--danger); border-color: var(--danger); }
+.quiet-link { color: var(--muted); font-weight: 500; }
+
+/* new seasons (Phase 2 step 4; design: Seasons.dc.html) */
+.alerts { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; }
+.row-alert { border: 1px solid var(--line); }
+.icon-btn-narrow { width: 36px; color: var(--muted); }
+.tab-icon { position: relative; display: flex; }
+.tab.has-alert .tab-icon::after { content: ''; position: absolute; top: -2px; right: -4px; width: 8px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
+
+/* taste over time (Phase 2 step 5; design: TasteTime.dc.html, spec in DESIGN.md) */
+.trends { display: flex; flex-direction: column; gap: 2px; }
+.trend-row { width: 100%; display: flex; flex-direction: column; gap: 2px; border: 0; background: transparent; color: var(--text); padding: 4px 0; text-align: left; min-height: 40px; }
+.trend-line { display: flex; align-items: center; gap: 10px; width: 100%; }
+.trend-name { width: 112px; flex: none; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spark { flex: none; overflow: visible; }
+.spark-zero { stroke: var(--line); stroke-width: 1; }
+.spark-line { fill: none; stroke: var(--muted); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.spark-dot { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.trend-word { flex: 1; text-align: right; font-size: 13px; color: var(--text-2); white-space: nowrap; }
+.trend-readout { padding-left: 122px; }
+.trend-axis { display: flex; justify-content: space-between; width: 140px; margin-left: 127px; font-size: 11px; color: var(--muted); }
+.how-lines { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--text-2); }
+
+/* people and sync: who's watching, the chip, People and sync */
+.who-avatar { flex: none; border-radius: 50%; background: var(--who, var(--accent)); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; }
+.who-sm { width: 28px; height: 28px; font-size: 14px; }
+.who-md { width: 40px; height: 40px; font-size: 18px; }
+.who-xl { width: 96px; height: 96px; font-size: 40px; }
+.who-plus { background: var(--surface-2); color: var(--muted); border: 1px dashed var(--line); }
+.who-chip { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; border-radius: 22px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; font-size: 14px; max-width: 150px; }
+.who-chip .who-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-actions .who-chip { margin-left: 4px; }
+@media (max-width: 420px) { .topbar-actions .who-chip { padding: 0 8px; } .topbar-actions .who-chip .who-name { display: none; } }
+.who-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 24px 20px calc(24px + var(--safe-bottom)); text-align: center; }
+.who-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+.who-tile { width: 120px; display: flex; flex-direction: column; align-items: center; gap: 10px; border: 0; background: transparent; color: var(--text); padding: 8px; border-radius: 20px; }
+.who-tile:hover .who-avatar, .who-tile:focus-visible .who-avatar { box-shadow: 0 0 0 3px var(--text); }
+.who-tile.is-current .who-avatar { box-shadow: 0 0 0 3px var(--accent); }
+.who-tile-name { font-weight: 700; font-size: 16px; }
+.who-body .switch-row { max-width: 360px; }
+.people-body { display: flex; flex-direction: column; gap: 22px; padding-top: 8px; }
+.person-row { gap: 10px; }
+.sync-status { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; }
+.invite-code { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: 1px; user-select: all; -webkit-user-select: all; }
+.or { text-align: center; }

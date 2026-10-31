@@ -42,21 +42,21 @@ Kind badges are always labelled (FILM / TV / ANIME), never colour alone.
    2020s … 1980s, Older) and Where ("Only what I can stream", once you've
    picked services). While any filter is on, the button wears an amber dot and
    a summary line with **Clear** sits under the pills.
-8. **Your streaming services**: a 3-column grid of toggle tiles (monogram,
+8. **Your streaming services** (built): a 3-column grid of toggle tiles (monogram,
    name, amber ring and tick when picked; no brand logos drawn by us, TMDB's
    logos when available), the "Only show what I can stream" switch, and a
    plain note on where availability comes from.
-9. **A person's work**: big photo with an amber ring if you know them, name,
+9. **A person's work** (built): big photo with an amber ring if you know them, name,
    what they're known for, "In Little Women, which you loved"; kind pills;
    rows best-for-you first, each with a match % or your status, and eye /
    bookmark actions.
-10. **Not this franchise**: after a Pass on something in a series, the toast
+10. **Not this franchise** (built): after a Pass on something in a series, the toast
     offers "Hide all Dune films"; then "Dune is hidden" with Undo. Also a link
     on the detail sheet. Hidden series sit in Taste → Never show me, tap to unhide.
-11. **New seasons**: Library → Watchlist opens with "Back with new episodes":
+11. **New seasons** (built): Library → Watchlist opens with "Back with new episodes":
     "Season 4 · airing now" / "out now" in amber, "starts 16 Jan" in sky;
     "Watched it" and ✕. The Library tab wears a dot while any are waiting.
-12. **Taste over time + how you like to watch**: the chart below; your length
+12. **Taste over time + how you like to watch** (built): the chart below; your length
     "sweet spot"; feeling-tag counts with one plain line on what "Slow" and
     "Overhyped" are doing to your suggestions.
 
@@ -74,6 +74,16 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   numbers; offer the same numbers as a table for screen readers.
 - Colours checked with the dataviz validator: grey vs amber ΔE 18 under colour
   blindness (19 normal), both ≥ 3:1 on `#0F0E13` and `#1A1820`.
+
+### After Phase 2 (no artboard yet)
+
+- **People** (built, `js/ui/people.js`): "Who's watching?" is a full screen of
+  large round initials in each person's colour (amber, sky, pink, green,
+  lilac, orange), the current one ringed. The **who chip** (initial + name;
+  initial only under 420 px) sits at the right of every screen's header.
+  **People and sync** is a full sheet in the Settings style.
+- **PC layout**: not designed yet. Design it on the canvas before building
+  (UPGRADE-PLAN.md, next step 2).
 
 ## Interaction rules
 

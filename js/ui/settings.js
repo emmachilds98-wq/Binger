@@ -4,6 +4,7 @@
 import { h, icon } from './dom.js';
 import { openSheet, closeButton, confirmSheet, choiceSheet, toast } from './sheet.js';
 import { toggle } from './taste.js';
+import { servicesSummary } from './services.js';
 
 const REGIONS = [
   ['GB', 'United Kingdom'], ['IE', 'Ireland'], ['US', 'United States'], ['CA', 'Canada'], ['AU', 'Australia'],
@@ -11,12 +12,17 @@ const REGIONS = [
   ['SE', 'Sweden'], ['NO', 'Norway'], ['DK', 'Denmark'], ['JP', 'Japan'], ['IN', 'India'], ['BR', 'Brazil'], ['MX', 'Mexico'],
 ];
 
+export function regionName(code) {
+  const hit = REGIONS.find(([c]) => c === code);
+  return hit ? hit[1] : code;
+}
+
 export function openSettings(ctx) {
   const sheet = openSheet({ label: 'Settings', variant: 'full', className: 'settings' });
   const s = ctx.getState().settings;
 
   // --- TMDB key ---
-  const keyInput = h('input', { id: 'tmdb-key', type: 'password', autocomplete: 'off', spellcheck: 'false', placeholder: 'API key or Read Access Token', value: s.tmdbKey || '' });
+  const keyInput = h('input', { id: 'tmdb-key', type: 'password', autocomplete: 'off', spellcheck: 'false', placeholder: 'API key or Read Access Token', value: (ctx.currentKey ? ctx.currentKey() : s.tmdbKey) || '' });
   const keyStatus = h('p', { class: 'small muted', role: 'status' }, ctx.keySource());
   const show = h('button', { type: 'button', class: 'btn btn-chip', onClick: () => { keyInput.type = keyInput.type === 'password' ? 'text' : 'password'; show.textContent = keyInput.type === 'password' ? 'Show' : 'Hide'; } }, 'Show');
   const testBtn = h('button', { type: 'button', class: 'btn btn-primary' }, 'Test & save');
@@ -29,6 +35,12 @@ export function openSettings(ctx) {
     keyStatus.classList.toggle('error', !result.ok);
     testBtn.disabled = false;
   });
+
+  // --- your services ---
+  const servicesLine = h('span', { class: 'small muted' }, servicesSummary(s.services));
+  const servicesBtn = h('button', { type: 'button', class: 'row-btn', onClick: () => ctx.onServices(() => {
+    servicesLine.textContent = servicesSummary(ctx.getState().settings.services);
+  }) }, h('span', { class: 'switch-text' }, h('span', { class: 'switch-label' }, 'Your streaming services'), servicesLine), icon('forward', 18));
 
   // --- region & playback ---
   const region = h('select', { id: 'region' }, REGIONS.map(([code, name]) => h('option', { value: code, selected: s.region === code }, name)));
@@ -64,13 +76,18 @@ export function openSettings(ctx) {
   sheet.body.append(
     h('div', { class: 'sheet-head' }, h('h1', { class: 'page-title' }, 'Settings'), closeButton(sheet)),
     h('div', { class: 'page-scroll settings-body' },
+      ctx.onPeople ? group('People and sync',
+        h('button', { type: 'button', class: 'row-btn', onClick: ctx.onPeople },
+          h('span', { class: 'switch-text' }, h('span', { class: 'switch-label' }, 'Who uses Binger, and sync'), h('span', { class: 'small muted' }, 'Separate libraries for each of you, the same on every device')),
+          icon('forward', 18))) : null,
       group('Films & TV (TMDB key)',
         h('p', { class: 'small muted' }, 'Films and TV come from TMDB, which needs a free key. Make an account at themoviedb.org, then Settings → API. Paste either the API Key or the Read Access Token. It’s stored only on this device.'),
         h('div', { class: 'key-row' }, h('label', { class: 'sr-only', for: 'tmdb-key' }, 'TMDB key'), keyInput, show),
         h('div', { class: 'row-gap' }, testBtn, h('a', { href: 'https://www.themoviedb.org/settings/api', target: '_blank', rel: 'noopener', class: 'small' }, 'Get a key', icon('external', 14))),
         keyStatus),
       group('Where you watch',
-        field('Region (for streaming info and certificates)', 'region', region)),
+        field('Region (for streaming info and certificates)', 'region', region),
+        servicesBtn),
       group('Trailers',
         toggle('Autoplay trailer in details', 'Muted; tap the video for sound', s.autoplayTrailers, (v) => ctx.updateSettings({ autoplayTrailers: v })),
         field('Clip length', 'clip', clip)),

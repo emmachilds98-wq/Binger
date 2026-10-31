@@ -6,4 +6,4 @@ export { scoreTitle, affinityOf, quality, freshness, warmth, onServices, hypeTru
 export { explain } from './explain.js';
 export { buildDeck, rankWatchlist, rankForYou, eligible, isShort, inDecade, franchiseBlock, isBlocked, DEFAULT_MIX } from './rank.js';
 export { seasonAlert, seasonAlerts, showsToCheck } from './seasons.js';
-export { tasteTimeline, itemAsOf } from './timeline.js';
+export { tasteTimeline, itemAsOf, monthEnds } from './timeline.js';

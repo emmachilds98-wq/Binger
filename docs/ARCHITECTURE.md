@@ -38,7 +38,7 @@ each one only talks to the one below it.
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |
 | `js/state/store.js` | localStorage persistence + change notifications |
 | `js/state/cache.js` | IndexedDB key-value cache with expiry (memory fallback) |
-| `js/ui/*.js` | One file per screen or sheet; `dom.js` = `h()` / `append()` helpers + icons; `sheet.js` = sheets + toasts; `filters.js` = deck filters sheet |
+| `js/ui/*.js` | One file per screen or sheet; `dom.js` = `h()` / `append()` helpers + icons; `sheet.js` = sheets + toasts; `filters.js` = deck filters sheet; `services.js` = your streaming services; `person.js` = a person's work |
 | `service-worker.js` | Network-first app shell, cache-first images |
 | `tests/*.test.js` | `node --test` unit tests; fixtures in `tests/fixtures/` |
 | `scripts/e2e.mjs` | Full browser run with mocked APIs, writes `docs/screenshots/` |

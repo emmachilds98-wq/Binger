@@ -5,6 +5,7 @@ import { h, icon, clear, KIND_NAME, metaLine, publicScore, avatar, starsText, sh
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
 import { knownFrom } from './card.js';
+import { canonicalService } from '../sources/services.js';
 
 export function openDetail(initial, ctx) {
   const sheet = openSheet({ label: initial.title, variant: 'full', className: 'detail' });
@@ -12,7 +13,7 @@ export function openDetail(initial, ctx) {
 
   function render() {
     clear(sheet.body);
-    sheet.body.append(media(title, ctx, sheet), body(title, ctx), footer(title, ctx, sheet));
+    sheet.body.append(media(title, ctx, sheet), body(title, ctx, sheet), footer(title, ctx, sheet));
   }
   render();
   sheet.focusFirst();
@@ -52,19 +53,26 @@ function media(t, ctx, sheet) {
   return box;
 }
 
-function crewLine(t) {
-  const by = (job) => (t.crew || []).filter((c) => c.job === job).map((c) => c.name);
+// "Studio Madhouse · Created by … · Directed by …", with each person a link
+// to their other work.
+function crewLine(t, ctx) {
+  const by = (job) => {
+    const seen = new Set();
+    return (t.crew || []).filter((c) => c.job === job && !seen.has(c.id) && seen.add(c.id));
+  };
+  const people = (list) => list.flatMap((c, i) => [i ? ', ' : null,
+    ctx.onPerson ? h('button', { type: 'button', class: 'link-btn inline', onClick: () => ctx.onPerson(c) }, c.name) : c.name]);
   const bits = [];
   const directors = by('Director');
   const creators = by('Creator');
-  if (t.kind === 'anime' && t.studios && t.studios.length) bits.push(`Studio ${t.studios.map(titleCase).join(', ')}`);
-  if (creators.length) bits.push(`Created by ${creators.join(', ')}`);
-  if (directors.length) bits.push(`Directed by ${[...new Set(directors)].join(', ')}`);
-  if (t.networks && t.networks.length) bits.push(t.networks.join(', '));
-  return bits.join(' · ');
+  if (t.kind === 'anime' && t.studios && t.studios.length) bits.push([`Studio ${t.studios.map(titleCase).join(', ')}`]);
+  if (creators.length) bits.push(['Created by ', ...people(creators)]);
+  if (directors.length) bits.push(['Directed by ', ...people(directors)]);
+  if (t.networks && t.networks.length) bits.push([t.networks.join(', ')]);
+  return bits.length ? bits.flatMap((b, i) => [i ? ' \u00b7 ' : null, ...b]) : null;
 }
 
-function body(t, ctx) {
+function body(t, ctx, sheet) {
   const format = t.kind === 'anime' && t.format && t.format !== 'TV' ? t.formatLabel : null;
   const facts = [format, metaLine(t, { genres: 0 }), t.certification, publicScore(t)].filter(Boolean).join(' · ');
   const chips = [...(t.genres || []), ...(t.keywords || []).slice(0, 4)];
@@ -76,7 +84,7 @@ function body(t, ctx) {
       h('div', { class: 'row-gap' }, h('span', { class: `badge badge-${t.kind}` }, KIND_NAME[t.kind]), h('span', { class: 'muted small' }, facts)),
       h('h1', { class: 'detail-title' }, t.title),
       t.tagline ? h('p', { class: 'tagline' }, t.tagline) : null,
-      crewLine(t) ? h('p', { class: 'muted small' }, crewLine(t)) : null),
+      crewLine(t, ctx) ? h('p', { class: 'muted small' }, crewLine(t, ctx)) : null),
     chips.length ? h('ul', { class: 'chips', 'aria-label': 'Genres and themes' }, chips.map((c) => h('li', { class: 'chip' }, c))) : null,
     reasons.length ? h('section', { class: 'why', 'aria-label': 'Why Binger picked this' },
       h('h2', { class: 'eyebrow accent' }, 'Why Binger picked this'),
@@ -86,22 +94,34 @@ function body(t, ctx) {
       h('h2', { class: 'eyebrow' }, t.kind === 'anime' ? `Voice cast${ctx.settings.voiceLanguage === 'ENGLISH' ? ' (English dub)' : ''}` : 'Cast'),
       h('ul', { class: 'cast-row' }, people.map((p) => {
         const known = knownFrom(p, ctx.profile, t.id);
-        return h('li', { class: 'cast-item' },
+        // Each person opens their other work (Phase 2 step 2).
+        return h('li', null, h('button', { type: 'button', class: 'cast-item', 'aria-label': `${p.name}: see their other work`, onClick: () => ctx.onPerson && ctx.onPerson(p) },
           avatar(p, 'lg', !!known),
           h('span', { class: 'cast-name' }, p.name),
-          h('span', { class: `cast-role${known ? ' is-known' : ''}` }, known || p.character || ''));
+          h('span', { class: `cast-role${known ? ' is-known' : ''}` }, known || p.character || '')));
       }))) : null,
     whereToWatch(t, ctx),
     history(t, ctx),
+    ctx.canHideSeries && ctx.canHideSeries(t) ? h('p', null, h('button', {
+      type: 'button', class: 'link-btn quiet-link',
+      onClick: () => { sheet.close(); ctx.onHideSeries(t); },
+    }, 'Hide the whole series')) : null,
     h('p', { class: 'small muted links' },
       t.trailer ? h('a', { href: fullTrailerUrl(t.trailer), target: '_blank', rel: 'noopener' }, 'Full trailer on YouTube', icon('external', 14)) : null,
       t.url ? h('a', { href: t.url, target: '_blank', rel: 'noopener' }, t.source === 'anilist' ? 'AniList page' : 'TMDB page', icon('external', 14)) : null));
 }
 
 function whereToWatch(t, ctx) {
+  const mine = ctx.settings.services || [];
   if (t.source === 'anilist') {
+    const links = t.watchLinks || [];
     return h('section', { class: 'where' }, h('h2', { class: 'eyebrow' }, 'Where to watch'),
-      h('p', { class: 'small muted' }, 'AniList lists official streaming links on its page for this show.'));
+      links.length
+        ? h('ul', { class: 'providers' }, links.map((l) => h('li', null,
+          h('a', { class: `provider provider-link${mine.includes(l.name) ? ' provider-yours' : ''}`, href: l.url, target: '_blank', rel: 'noopener' },
+            h('span', null, l.name), mine.includes(l.name) ? h('span', { class: 'sr-only' }, ' (one of your services)') : null))))
+        : h('p', { class: 'small muted' }, 'No official streaming links listed on AniList yet.'),
+      links.length ? h('p', { class: 'small muted' }, 'Official links from AniList. They aren\u2019t per country, so check yours carries it.') : null);
   }
   if (!t.detailed) return null;
   const region = ctx.settings.region;
@@ -112,8 +132,12 @@ function whereToWatch(t, ctx) {
     rows.length
       ? h('div', { class: 'provider-rows' }, rows.map(([label, list]) => h('div', { class: 'provider-row' },
         h('span', { class: 'provider-label' }, label),
-        h('ul', { class: 'providers' }, list.slice(0, 6).map((x) => h('li', { class: 'provider', title: x.name },
-          x.logo ? h('img', { src: x.logo, alt: '', loading: 'lazy' }) : null, h('span', null, x.name)))))))
+        h('ul', { class: 'providers' }, list.slice(0, 6).map((x) => {
+          const yours = label !== 'Rent' && label !== 'Buy' && mine.includes(canonicalService(x.name));
+          return h('li', { class: `provider${yours ? ' provider-yours' : ''}`, title: x.name },
+            x.logo ? h('img', { src: x.logo, alt: '', loading: 'lazy' }) : null, h('span', null, x.name),
+            yours ? h('span', { class: 'sr-only' }, ' (one of your services)') : null);
+        })))))
       : h('p', { class: 'small muted' }, `Not streaming in ${region} right now, as far as TMDB knows.`),
     rows.length && p.link ? h('p', { class: 'small muted' }, 'Availability data from ', h('a', { href: p.link, target: '_blank', rel: 'noopener' }, 'JustWatch via TMDB'), '.') : null);
 }

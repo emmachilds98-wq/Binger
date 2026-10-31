@@ -8,6 +8,8 @@
 //   settings: { ...DEFAULT_SETTINGS },
 //   onboarded: boolean,
 //   createdAt: ISO string,
+//   settingsAt: ISO string | null,        // last settings change (sync: newer wins)
+//   removed: { [titleId]: ISO string },   // when each item was deleted (sync tombstones)
 // }
 // Item = {
 //   id, title: Snapshot,                  // a trimmed copy of the Title
@@ -16,6 +18,7 @@
 //   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '' }],
 //   via: [...],                           // why Binger showed it (if it did)
 //   dismissed: ['s3'],                    // new-season alerts you've waved away
+//   changedAt,                            // set by undo, which puts back an older copy
 // }
 
 export const SCHEMA = 1;
@@ -68,6 +71,8 @@ export function emptyState(now = Date.now()) {
     settings: structuredClone(DEFAULT_SETTINGS),
     onboarded: false,
     createdAt: new Date(now).toISOString(),
+    settingsAt: null,
+    removed: {},
   };
 }
 
@@ -76,10 +81,19 @@ const today = (now) => iso(now).slice(0, 10);
 let counter = 0;
 const newId = (now) => `w${now.toString(36)}${(counter++).toString(36)}`;
 
-function withItem(state, id, item) {
+// Deleting leaves a dated tombstone so another device's copy doesn't bring
+// the item back when the two are merged (sync).
+function withItem(state, id, item, now = Date.now()) {
   const items = { ...state.items };
-  if (item) items[id] = item; else delete items[id];
-  return { ...state, items };
+  const removed = { ...(state.removed || {}) };
+  if (item) {
+    items[id] = item;
+    delete removed[id];
+  } else if (items[id]) {
+    delete items[id];
+    removed[id] = iso(now);
+  }
+  return { ...state, items, removed };
 }
 
 export function getItem(state, id) {
@@ -136,27 +150,31 @@ export function deleteWatch(state, id, watchId, now = Date.now()) {
   const prev = state.items[id];
   if (!prev) return state;
   const watches = prev.watches.filter((w) => w.id !== watchId);
-  if (!watches.length) return withItem(state, id, null);
+  if (!watches.length) return withItem(state, id, null, now);
   return withItem(state, id, { ...prev, watches, updatedAt: iso(now) });
 }
 
-export function removeItem(state, id) {
-  return withItem(state, id, null);
+export function removeItem(state, id, now = Date.now()) {
+  return withItem(state, id, null, now);
 }
 
-// Undo: put back exactly what was there before (or nothing).
-export function restoreItem(state, id, prevItem) {
-  return withItem(state, id, prevItem || null);
+// Undo: put back what was there before (or nothing). The copy put back is
+// marked as changed now, so it beats the undone change on other devices.
+export function restoreItem(state, id, prevItem, now = Date.now()) {
+  return withItem(state, id, prevItem ? { ...prevItem, changedAt: iso(now) } : null, now);
 }
 
-export function forgetPasses(state) {
+export function forgetPasses(state, now = Date.now()) {
   const items = {};
-  for (const [id, it] of Object.entries(state.items)) if (it.status !== 'passed') items[id] = it;
-  return { ...state, items };
+  const removed = { ...(state.removed || {}) };
+  for (const [id, it] of Object.entries(state.items)) {
+    if (it.status !== 'passed') items[id] = it; else removed[id] = iso(now);
+  }
+  return { ...state, items, removed };
 }
 
-export function updateSettings(state, patch) {
-  return { ...state, settings: { ...state.settings, ...patch } };
+export function updateSettings(state, patch, now = Date.now()) {
+  return { ...state, settings: { ...state.settings, ...patch }, settingsAt: iso(now) };
 }
 
 export function setOnboarded(state, value = true) {
@@ -219,8 +237,70 @@ export function migrate(raw, now = Date.now()) {
     items[id] = { ...it, watches: Array.isArray(it.watches) ? it.watches.filter(isObj) : [] };
   }
   out.items = items;
+  out.settingsAt = typeof raw.settingsAt === 'string' ? raw.settingsAt : null;
+  out.removed = {};
+  for (const [id, at] of Object.entries(isObj(raw.removed) ? raw.removed : {})) if (typeof at === 'string') out.removed[id] = at;
   out.schema = SCHEMA;
   return out;
+}
+
+// --- sync ---------------------------------------------------------------------
+
+const TOMBSTONE_DAYS = 180;
+const stamp = (it) => {
+  const a = String(it.updatedAt || '');
+  const b = String(it.changedAt || '');
+  return a > b ? a : b;
+};
+
+// Two copies of one person's library (this device's and the cloud's) made
+// into one. Per item, the most recent change wins; an item deleted after its
+// last change stays deleted; the newer settings win, except the TMDB key,
+// which belongs to the device. Same inputs, same output, on every device.
+export function mergeStates(local, remote, now = Date.now()) {
+  const a = migrate(local, now);
+  const b = migrate(remote, now);
+  const removed = { ...a.removed };
+  for (const [id, at] of Object.entries(b.removed)) if (!removed[id] || at > removed[id]) removed[id] = at;
+  const cutoff = iso(now - TOMBSTONE_DAYS * 86400000);
+  for (const [id, at] of Object.entries(removed)) if (at < cutoff) delete removed[id];
+
+  const items = {};
+  for (const id of new Set([...Object.keys(a.items), ...Object.keys(b.items)])) {
+    const x = a.items[id];
+    const y = b.items[id];
+    const win = !x ? y : !y ? x : stamp(y) > stamp(x) ? y : x;
+    if (removed[id] && removed[id] >= stamp(win)) continue;
+    items[id] = win;
+    if (removed[id]) delete removed[id];
+  }
+  const bNewer = String(b.settingsAt || '') > String(a.settingsAt || '');
+  const settings = { ...(bNewer ? b.settings : a.settings), tmdbKey: a.settings.tmdbKey };
+  return {
+    ...a,
+    items,
+    removed,
+    settings,
+    settingsAt: bNewer ? b.settingsAt : a.settingsAt,
+    onboarded: a.onboarded || b.onboarded,
+    createdAt: a.createdAt < b.createdAt ? a.createdAt : b.createdAt,
+  };
+}
+
+// The library as it's stored in the cloud: no TMDB key, keys in a fixed
+// order, so two devices holding the same library produce the same text (and
+// neither keeps re-sending it).
+export function syncText(state) {
+  const { tmdbKey, ...settings } = state.settings || {};
+  return stableStringify({ ...state, settings });
+}
+
+function stableStringify(v) {
+  if (Array.isArray(v)) return `[${v.map((x) => (x === undefined ? 'null' : stableStringify(x))).join(',')}]`;
+  if (isObj(v)) {
+    return `{${Object.keys(v).sort().filter((k) => v[k] !== undefined).map((k) => `${JSON.stringify(k)}:${stableStringify(v[k])}`).join(',')}}`;
+  }
+  return JSON.stringify(v ?? null);
 }
 
 export function exportState(state, now = Date.now()) {

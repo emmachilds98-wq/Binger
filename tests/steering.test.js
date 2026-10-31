@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {
   featuresOf, lengthBucket, buildProfile, itemSignal, scoreTitle, onServices, buildDeck, explain,
   isShort, inDecade, franchiseBlock, isBlocked, rankForYou, seasonAlert, seasonAlerts, showsToCheck,
-  tasteTimeline, itemAsOf, TAG_NUDGE, topFeatures,
+  tasteTimeline, itemAsOf, monthEnds, TAG_NUDGE, topFeatures,
 } from '../js/engine/index.js';
 import { TAGS } from '../js/state/library.js';
 
@@ -225,6 +225,15 @@ test('tasteTimeline shows a genre rising and another fading', () => {
   assert.equal(comedy.values[0], 0, 'before any comedy, affinity is 0');
   const fresh = tasteTimeline({}, { now: NOW });
   assert.equal(fresh.enough, false);
+});
+
+test('taste over time takes one snapshot per calendar month, ending now', () => {
+  const at = monthEnds(NOW, 6);
+  const months = at.map((ms) => new Date(ms).toISOString().slice(0, 7));
+  assert.deepEqual(months, ['2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10']);
+  assert.equal(at[5], NOW);
+  assert.equal(new Date(at[0]).toISOString(), '2026-05-31T23:59:59.999Z');
+  assert.equal(tasteTimeline({}, { now: NOW }).at.length, 6);
 });
 
 test('explain names a length you rate highly', () => {
