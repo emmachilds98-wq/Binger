@@ -82,11 +82,18 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   lilac, orange), the current one ringed. The **who chip** (initial + name;
   initial only under 420 px) sits at the right of every screen's header.
   **People and sync** is a full sheet in the Settings style.
-- **Welcome** (built, `openWelcome` in `js/ui/people.js`): on a device's first
-  visit, before "What have you loved?", the "Who's watching?" style screen asks
-  "Who's this?": a name field, **Sync with friends** (amber; needs a name, then
-  opens sign-in over the first run) and **Just me for now** (quiet). Skipped
-  for invite links and devices already in a household. Screenshot `20-welcome`.
+- **Welcome** (built, `openWelcome` in `js/ui/people.js`): a device's first
+  visit opens on sign-in, so syncing is set up from the start rather than
+  linked later. "Welcome to Binger": your name, **Continue with Google**
+  (amber), or email with **Create account** / **Sign in**; the only way past
+  without signing in is **Just my name for now** (amber link; needs a name).
+  Escape doesn't skip it. A new account gets its own household at once; an
+  existing one asks "Which one is you?". Skipped for invite links and devices
+  already in a household. Screenshot `20-welcome`.
+- **Watch button** (built): "Where to watch" opens with one amber button:
+  "Watch on Crunchyroll" (anime: the official stream, your service first) or
+  "Where to watch it" (films and TV: TMDB's page of legal options in your
+  country). Only legal sources: decision 15 in PLAN.md.
 - **"Wider" picks** (built): a card reached by the deck's wider pull says how,
   in the sky "explore" style: "Acclaimed: among TMDB's best rated", "A hidden
   gem: loved by the people who found it", "A Korean series, from further afield".

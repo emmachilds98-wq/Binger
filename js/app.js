@@ -51,6 +51,8 @@ const store = createStore({ key: currentProfile(device.profiles).key, onSaveErro
 // Sync across devices (Firebase), once set up and signed in.
 const sync = { fb: null, loading: null, user: null, ctl: null, status: '', error: '', busy: false, pendingCode: null };
 let peopleSheet = null;
+// The first-visit welcome (sign in, or just a name) while it's open.
+let welcome = null;
 let cache = createMemoryCache();
 let tmdb = null;
 let anilist = null;
@@ -451,6 +453,7 @@ function firebaseConfig() {
 
 function refreshPeople() {
   if (peopleSheet) peopleSheet.refresh();
+  if (welcome) welcome.refresh();
 }
 function syncStatus(text) { sync.status = text; sync.error = ''; refreshPeople(); }
 function syncError(text) { sync.error = text; refreshPeople(); }
@@ -488,6 +491,8 @@ async function onUser(user) {
   }
   if (device.household) await beginSync();
   refreshPeople();
+  // Signed in from the welcome (straight away, or back from a Google redirect).
+  if (welcome) await welcomeSignedIn();
 }
 
 async function beginSync() {
@@ -940,22 +945,77 @@ function afterWho() {
   if (!store.get().onboarded) startOnboarding();
 }
 
-// "Who's this?" once per device, before anything else: a name (so friends
-// can tell whose library is whose) and the way into syncing with them.
+// The welcome, once per device, before anything else: sign in straight away
+// (so syncing and inviting friends are set up from the start, not linked
+// later), or "Just my name" to go on without.
 function needsWelcome() {
   return !device.welcomed && !device.household && !currentProfile(device.profiles).name;
 }
 
-async function showWelcome() {
+function setMyName(name) {
   const me = currentProfile(device.profiles);
-  const { name, choice } = await openWelcome({ name: me.name });
+  if (name && name !== me.name) setProfiles(renameProfile(device.profiles, me.id, name));
+}
+
+function showWelcome() {
+  if (firebaseConfig()) ensureFirebase();
+  welcome = openWelcome({
+    get: () => ({
+      hasConfig: !!firebaseConfig(),
+      busy: sync.busy || (!!firebaseConfig() && !sync.fb && !!sync.loading),
+      error: sync.error,
+    }),
+    onGoogle: (name) => welcomeSignIn(name, (fb) => fb.signInGoogle()),
+    onEmail: (name, email, password, create) => welcomeSignIn(name, (fb) => {
+      if (!email || !password) throw Object.assign(new Error(), { code: 'auth/invalid-email' });
+      return create ? fb.createAccount(email, password) : fb.signInEmail(email, password);
+    }),
+    onNameOnly: (name) => finishWelcome({ name }),
+    // Closed some other way (the phone's back gesture): carry on without
+    // marking it done, so it asks again next time.
+    onClose: () => { if (welcome) { welcome = null; if (!store.get().onboarded) startOnboarding(); } },
+  });
+}
+
+// The name goes on this device's person first, so a new household (or
+// "Someone new" in a household) already knows it.
+async function welcomeSignIn(name, signIn) {
+  setMyName(name);
+  await syncAction(async () => { const fb = await ensureFirebase(); if (fb) await signIn(fb); });
+  // onUser carries on from here once Firebase says who's signed in.
+}
+
+// Signed in: an account with a household joins it (onUser has already asked
+// "Which one is you?"); a new account gets its own household, so inviting a
+// friend is one link from now on.
+async function welcomeSignedIn() {
+  if (!welcome || welcome.finishing || !sync.user) return;
+  welcome.finishing = true;
+  try {
+    if (!device.household) {
+      if (!currentProfile(device.profiles).name && sync.user.name) setMyName(sync.user.name.split(' ')[0]);
+      device.household = await createHousehold(sync.fb, sync.user.uid, device.profiles);
+      saveDevice(device);
+      await beginSync();
+    }
+  } catch (err) {
+    welcome.finishing = false;
+    syncError(authMessage(err));
+    return;
+  }
+  finishWelcome({ signedIn: true });
+}
+
+function finishWelcome({ name = '', signedIn = false } = {}) {
+  if (name) setMyName(name);
   device.welcomed = true;
   saveDevice(device);
-  if (name) setProfiles(renameProfile(device.profiles, me.id, name));
+  const w = welcome;
+  welcome = null;
+  if (w) w.close();
+  // Sync may have brought this person's library from another device.
   if (!store.get().onboarded) startOnboarding();
-  // People and sync opens on top of the first run: if they join a household
-  // that already has their library, the first run closes by itself.
-  if (choice === 'sync') showPeople();
+  if (signedIn) toast(`Signed in as ${displayName(currentProfile(device.profiles))}. Invite friends from Settings → People and sync.`, { ms: 4000 });
 }
 
 async function init() {

@@ -45,35 +45,76 @@ export function openWhoIsWatching(ctx) {
   return sheet;
 }
 
-// First visit: who's this, and do they want to sync with friends? Resolves
-// to { name, choice: 'sync' | 'solo' } (name may be ''), however it closes.
-export function openWelcome({ name = '' } = {}) {
-  return new Promise((resolve) => {
-    let result = null;
-    const sheet = openSheet({ label: 'Welcome to Binger', variant: 'full', className: 'who welcome', onClose: () => resolve(result || { name: input.value.trim(), choice: 'solo' }) });
-    const input = h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', value: name, placeholder: 'Your name' });
-    const done = (choice) => {
-      const v = input.value.trim();
-      if (choice === 'sync' && !v) { input.focus(); hint.textContent = 'Add your name first, so your friends can tell whose library is whose.'; return; }
-      result = { name: v, choice };
-      sheet.close();
-    };
-    const hint = h('p', { class: 'small muted', role: 'status' }, 'Everyone gets their own watchlist, diary and suggestions. Sync keeps them on all your devices and lets friends and family see who’s who.');
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') done(input.value.trim() ? 'sync' : 'solo'); });
-    append(sheet.body, [
-      h('div', { class: 'who-body welcome-body' },
-        h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
-        h('h1', { class: 'page-title' }, 'Who’s this?'),
-        h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
-        input,
-        hint,
+// First visit: sign in straight away, so syncing (and inviting friends) is
+// set up from the start rather than linked later. "Just my name" is the only
+// way past without signing in. ctx.get() returns { hasConfig, busy, error };
+// actions: onGoogle(name), onEmail(name, email, password, create),
+// onNameOnly(name), onClose(). The app closes it once someone is signed in.
+export function openWelcome(ctx) {
+  const sheet = openSheet({ label: 'Welcome to Binger', variant: 'full', className: 'who welcome', dismissible: false, onClose: ctx.onClose });
+  const body = h('div', { class: 'who-body welcome-body' });
+  append(sheet.body, [body]);
+  let need = '';
+
+  const val = (id) => { const el = body.querySelector(`#${id}`); return el ? el.value.trim() : ''; };
+  // A name is needed for a new account and for "Just my name", so friends can
+  // tell whose library is whose. Google and an existing account bring theirs.
+  const requireName = () => {
+    if (val('welcome-name')) return true;
+    need = 'Add your name first, so friends can tell whose library is whose.';
+    render();
+    body.querySelector('#welcome-name').focus();
+    return false;
+  };
+
+  function render() {
+    const st = ctx.get();
+    const typed = new Map([...body.querySelectorAll('input[id]')].map((el) => [el.id, el.value]));
+    const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : null;
+    clear(body);
+    const name = h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', placeholder: 'Your name' });
+    const parts = [
+      h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
+      h('h1', { class: 'page-title' }, 'Welcome to Binger'),
+      h('p', { class: 'small muted' }, st.hasConfig
+        ? 'Sign in so your watchlist and ratings follow you to every device, and friends can join you.'
+        : 'Everyone gets their own watchlist, diary and suggestions.'),
+      h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
+      name,
+    ];
+    if (st.hasConfig) {
+      const email = h('input', { id: 'welcome-email', type: 'email', autocomplete: 'username', placeholder: 'you@example.com' });
+      const pw = h('input', { id: 'welcome-password', type: 'password', autocomplete: 'current-password', placeholder: 'Password (6 or more characters)' });
+      parts.push(
         h('div', { class: 'welcome-actions' },
-          h('button', { type: 'button', class: 'btn btn-primary', onClick: () => done('sync') }, icon('people', 18), 'Sync with friends'),
-          h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => done('solo') }, 'Just me for now')),
-        h('p', { class: 'small muted' }, 'You can change either later in Settings → People and sync.')),
-    ]);
-    requestAnimationFrame(() => input.focus());
-  });
+          h('button', { type: 'button', class: 'btn btn-primary', disabled: st.busy, onClick: () => { need = ''; ctx.onGoogle(val('welcome-name')); } }, 'Continue with Google'),
+          h('p', { class: 'small muted welcome-or' }, 'or with email'),
+          h('label', { class: 'sr-only', for: 'welcome-email' }, 'Email'), email,
+          h('label', { class: 'sr-only', for: 'welcome-password' }, 'Password'), pw,
+          h('div', { class: 'row-gap welcome-email-actions' },
+            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { if (requireName()) { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-email'), body.querySelector('#welcome-password').value, true); } } }, 'Create account'),
+            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-email'), body.querySelector('#welcome-password').value, false); } }, 'Sign in'))),
+        st.busy ? h('p', { class: 'small muted', role: 'status' }, 'Signing in…') : null,
+        st.error ? h('p', { class: 'small error', role: 'alert' }, st.error) : null,
+        need ? h('p', { class: 'small error', role: 'alert' }, need) : null,
+        h('button', { type: 'button', class: 'link-btn welcome-skip', disabled: st.busy, onClick: () => { if (requireName()) ctx.onNameOnly(val('welcome-name')); } }, 'Just my name for now'),
+        h('p', { class: 'small muted' }, 'You can sign in to sync across devices later, in Settings → People and sync.'));
+    } else {
+      parts.push(
+        need ? h('p', { class: 'small error', role: 'alert' }, need) : null,
+        h('div', { class: 'welcome-actions' }, h('button', { type: 'button', class: 'btn btn-primary', onClick: () => { if (requireName()) ctx.onNameOnly(val('welcome-name')); } }, 'Continue')));
+    }
+    append(body, parts);
+    for (const [id, value] of typed) { const el = body.querySelector(`#${id}`); if (el && value) el.value = value; }
+    // Typing survives a re-render (sign-in state changing), and so does focus.
+    const again = focused && body.querySelector(`#${focused}`);
+    if (again) again.focus();
+  }
+
+  render();
+  // After the sheet's own focus (openSheet focuses the panel on the next frame).
+  requestAnimationFrame(() => { const n = body.querySelector('#welcome-name'); if (n) n.focus(); });
+  return { sheet, refresh: () => { if (sheet.el.isConnected) render(); }, close: () => sheet.close() };
 }
 
 // A small sheet asking for a name. Resolves to the name, or null.

@@ -179,6 +179,11 @@ Everything technical you need is in this file,
     entry and already arrives in the deck ("Next part of…"); a TV show keeps one
     TMDB id across seasons, so it can't. A season is "new" if it premieres after
     the latest date in your diary for that show; logging it clears the alert.
+15. **"Where to watch" links only to legal sources** (TMDB / JustWatch for
+    films and TV, AniList's official links for anime). The owner asked for
+    buttons and a Settings link to piracy streaming sites (r/Piracy's
+    megathread) on 2026-10-31; declined, and the legal Watch button built
+    instead. Don't add piracy sites or lists of them.
 
 ---
 
@@ -352,6 +357,19 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session, end): sign in on the welcome, Watch button
+- The owner asked for sign-in on the first visit (so nobody links devices
+  later), with "just a name" as the only way past. The welcome now signs you
+  in (Google or email) and makes a household for a new account straight away;
+  an existing account gets "Which one is you?". `welcomeSignedIn` in `app.js`
+  finishes it from `onUser`, so a Google redirect lands in the same place.
+- The owner also asked for buttons to, and a Settings link to, piracy
+  streaming sites. Declined (decision 15); built a legal **Watch** button in
+  "Where to watch" instead.
+- e2e: the main run takes "Just my name" (Escape can't skip; a name is
+  needed); the sync run signs Emma up on the welcome, signs her laptop in
+  there ("Which one is you?" → Emma → welcome closes), 36 checks.
 
 ### 2026-10-31 (third session, after merge): deploy fix
 - The owner switched Pages to GitHub Actions and ran "Deploy site": it failed
