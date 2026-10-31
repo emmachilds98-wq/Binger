@@ -51,6 +51,29 @@ Either:
   the TMDB key it's fine in a public repo.
 - **Or per device:** Settings → People and sync → paste the config → Connect.
 
+### Is the API key in `js/config.js` a leak?
+
+No. A Firebase **web** config, `apiKey` included, identifies the project; it
+isn't a password. Every Firebase website sends it to every visitor's browser,
+so keeping it out of the repo wouldn't hide it: the live site has to serve
+it. What protects the data is `firestore.rules` (checked: strangers can't read
+or write anything) and the authorised domains. GitHub's secret scanner may
+still flag it, because it looks like any Google API key: close that alert as
+"used in tests / false positive" or "won't fix".
+
+Optional hardening, so the key only works from Binger: Google Cloud console →
+project `binger-5cee3` → APIs & Services → Credentials → the "Browser key
+(auto created by Firebase)" →
+- **Application restrictions:** Websites: `https://emmachilds98-wq.github.io/*`,
+  `https://binger-5cee3.firebaseapp.com/*` (Google sign-in runs through it) and
+  `http://localhost/*`.
+- **API restrictions:** Identity Toolkit API, Token Service API, Cloud
+  Firestore API.
+
+Then try signing in on the live site; if it fails, the message names the
+cause. Real secrets (the TMDB key) never go in the repo: a test fails if
+anything shaped like a TMDB key or token is committed anywhere.
+
 ## 3. Use it
 
 1. Emma: Settings → People and sync → Sign in → **Start a household**.

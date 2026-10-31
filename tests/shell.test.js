@@ -77,6 +77,20 @@ test('no TMDB key is committed in config.js', () => {
   assert.match(src, /tmdbKey: ''/, 'leave CONFIG.tmdbKey empty in the repo; set keys in the app\u2019s Settings');
 });
 
+// A TMDB key is a secret: not in config.js, and not anywhere else either.
+// A v3 key is 32 hex characters, a v4 token a long JWT ("eyJ…"). The only
+// key-shaped string allowed is the obvious fake the unit tests use.
+test('no TMDB key or token is committed anywhere', () => {
+  const FAKE = '0123456789abcdef0123456789abcdef';
+  const text = walk(ROOT).filter((f) => !/\.(jpg|png|ico|webp|woff2?)$/.test(f));
+  for (const file of text) {
+    const src = readFileSync(file, 'utf8');
+    const hex = (src.match(/\b[0-9a-f]{32}\b/g) || []).filter((m) => m !== FAKE);
+    assert.deepEqual(hex, [], `${relative(ROOT, file)} holds something shaped like a TMDB key`);
+    assert.ok(!/eyJ[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_-]{30,}\./.test(src), `${relative(ROOT, file)} holds something shaped like a TMDB access token`);
+  }
+});
+
 // The Firebase web config may be committed (it isn't a secret), but a broken
 // or test-only one would stop sync for everyone.
 test('the committed Firebase config is a whole web config, never the emulators', async () => {

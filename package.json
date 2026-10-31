@@ -11,7 +11,8 @@
     "bump": "node scripts/bump.mjs",
     "e2e": "node scripts/e2e.mjs",
     "e2e:sync": "node scripts/e2e-sync.mjs",
-    "emulators": "npx -y firebase-tools@15.34.2 emulators:start --project demo-binger --only auth,firestore"
+    "emulators": "npx -y firebase-tools@15.34.2 emulators:start --project demo-binger --only auth,firestore",
+    "tmdb:live": "node scripts/tmdb-live.mjs"
   },
   "engines": {
     "node": ">=20"

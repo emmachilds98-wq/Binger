@@ -38,7 +38,9 @@ const tmdb = createTmdb({ key: KEY, region: 'GB', fetchImpl });
 // The shape of a value: type for scalars, keys (and element shape) for the rest.
 function shape(v, depth = 0) {
   if (v === null || v === undefined) return 'empty';
-  if (Array.isArray(v)) return v.length && depth < 3 ? [shape(v.find((x) => x != null), depth + 1)] : 'array';
+  // An empty list is "empty" too: the fixture's show may stream nowhere in GB
+  // while the live one streams somewhere, and that's not a different shape.
+  if (Array.isArray(v)) return v.length ? (depth < 3 ? [shape(v.find((x) => x != null), depth + 1)] : 'array') : 'empty';
   if (typeof v === 'object') return depth < 3 ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, shape(v[k], depth + 1)])) : 'object';
   return typeof v;
 }
@@ -92,6 +94,9 @@ await step('TV details', async () => {
   console.log(`    ${live.title} · ${live.seasons} seasons · next ${JSON.stringify(live.nextEpisode)} · last ${JSON.stringify(live.lastEpisode)} · seasons ${live.seasonList.map((s) => `${s.number}:${s.date}`).join(' ')}`);
   check(live.title === 'Severance' && live.seasonList.length >= 2 && live.seasonList.every((s) => s.number > 0), 'Severance: seasons listed, specials left out');
   check(live.lastEpisode && typeof live.lastEpisode.season === 'number', 'the last episode has a season number (what new-season alerts read)');
+  // An Apple original: TMDB calls the service "Apple TV" since Apple's 2025
+  // rename; Binger's one name for it is "Apple TV+" (js/sources/services.js).
+  check(live.streaming.includes('Apple TV+'), `Severance counts as on Apple TV+ (${JSON.stringify(live.streaming)})`);
   compare('TV details', live, fromTmdbDetail(fx('tmdb-tv-detail.json'), 'tv', 'GB'));
 });
 

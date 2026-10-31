@@ -16,6 +16,10 @@ const ALIASES = {
   'disney plus': 'Disney+',
   'apple tv plus': 'Apple TV+',
   'apple tv+': 'Apple TV+',
+  // Apple renamed Apple TV+ to "Apple TV" in 2025 and TMDB followed (seen in
+  // the live check, 2026-10-31). Binger keeps "Apple TV+" so saved picks keep
+  // working and it can't be mistaken for the Apple TV Store (rent and buy).
+  'apple tv': 'Apple TV+',
   'paramount plus': 'Paramount+',
   'paramount+ premium': 'Paramount+',
   'hbo max': 'Max',
@@ -58,6 +62,13 @@ export function canonicalService(name) {
   }
   const alias = ALIASES[n.toLowerCase()];
   return alias || n;
+}
+
+// Shops and guides, not subscriptions: TMDB's region list includes them
+// ("Apple TV Store", "JustWatch TV Store"), but nobody subscribes to them, so
+// they don't belong in "Your streaming services".
+export function isStoreOnly(name) {
+  return / store$/i.test(String(name || '').trim()) || /^justwatch\b/i.test(String(name || '').trim());
 }
 
 // Canonical names, deduplicated, in first-seen order.

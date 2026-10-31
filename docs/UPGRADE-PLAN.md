@@ -106,8 +106,8 @@ PLAN.md). Options, best first:
       from a GitHub Actions secret. It still ends up public on the site.
       If the owner chooses it anyway, update decision 4 in PLAN.md and the
       shell test together.
-- [ ] Still outstanding from Phase 1.1: [Verifying TMDB live](PLAN.md#verifying-tmdb-live)
-      in a session where `TMDB_API_KEY` is actually set (it wasn't in this one).
+- [x] Phase 1.1's [Verifying TMDB live](PLAN.md#verifying-tmdb-live): done in
+      GitHub Actions with the repository secret (2026-10-31), and kept running weekly.
 
 ### 4. Mobile polish (after 1 to 3)
 

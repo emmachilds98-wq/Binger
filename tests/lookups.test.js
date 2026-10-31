@@ -1,10 +1,12 @@
 // Phase 2 sources: streaming services, people, franchises, TV seasons, and
 // candidate gathering with services and deck filters. AniList fixtures are
-// real captured responses; TMDB ones follow TMDB's documented format.
+// real captured responses. TMDB ones are hand-written to TMDB's format; their
+// normalised shapes are checked against the live API by scripts/tmdb-live.mjs
+// (GitHub Actions, weekly).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { canonicalService, canonicalServices } from '../js/sources/services.js';
+import { canonicalService, canonicalServices, isStoreOnly } from '../js/sources/services.js';
 import { fromTmdbDetail, fromTmdbList, fromTmdbPerson, fromTmdbCollection, fromTmdbProviders, collectionName, createTmdb } from '../js/sources/tmdb.js';
 import { fromAniList, parsePerson, parseFranchise, parseDeckBatch, decadeRange, createAniList } from '../js/sources/anilist.js';
 import { gatherCandidates, hydrate, decadeDates } from '../js/sources/candidates.js';
@@ -41,6 +43,15 @@ test('service names from TMDB and AniList meet in one vocabulary', () => {
   assert.equal(canonicalService('Peacock Premium'), 'Peacock');
   assert.equal(canonicalService('Funimation Now'), 'Crunchyroll');
   assert.deepEqual(canonicalServices(['Netflix', 'Netflix Standard with Ads', 'HIDIVE']), ['Netflix', 'HIDIVE']);
+  // Live TMDB, 2026-10-31: Apple TV+ is now listed as "Apple TV". It must still
+  // match a saved "Apple TV+" pick, or "only what I can stream" hides Apple shows.
+  assert.equal(canonicalService('Apple TV'), 'Apple TV+');
+  assert.equal(canonicalService('Apple TV Store'), 'Apple TV Store', 'the store (rent and buy) is not the subscription');
+});
+
+test('shops and guides are not services you subscribe to', () => {
+  for (const name of ['Apple TV Store', 'JustWatch TV Store', 'JustWatch TV Free', 'Google Play Store']) assert.ok(isStoreOnly(name), name);
+  for (const name of ['Netflix', 'Apple TV+', 'Rakuten TV', 'Amazon Prime Video']) assert.ok(!isStoreOnly(name), name);
 });
 
 test('TMDB region providers: one entry per service, most common first', () => {
@@ -221,6 +232,10 @@ test('serviceChoices: your region\'s services first, common ones always offered'
   assert.equal(withKey[0].service, 'BBC iPlayer');
   assert.ok(withKey[0].logo);
   assert.equal(new Set(withKey.map((s) => s.service)).size, withKey.length);
+  // The live GB list includes shops (2026-10-31); the picker leaves them out.
+  const shops = { results: [...fx('tmdb-providers-movie.json').results, { provider_id: 2, provider_name: 'Apple TV Store', display_priorities: { GB: 4 } }, { provider_id: 2784, provider_name: 'JustWatch TV Store', display_priorities: { GB: 5 } }] };
+  const picker = await serviceChoices({ tmdb: createTmdb({ key: 'k', fetchImpl: fakeFetch([['/watch/providers/', shops]]) }) });
+  assert.ok(!picker.some((s) => isStoreOnly(s.service)), 'no shops in "Your streaming services"');
 });
 
 test('checkNewSeasons fetches watched shows and reports a new season', async () => {

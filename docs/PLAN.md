@@ -39,11 +39,9 @@ Do these in order:
 
 1. Run `npm run check && npm test && npm run e2e` to confirm a green start
    (and `npm run e2e:sync` if Java is installed; see [FIREBASE.md](FIREBASE.md#on-the-emulators-no-firebase-project-needed)).
-2. **The TMDB key is now in the environment's secrets** (`TMDB_API_KEY`; the
-   owner added it on 2026-10-31, after the third session's container had
-   started, so that session couldn't see it). Do [Verifying TMDB live](#verifying-tmdb-live)
-   first. It has been blocked four times, and Phase 2 adds four TMDB endpoints
-   that are still tested only against hand-written responses.
+2. **TMDB is verified live**, in GitHub Actions with the repository secret
+   (`.github/workflows/tmdb-live.yml`, weekly and on adapter changes). If that
+   workflow goes red, TMDB changed: read its log, fix `js/sources/tmdb.js`.
 3. **Firebase is connected and live-checked** (`binger-5cee3`, config in
    `js/config.js`, console steps done, [live check passed](FIREBASE.md#on-the-real-project)).
    Only Google sign-in is untested by script: ask the owner to try it once.
@@ -211,9 +209,9 @@ Everything technical you need is in this file,
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
 - [ ] Add to Home Screen (Safari: Share → Add to Home Screen). On iPhone this
       also stops Safari clearing the library after 7 days unused.
-- [ ] **Verify films and TV against the live TMDB API.** Still not done: the
-      `TMDB_API_KEY` secret wasn't present in any of the three sessions so far. Steps in
-      [Verifying TMDB live](#verifying-tmdb-live).
+- [x] **Verify films and TV against the live TMDB API** (2026-10-31, in GitHub
+      Actions with the repository secret; now weekly and on every adapter
+      change: [Verifying TMDB live](#verifying-tmdb-live)).
 
 ### Phase 2: Smarter suggestions ✅
 
@@ -345,6 +343,18 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session, last): TMDB verified live
+- PC layout merged (#5). The owner added the TMDB key as a GitHub repository
+  secret, so the live TMDB check now runs in GitHub Actions
+  (`scripts/tmdb-live.mjs`, `.github/workflows/tmdb-live.yml`), no session
+  secret needed. First real contact between the adapter and TMDB: shapes all
+  match the fixtures.
+- Fixed from what it found: Apple's rename (TMDB "Apple TV" is Binger's
+  "Apple TV+" again, so stream-only stops hiding Apple shows); shops filtered
+  out of the services picker (`isStoreOnly` in `services.js`). Tests: 105.
+- **Next:** UPGRADE-PLAN step 3's proxy (films and TV for visitors without a
+  key) needs the owner's Cloudflare account; then step 4, mobile polish.
 
 ### 2026-10-31 (third session, later): PC layout
 - After #4 merged, the owner asked to carry on and merge to `main`. Built the
@@ -552,7 +562,24 @@ Newest first. One entry per working session: what changed, what's next, what's b
 
 ## Verifying TMDB live
 
-In a session where `TMDB_API_KEY` is set:
+**Automatic:** `.github/workflows/tmdb-live.yml` runs `scripts/tmdb-live.mjs`
+with the repository's `TMDB_API_KEY` secret whenever the TMDB adapter changes,
+every Monday, and on demand (Actions → TMDB live → Run workflow). It asks TMDB
+for the titles the fixtures describe, runs both through the adapter and
+compares the normalised shapes, and uploads trimmed raw captures as an
+artifact (`tmdb-live-captures`) for replacing fixtures. Locally, with the key
+in your environment: `npm run tmdb:live`.
+
+First run, 2026-10-31: everything matched (trending, film and TV details,
+GB providers, a person, a collection, discover by service + length + decade),
+and it turned up two things, both fixed: TMDB now calls Apple TV+ "Apple TV"
+(Apple's 2025 rename), which stopped "only what I can stream" matching Apple
+shows for anyone who'd picked Apple TV+; and GB's provider list now includes
+shops ("Apple TV Store", "JustWatch TV Store"), now kept out of the services
+picker. Severance's season 3 is listed with no date yet; new-season alerts
+wait for a date, which is the intended behaviour.
+
+By hand, in a session where `TMDB_API_KEY` is set:
 
 ```bash
 # 1. The key works
