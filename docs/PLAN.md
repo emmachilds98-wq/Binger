@@ -28,9 +28,10 @@ Where things stand on 2026-10-31 (third session):
   showing whose library it is, "Who's watching?", and household sync.
   **Sync now passes the full live check on the Firebase emulators** with the
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
-- **Open PRs:** #2 (steps 1–2) is inside #3 (`claude/inspiring-ride-ieuekd`,
-  Phase 2 + people + sync), which is inside #4 (`claude/firebase-upgrades`,
-  this session: the emulator run and two sync fixes). Merging #4 merges all of it.
+- **PRs:** #2 and #3 (Phase 2, people, sync code) were merged into `main` on
+  2026-10-31, so they're live. #4 (`claude/firebase-upgrades`: the emulator
+  run, two sync fixes and the project's Firebase config) is open; until it's
+  merged, the live site has no Firebase project to sync with.
 - **Checks:** `npm test` 104 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
@@ -352,7 +353,9 @@ Newest first. One entry per working session: what changed, what's next, what's b
 - The owner asked to carry on from the last session, connect Firebase and
   finish the upgrades. Started from PR #3's head (`29488b5`, CI green); all
   three branches checked: `claude/happy-cerf-qei1lg` (PR #2) is contained in
-  `claude/inspiring-ride-ieuekd` (PR #3), and `main` is unchanged at `e86c79f`.
+  `claude/inspiring-ride-ieuekd` (PR #3), and `main` was at `e86c79f`. (The
+  owner merged #2 and #3 into `main` at 07:48, just after; #4 holds only this
+  session's commits on top.)
 - No access to the owner's Firebase project from the session (gcloud has no
   credentials, and the web config isn't anywhere in the repo or PRs), so
   instead ran the FIREBASE.md live check for real: the real Firebase JS SDK
