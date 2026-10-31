@@ -31,7 +31,7 @@ Where things stand on 2026-10-31 (fourth session):
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
 - **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
   people and sync with the owner's Firebase project are live.
-- **Checks:** `npm test` 120 passing, `npm run e2e` all passing,
+- **Checks:** `npm test` 131 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
@@ -50,9 +50,11 @@ Do these in order:
    the PC layout is done (step 2), so 3. films and TV for everyone, then
    4. mobile polish. If someone with canvas access is around, add a desktop
    row to the canvas from DESIGN.md → "PC and tablet layout".
-5. **Coverage** ([COVERAGE-PLAN.md](COVERAGE-PLAN.md)): step 1 is built
-   (search, first run, wider deck); check its TMDB live run is green, then
-   carry on with step 2. Step 3 lists what the owner can connect.
+5. **Coverage** ([COVERAGE-PLAN.md](COVERAGE-PLAN.md)): steps 1 and 2 are
+   built (search, first run, wider deck, people and years in search, review
+   scores). Review scores wait for the owner's `MDBLIST_API_KEY` secret
+   (step 4); check the TMDB live run's "review scores" step once it's in.
+   Then step 3.
 6. Tick the boxes here and add a [status log](#status-log) entry.
 
 ### New to the project? (human engineers)
@@ -138,8 +140,11 @@ Everything technical you need is in this file,
    like a TMDB key is committed anywhere. The key is readable by anyone who
    opens the site, as any key a browser uses is. Accepted for a free,
    read-only key; if it's ever abused, make a new key at TMDB and update the
-   secret, or move it behind a proxy (UPGRADE-PLAN step 3). A key pasted in
-   Settings still wins. Without any key the app still works, anime-only.
+   secret, or move it behind a proxy (UPGRADE-PLAN step 3). **The built-in
+   key wins, and Settings has no key field where one is built in** (the
+   owner's ask, 2026-10-31); the field, and a pasted or household key, only
+   apply to a copy with none built in (forks, local development). Without
+   any key the app still works, anime-only.
 5. **Local-first library.** Everything you do lives in the browser
    (localStorage), with Export/Import for backup. No account needed. Cross-device
    sync is Phase 3.
@@ -197,6 +202,13 @@ Everything technical you need is in this file,
     `services.js`, same in every country; each id checked weekly by the live
     check); "what's on Netflix" by watch provider, in your region. Typing a
     service into search lists both, first.
+18. **Review scores come from MDBList** (`js/sources/ratings.js`): IMDb,
+    Rotten Tomatoes critics and audience, Metacritic, Letterboxd, by TMDB
+    id. Rotten Tomatoes and IMDb have no open API (RT licenses to partners
+    only); OMDb lacks the audience score. The key is built in at deploy from
+    `MDBLIST_API_KEY` like the TMDB key (decision 4), each title's scores are
+    cached for a week (free plan: 1,000 lookups a day), and without a key
+    nothing shows. Scores are shown, not yet used by the engine.
 
 ---
 
@@ -359,9 +371,13 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 - [x] Step 1: search finds any film or show (and "apple tv" lists Apple's),
       a first-run grid of what most people have seen with "Show more", a
       newer and wider deck (recent hits, streamers' originals, no talk shows)
-- [ ] Step 2: people and years in search, `/similar` fallback, browse by
-      service on the first run (design first), coming soon
-- [ ] Step 3 (owner): `TMDB_API_KEY` in the cloud environment; Trakt later, maybe
+- [x] Step 2: people and years in search, `/similar` fallback, page memory,
+      review scores (IMDb, Rotten Tomatoes critics + audience, Metacritic,
+      Letterboxd via MDBList), no TMDB key field where one is built in
+- [ ] Step 3: scores in the engine, browse by service on the first run and
+      coming soon (both design first), anime scores
+- [ ] Step 4 (owner): `MDBLIST_API_KEY` repository secret (switches scores
+      on); `TMDB_API_KEY` + `MDBLIST_API_KEY` in the cloud environment; Trakt later, maybe
 
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
@@ -378,6 +394,30 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session, later): coverage step 2, review scores
+- The owner merged #9 ("merge it and start"), then asked for more sources
+  "like IMDb", Rotten Tomatoes' user score, and no TMDB key in Settings now
+  that it's built in.
+- Checked the sources (COVERAGE-PLAN → Sources): Rotten Tomatoes' API is
+  partner-only and licensed (about $60k a year); IMDb has no free API; OMDb
+  has no audience score. MDBList (free key) gives IMDb, Rotten Tomatoes
+  critics and audience, Metacritic and Letterboxd by TMDB id: built
+  `js/sources/ratings.js` against its documented format (decision 18). It
+  switches on when the owner adds `MDBLIST_API_KEY` (built in at deploy).
+- Built COVERAGE-PLAN step 2: people in search (a row that opens their
+  page, plus what they're known for), a year in search ("dune 2021"),
+  `/similar` when recommendations are thin, 5 seeds for big libraries, and a
+  page memory so refills keep reaching new titles. Details link to IMDb.
+- Settings has no TMDB key section where a key is built in, and the
+  built-in key always wins (decision 4 updated).
+- Tests: 131 unit (was 120); `e2e:sync` all passing on the emulators (the
+  key order changed); e2e all passing with new checks (person in
+  search, review scores with a built-in key, no key field); screenshots
+  `23-search-person`, `24-review-scores`. The live check gains "people and
+  years in search", "deck reach" and "review scores" (skips without the key).
+- **Owner:** add the `MDBLIST_API_KEY` repository secret (COVERAGE-PLAN step
+  4). **Next:** COVERAGE-PLAN step 3.
 
 ### 2026-10-31 (fourth session): coverage, more films and shows
 - The owner couldn't find Apple TV+ shows they like, saw gaps in newer

@@ -75,6 +75,7 @@ test('index.html loads version.js before the app and links the manifest', () => 
 test('no TMDB key is committed in config.js', () => {
   const src = readFileSync(join(ROOT, 'js', 'config.js'), 'utf8');
   assert.match(src, /tmdbKey: ''/, 'leave CONFIG.tmdbKey empty in the repo; set keys in the app\u2019s Settings');
+  assert.match(src, /mdblistKey: ''/, 'leave CONFIG.mdblistKey empty in the repo: the deploy builds it in from the MDBLIST_API_KEY secret');
 });
 
 // A TMDB key is a secret: not in config.js, and not anywhere else either.

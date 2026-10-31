@@ -41,6 +41,7 @@ const SHELL = [
   'js/sources/anilist.js',
   'js/sources/candidates.js',
   'js/sources/lookups.js',
+  'js/sources/ratings.js',
   'js/state/library.js',
   'js/state/store.js',
   'js/state/cache.js',

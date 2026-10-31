@@ -1,7 +1,7 @@
 // Search films, TV and anime at once, to log something you've watched or save
 // something you've heard about.
 
-import { h, append, icon, clear, KIND_NAME, poster } from './dom.js';
+import { h, append, icon, clear, KIND_NAME, poster, avatar } from './dom.js';
 import { openSheet, closeButton } from './sheet.js';
 
 export function openSearch(ctx) {
@@ -22,15 +22,16 @@ export function openSearch(ctx) {
     const mine = ++seq;
     if (q.length < 2) { clear(results); return; }
     clear(results).append(h('p', { class: 'muted search-status' }, 'Searching…'));
-    const { titles, errors, service } = await ctx.search(q);
+    const { titles, errors, service, people = [] } = await ctx.search(q);
     if (mine !== seq) return;
     clear(results);
-    if (!titles.length) {
+    if (!titles.length && !people.length) {
       results.append(h('p', { class: 'muted search-status' }, errors.length ? 'Search failed. Check your connection.' : `Nothing found for “${q}”.`));
     } else {
       append(results, [
+        people.length && ctx.onPerson ? h('ul', { class: 'rows search-people', 'aria-label': 'People' }, people.map((p) => personRow(p, ctx))) : null,
         service ? h('p', { class: 'small muted search-hint search-service' }, serviceLine(service)) : null,
-        h('ul', { class: 'rows' }, titles.map((t) => resultRow(t, ctx, sheet)))]);
+        titles.length ? h('ul', { class: 'rows' }, titles.map((t) => resultRow(t, ctx, sheet))) : null]);
     }
     if (!ctx.hasKey) results.append(h('p', { class: 'small muted search-hint' }, 'Only anime is searched until you add a TMDB key in Settings.'));
   };
@@ -43,6 +44,19 @@ export function openSearch(ctx) {
 // Typing a service's name lists its shows first (js/sources/lookups.js).
 export function serviceLine(service) {
   return `${service} shows and films first, then everything else that matches.`;
+}
+
+// Someone whose name you typed: opens their page (js/ui/person.js), their
+// films and shows ranked for you. What they're known for is in the results too.
+function personRow(p, ctx) {
+  const known = (p.knownFor || []).slice(0, 2).map((t) => t.title).join(', ');
+  return h('li', { class: 'row' },
+    h('button', { type: 'button', class: 'row-main', 'aria-label': `${p.name}: see their films and shows`, onClick: () => ctx.onPerson(p) },
+      avatar(p, 'lg'),
+      h('span', { class: 'row-text' },
+        h('span', { class: 'row-title' }, p.name),
+        h('span', { class: 'small muted' }, [p.known, known ? `known for ${known}` : null].filter(Boolean).join(' · '))),
+      icon('forward', 18)));
 }
 
 function resultRow(t, ctx, sheet) {

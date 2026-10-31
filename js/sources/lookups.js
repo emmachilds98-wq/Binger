@@ -35,6 +35,16 @@ export function normaliseName(s) {
 
 const ARTICLE = /^(the|a|an) /;
 
+// "Dune 2021", "The Office (2005)": a year at the end narrows the search.
+// Only years up to three from now count, so "Blade Runner 2049" stays a title.
+export function splitYear(query, now = Date.now()) {
+  const q = String(query || '').trim();
+  const m = q.match(/^(.*\S)\s+\(?((?:18|19|20)\d{2})\)?$/);
+  const year = m ? Number(m[2]) : null;
+  if (!m || year < 1880 || year > new Date(now).getUTCFullYear() + 3) return { text: q, year: null };
+  return { text: m[1], year };
+}
+
 // How closely a title's name matches what was typed: 0 the same name,
 // 1 starts with it, 2 has every word ("slow hor" finds Slow Horses),
 // 3 anything else the source thought was a match.
@@ -53,19 +63,41 @@ export function matchTier(title, query) {
   return best;
 }
 
-// Results from several sources, best match first. Within a tier, each
-// source's own order (TMDB's most popular, AniList's best match) decides,
-// sources taking turns, and titles with no poster go last.
-export function rankSearch(query, lists) {
+// Results from several sources, best match first. Within a tier, a title
+// from the year asked for comes first, then each source's own order (TMDB's
+// most popular, AniList's best match), sources taking turns; titles with no
+// poster go last. query can be several ways of reading what was typed
+// ("dune 2021" and "dune"): the closest match counts. known: ids of what a
+// person you named is known for, which count as a good match ("adam scott"
+// finds Severance before films that only loosely match the words).
+export function rankSearch(query, lists, { year = null, known = null } = {}) {
+  const queries = Array.isArray(query) ? query : [query];
   const all = [];
   const seen = new Set();
   lists.forEach((list, li) => (list || []).forEach((t, pos) => {
     if (!t || !t.id || seen.has(t.id)) return;
     seen.add(t.id);
-    all.push({ t, tier: matchTier(t, query), art: t.poster ? 0 : 1, pos, li });
+    const tier = Math.min(...queries.map((q) => matchTier(t, q)), known && known.has(t.id) ? 2 : 3);
+    all.push({ t, tier, off: year && t.year !== year ? 1 : 0, art: t.poster ? 0 : 1, pos, li });
   }));
-  all.sort((a, b) => a.tier - b.tier || a.art - b.art || a.pos - b.pos || a.li - b.li);
+  all.sort((a, b) => a.tier - b.tier || a.off - b.off || a.art - b.art || a.pos - b.pos || a.li - b.li);
   return all.map((x) => x.t);
+}
+
+// People worth a row of their own: you typed their whole name ("adam
+// scott"), or the start of it in two words or more ("pedro pas"). A single
+// word ("tom") is more likely a title, unless it's a well-known one-name
+// person ("zendaya"). A namesake far less known than the best match (a
+// second "Adam Scott", a producer) is left out.
+export function matchingPeople(query, people, max = 2) {
+  const words = normaliseName(query).split(' ').filter(Boolean).length;
+  const matches = (people || []).filter((p) => {
+    const tier = matchTier({ title: p.name }, query);
+    if (words >= 2) return tier <= 1;
+    return tier === 0 && (p.popularity || 0) >= 5;
+  });
+  const top = Math.max(0, ...matches.map((p) => p.popularity || 0));
+  return matches.filter((p) => (p.popularity || 0) >= top * 0.3).slice(0, max);
 }
 
 // A streaming service's shows and films: its own series (TMDB networks, any
@@ -84,22 +116,33 @@ export async function serviceTitles(service, { tmdb, page = 1 } = {}) {
 }
 
 // Search films, TV and anime at once. Typing a service's name ("apple tv",
-// "netflix") also brings up that service's shows, first.
-// -> { titles, errors, service } (service: the name matched, or null).
-export async function searchTitles(query, { tmdb, anilist, limit = 40 } = {}) {
+// "netflix") also brings up that service's shows, first; a person's name
+// brings them up (to open their page) and what they're known for; a year at
+// the end ("dune 2021") puts that year's title first.
+// -> { titles, errors, service, people } (service: the name matched, or null).
+export async function searchTitles(query, { tmdb, anilist, limit = 40, now = Date.now() } = {}) {
   const q = String(query || '').trim();
-  if (!q) return { titles: [], errors: [], service: null };
+  if (!q) return { titles: [], errors: [], service: null, people: [] };
   const service = serviceFromQuery(q);
+  const { text, year } = splitYear(q, now);
+  const hasTmdb = !!(tmdb && tmdb.hasKey);
   const jobs = [];
-  if (tmdb && tmdb.hasKey) jobs.push(tmdb.search(q));
-  if (anilist) jobs.push(anilist.search(q));
-  const [svc, ...settled] = await Promise.allSettled([serviceTitles(service, { tmdb }), ...jobs]);
+  if (hasTmdb) {
+    jobs.push(tmdb.search(q));
+    // "Space 1999" is a title too, so the whole query is searched as well.
+    if (year) jobs.push(tmdb.search(text, { year }), tmdb.search(text));
+  }
+  if (anilist) jobs.push(anilist.search(year ? text : q));
+  const peopleJob = hasTmdb && !service ? tmdb.searchPeople(text).catch(() => []) : Promise.resolve([]);
+  const [svc, who, ...settled] = await Promise.allSettled([serviceTitles(service, { tmdb }), peopleJob, ...jobs]);
   const errors = settled.filter((r) => r.status === 'rejected').map((r) => r.reason);
-  const found = rankSearch(q, settledValues(settled));
+  const people = matchingPeople(text, who.status === 'fulfilled' ? who.value : []);
+  const known = new Set(people.flatMap((p) => p.knownFor.map((t) => t.id)));
+  const found = rankSearch(year ? [q, text] : q, [...people.map((p) => p.knownFor), ...settledValues(settled)], { year, known });
   const fromService = svc.status === 'fulfilled' ? svc.value.slice(0, 24) : [];
   const ids = new Set(fromService.map((t) => t.id));
   const titles = [...fromService, ...found.filter((t) => !ids.has(t.id))].slice(0, limit + fromService.length);
-  return { titles, errors, service: fromService.length ? service : null };
+  return { titles, errors, service: fromService.length ? service : null, people };
 }
 
 // ---- First run ---------------------------------------------------------------

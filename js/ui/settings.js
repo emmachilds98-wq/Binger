@@ -1,5 +1,6 @@
-// Settings: TMDB key, region, trailer behaviour, anime voice language,
-// backup / restore, reset, and credits.
+// Settings: region, trailer behaviour, anime voice language, backup /
+// restore, reset, and credits. The TMDB key field appears only on a copy of
+// Binger with no key built in (forks, local copies): the live site has one.
 
 import { h, icon } from './dom.js';
 import { openSheet, closeButton, confirmSheet, choiceSheet, toast } from './sheet.js';
@@ -80,7 +81,7 @@ export function openSettings(ctx) {
         h('button', { type: 'button', class: 'row-btn', onClick: ctx.onPeople },
           h('span', { class: 'switch-text' }, h('span', { class: 'switch-label' }, 'Who uses Binger, and sync'), h('span', { class: 'small muted' }, 'Separate libraries for each of you, the same on every device')),
           icon('forward', 18))) : null,
-      group('Films & TV (TMDB key)',
+      !ctx.keyField ? null : group('Films & TV (TMDB key)',
         h('p', { class: 'small muted' }, 'Films and TV come from TMDB, which needs a free key. Make an account at themoviedb.org, then Settings → API. Paste either the API Key or the Read Access Token. It’s stored only on this device.'),
         h('div', { class: 'key-row' }, h('label', { class: 'sr-only', for: 'tmdb-key' }, 'TMDB key'), keyInput, show),
         h('div', { class: 'row-gap' }, testBtn, h('a', { href: 'https://www.themoviedb.org/settings/api', target: '_blank', rel: 'noopener', class: 'small' }, 'Get a key', icon('external', 14))),
@@ -108,7 +109,7 @@ export function openSettings(ctx) {
         }, icon('trash', 18), 'Erase my library')),
       group('About',
         h('p', { class: 'small muted' }, `Binger ${self.BINGER_VERSION || 'dev'}${self.BINGER_BUILD_TIME ? ` · built ${new Date(self.BINGER_BUILD_TIME).toLocaleString()}` : ''}`),
-        h('p', { class: 'small muted' }, 'Film and TV data: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability: JustWatch, via TMDB. Anime data: AniList. Trailers: YouTube.'))));
+        h('p', { class: 'small muted' }, 'Film and TV data: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability: JustWatch, via TMDB. Anime data: AniList. Review scores (IMDb, Rotten Tomatoes, Metacritic, Letterboxd): MDBList. Trailers: YouTube.'))));
   return sheet;
 }
 

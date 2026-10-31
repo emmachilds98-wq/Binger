@@ -107,6 +107,29 @@ export function publicScore(t) {
   return t.source === 'anilist' ? `AniList ${Math.round(t.score * 10)}%` : `TMDB ${t.score.toFixed(1)}`;
 }
 
+// Review scores (js/sources/ratings.js) as short labels, each with a link
+// to its page when there is one. Rotten Tomatoes' audience score is the one
+// from people who watched it; "critics" is its Tomatometer.
+export function reviewScores(t) {
+  const r = t && t.ratings;
+  if (!r) return [];
+  return [
+    r.imdb ? { key: 'imdb', text: `IMDb ${r.imdb.value.toFixed(1)}`, url: r.imdb.url } : null,
+    r.critics ? { key: 'critics', text: `RT critics ${r.critics.value}%`, url: r.critics.url } : null,
+    r.audience ? { key: 'audience', text: `RT audience ${r.audience.value}%`, url: r.audience.url } : null,
+    r.metacritic ? { key: 'metacritic', text: `Metacritic ${r.metacritic.value}`, url: r.metacritic.url } : null,
+    r.letterboxd ? { key: 'letterboxd', text: `Letterboxd ${r.letterboxd.value.toFixed(1)}`, url: r.letterboxd.url } : null,
+  ].filter(Boolean);
+}
+
+// The card's one-line score: IMDb and Rotten Tomatoes' audience score (or
+// its critics' score) when known, otherwise TMDB's or AniList's own.
+export function cardScore(t) {
+  const s = reviewScores(t);
+  const pick = [s.find((x) => x.key === 'imdb'), s.find((x) => x.key === 'audience') || s.find((x) => x.key === 'critics')].filter(Boolean);
+  return pick.length ? pick.map((x) => x.text).join(' · ') : publicScore(t);
+}
+
 export function titleCase(s) {
   // AniList shouts some studio names ("MADHOUSE"); keep short acronyms as-is.
   if (!s || s !== s.toUpperCase() || s.length <= 4) return s;

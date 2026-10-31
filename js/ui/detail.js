@@ -1,7 +1,7 @@
 // Full detail for one title: trailer clip, why it was picked, synopsis, cast
 // (people you know highlighted), where to watch, and your own history with it.
 
-import { h, icon, clear, KIND_NAME, metaLine, publicScore, avatar, starsText, shortDate, titleCase, safeImg } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg } from './dom.js';
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
 import { knownFrom } from './card.js';
@@ -79,6 +79,18 @@ function crewLine(t, ctx) {
   return bits.length ? bits.flatMap((b, i) => [i ? ' \u00b7 ' : null, ...b]) : null;
 }
 
+// IMDb, Rotten Tomatoes (critics and audience), Metacritic and Letterboxd,
+// each opening its page. Just an IMDb link when there are no scores yet.
+function scoresRow(t) {
+  const scores = reviewScores(t);
+  const imdbOnly = !scores.some((s) => s.key === 'imdb') && t.imdbId ? [{ key: 'imdb', text: 'IMDb', url: `https://www.imdb.com/title/${t.imdbId}/` }] : [];
+  const all = [...scores, ...imdbOnly];
+  if (!all.length) return null;
+  return h('ul', { class: 'chips scores', 'aria-label': 'Review scores' }, all.map((s) => h('li', null, s.url
+    ? h('a', { class: 'chip chip-link', href: s.url, target: '_blank', rel: 'noopener' }, s.text, icon('external', 12))
+    : h('span', { class: 'chip' }, s.text))));
+}
+
 function body(t, ctx, sheet) {
   const format = t.kind === 'anime' && t.format && t.format !== 'TV' ? t.formatLabel : null;
   const facts = [format, metaLine(t, { genres: 0 }), t.certification, publicScore(t)].filter(Boolean).join(' · ');
@@ -92,6 +104,7 @@ function body(t, ctx, sheet) {
       h('h1', { class: 'detail-title' }, t.title),
       t.tagline ? h('p', { class: 'tagline' }, t.tagline) : null,
       crewLine(t, ctx) ? h('p', { class: 'muted small' }, crewLine(t, ctx)) : null),
+    scoresRow(t),
     chips.length ? h('ul', { class: 'chips', 'aria-label': 'Genres and themes' }, chips.map((c) => h('li', { class: 'chip' }, c))) : null,
     reasons.length ? h('section', { class: 'why', 'aria-label': 'Why Binger picked this' },
       h('h2', { class: 'eyebrow accent' }, 'Why Binger picked this'),

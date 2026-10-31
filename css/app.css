@@ -122,6 +122,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--text-2); }
 .chip-solid { background: var(--surface); }
+/* Review scores in details: each opens its site. */
+.scores { margin-top: -4px; }
+.chip-link { display: inline-flex; align-items: center; gap: 5px; color: var(--text); text-decoration: none; font-weight: 600; }
+.chip-link:hover { border-color: var(--muted); color: var(--text); }
+.chip-link svg { color: var(--muted); }
 
 .avatar {
   flex: none; border-radius: 50%; background: var(--line); color: var(--text); overflow: hidden;
@@ -317,6 +322,8 @@ input[type="range"] { accent-color: var(--accent); }
 .search-hint { padding: 0 16px 10px; }
 /* Inside the results, which have their own padding. */
 .search .search-service { padding: 0 0 12px; }
+.search-people { margin-bottom: 14px; }
+.search-people .row-main > svg { flex: none; color: var(--muted); }
 .search-status { padding: 24px 4px; text-align: center; }
 
 /* settings */

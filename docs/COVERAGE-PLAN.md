@@ -2,7 +2,7 @@
 
 Written 2026-10-31. [PLAN.md](PLAN.md) stays the source of truth for
 decisions and the status log; this file is the plan for making Binger find
-more of what's out there. **Picking this up? Start at [Next](#step-2-next-no-owner-input-needed).**
+more of what's out there. **Picking this up? Start at [Next](#step-3-next-no-owner-input-needed).**
 
 ## The owner's ask (their words, 2026-10-31)
 
@@ -14,6 +14,11 @@ more of what's out there. **Picking this up? Start at [Next](#step-2-next-no-own
 > screen to show what I like, but pickings seem slim.
 
 > Make a full upgrade plan and ask me to upgrade connections if needed.
+
+> Use more sources like IMDb to expand, as well as any more that would be
+> useful, and maybe add user review score from Rotten Tomatoes.
+
+> TMDB [is] built in now, right? Remove the settings area for it.
 
 ## What was wrong
 
@@ -31,7 +36,7 @@ The gaps came from **how Binger asked TMDB**, not from what TMDB has:
 | Deck: vote floors | 150 ratings for genre picks, films and TV alike | Series get far fewer ratings than films on TMDB: a well-loved new show may have 40. Most newer series never qualified. |
 | Deck: streamers | Only via trending, or if you'd picked the service | Apple TV+ originals rarely trend, so they rarely came up. |
 
-## Step 1 (this PR): done
+## Step 1: done (PR #9, merged)
 
 - [x] **Search finds any film or show.** Films and series are searched
       separately (20 + 20), plus 25 anime, ranked by how closely the name
@@ -71,55 +76,98 @@ The gaps came from **how Binger asked TMDB**, not from what TMDB has:
 - [x] Unit tests (`tests/coverage.test.js`) and browser checks (first-run
       search, "Show more", "apple tv" search; screenshots 21 and 22).
 
-## Step 2: next (no owner input needed)
+## Step 2: built (2026-10-31, second round)
 
-In order of value for "I can't find what I've watched":
+The owner merged step 1 and asked to carry on; then asked for more sources
+("like IMDb"), Rotten Tomatoes' user score, and no TMDB key in Settings now
+it's built in.
 
-1. [ ] **People in search.** Typing an actor or director ("Adam Scott")
-       shows them as a row that opens their page (already built: `openPerson`),
-       plus their best-known titles in the results. TMDB `/search/person`
-       gives `known_for`. Needs a small design note (a person row in search).
-2. [ ] **A year in search.** "Dune 1984" or "The Office 2001": when the last
-       word is a year, ask TMDB with `year` / `first_air_date_year` as well as
-       without, and rank the matching year first.
-3. [ ] **"More like this" that never runs dry.** Seeds use TMDB
-       `/recommendations`, which is empty for many new or niche titles. Fall
-       back to `/similar` when it is, and allow 5 seeds (not 3) once a library
-       has 30+ loved titles.
-4. [ ] **Browse by service on the first run.** A row of service chips above
+1. [x] **People in search.** Typing someone's name ("adam scott", "pedro
+       pas") shows them as a row that opens their page (`openPerson`), and
+       their best-known titles join the results. One word ("tom") is more
+       likely a title, so only a well-known one-name person ("zendaya") gets
+       a row; a far less known namesake (a second "Adam Scott", found by the
+       live check) is left out, and what they're known for ranks above
+       titles that only loosely match the words (`matchingPeople`, TMDB
+       `/search/person`).
+2. [x] **A year in search.** "dune 2021", "The Office (2005)": TMDB is also
+       asked for that year, and that year's title goes first. "Blade Runner
+       2049" and "Space 1999" still work as titles (`splitYear`).
+3. [x] **"More like this" that never runs dry.** When `/recommendations`
+       has fewer than 10 titles (new or niche films), `/similar` fills in; a
+       library with 30+ loved titles from a source seeds from 5 of them, not 3.
+4. [x] **Page memory.** Each refill turns every list to its next page
+       (`turnPage`; the app keeps `deck.pages` for the session, reset with
+       the pool or a filter change), so a long session keeps reaching titles
+       it hasn't seen. The live check measures it ("deck reach", PR #10):
+       five refills reach 686 titles with the memory, 444 without (312 and
+       183 of them from the last two years); the fifth refill still adds
+       123 new titles, against 57.
+5. [x] **Review scores** (the owner's ask): IMDb, Rotten Tomatoes critics
+       and audience, Metacritic and Letterboxd, on cards ("IMDb 8.1 · RT
+       audience 90%") and in details (each opens its site). From MDBList: see
+       [Sources](#sources-what-each-could-add) for why. Needs the owner's
+       key (step 3, item 1); until then nothing shows and nothing breaks.
+       Details also link to the title's IMDb page, key or not.
+6. [x] **No TMDB key in Settings on the live site.** The key built into the
+       site always wins; the field only appears on a copy with none built
+       in (forks, local development). Decision 4 updated.
+
+## Step 3: next (no owner input needed)
+
+1. [ ] **Scores in the engine.** Use IMDb / Rotten Tomatoes audience
+       scores, where known, in the engine's quality term (today it's TMDB's
+       vote average), so well-loved titles rank higher. Pure change in
+       `js/engine/score.js`, after a week of real scores in the cache.
+2. [ ] **Browse by service on the first run.** A row of service chips above
        the grid (Apple TV+, Netflix, Prime Video, Disney+, BBC iPlayer…); a
        tap fills the grid with that service's shows (`serviceTitles`, page by
        page). **Design first**: add it to canvas artboard 1, or sketch it in
        DESIGN.md and get the owner's OK.
-5. [ ] **Coming soon.** Films and series not out yet (TMDB discover with
-       future dates, most anticipated first), so they can go on the watchlist
-       now; new-season alerts already cover shows you've watched.
-6. [ ] **Fewer "nothing new" refills.** Each refill picks random pages; keep
-       a per-session record of which pages have been asked for, so a long
-       session keeps reaching new titles instead of re-asking page 1.
-7. [ ] **Measure it.** A small script (`npm run coverage`, needs the key)
-       that counts how many distinct titles ten refills reach, and how many
-       are from the last two years, so changes here can be compared.
+3. [ ] **Coming soon.** Films and series not out yet (TMDB discover with
+       future dates, most anticipated first), so they can go on the
+       watchlist now. Needs a place on screen: design first.
+4. [ ] **Anime scores.** MDBList also knows MyAnimeList ids; AniList gives
+       `idMal`. Add it to the AniList query and show MyAnimeList's score.
 
-## Step 3: needs the owner (connections and decisions)
+## Step 4: needs the owner (connections)
 
-1. [ ] **TMDB key for cloud sessions** (recommended; two minutes). The repo's
+1. [ ] **MDBList key, for review scores** (five minutes, free). Make an
+       account at mdblist.com → Preferences → API → generate a key. Add it
+       to GitHub: the repository's **Settings → Secrets and variables →
+       Actions → New repository secret**, named **`MDBLIST_API_KEY`**. The
+       next deploy builds it in (and the weekly live check starts checking
+       scores). Like the TMDB key it ends up readable on the live site,
+       which is fine for a free key; if it's ever abused, make a new one.
+       Never paste it into a chat or commit it. The free plan allows 1,000
+       lookups a day; each title's scores are kept for a week, which is
+       plenty for a household.
+2. [ ] **TMDB key for cloud sessions** (recommended; two minutes). The repo's
        GitHub Actions secret already runs the live check, but a Claude Code
        cloud session can't see it, so a session builds against fixtures and
        waits for Actions to find out how real TMDB answers. Add the same key
-       to the cloud environment: the environment menu in the session's title
-       bar → Edit → Network secrets (or an environment variable) named
-       **`TMDB_API_KEY`**. New sessions pick it up. Never paste it into a chat
-       or commit it.
-2. [ ] **Optional, later: Trakt.** A free Trakt API app gives "most
-       anticipated", "most watched this week / year" lists and history import
-       (Phase 3). It would be a third source (decision 2 says TMDB + AniList),
-       so it's the owner's call. Needs a Trakt account and an API app's client
-       id (not a secret); nothing is needed now.
-3. Not needed: JustWatch has no public API (TMDB's "where to watch" already
-   comes from JustWatch); TVmaze and OMDb would add little that TMDB doesn't
-   have. The TMDB proxy in [UPGRADE-PLAN.md](UPGRADE-PLAN.md) step 3 is about
-   who can use the key, not coverage.
+       (and the MDBList one) to the cloud environment: the environment menu
+       in the session's title bar → Edit → Network secrets (or environment
+       variables) named **`TMDB_API_KEY`** and **`MDBLIST_API_KEY`**. New
+       sessions pick them up.
+3. [ ] **Optional, later: Trakt.** See [Sources](#sources-what-each-could-add).
+
+## Sources: what each could add
+
+Checked 2026-10-31. TMDB stays the catalogue: it lists far more than any
+household will watch, every streaming original included. What the others
+could add is mostly *scores*, and history import.
+
+| Source | Gives | Can Binger use it? |
+|---|---|---|
+| **MDBList** | IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd, Trakt scores, by TMDB id | **Yes: chosen.** Free key, 1,000 lookups a day. One call per title (`js/sources/ratings.js`). |
+| IMDb | Its ratings and the biggest catalogue | Not directly: no free API (only paid AWS data, or bulk files for non-commercial use, too big for a web app). Its rating comes via MDBList; details link to IMDb pages. |
+| Rotten Tomatoes | Tomatometer, audience score | Not directly: its API is for approved partners only, with a licence fee (from about $60,000 a year). Both scores come via MDBList. |
+| OMDb | IMDb rating, Tomatometer, Metascore | Possible (free key, 1,000 a day), but no Rotten Tomatoes audience score, and MDBList covers it all. Not needed. |
+| Trakt | "Most anticipated", "most watched" lists; history import | Later, maybe (free API app, a client id). A third source is the owner's call (decision 2). |
+| Letterboxd | Film ratings, diaries | Its API is closed; its rating comes via MDBList. CSV import of your diary is Phase 3. |
+| JustWatch | Where to watch | Already in, through TMDB. No public API of its own. |
+| TVmaze | TV schedules | Free, but adds little TMDB doesn't have. |
 
 ## How to see it working
 
@@ -128,4 +176,9 @@ In order of value for "I can't find what I've watched":
 - First run: scroll the grid (classics, recent hits, anime), tap "Show more".
 - Discover: some cards say "An Apple TV+ original" (or another service).
 - GitHub → Actions → **TMDB live**: the "networks", "originals", "TV without
-  talk shows", "search" and "first-run grid" steps.
+  talk shows", "search", "people and years in search", "deck reach",
+  "review scores" (once the MDBList key is in) and "first-run grid" steps.
+- Search "adam scott": him first (tap for his page), then Severance and more.
+- Search "dune 2021": the 2021 film first.
+- Once the MDBList key is in: cards say "IMDb 8.5 · RT audience 95%", and
+  details list every score, each opening its site.

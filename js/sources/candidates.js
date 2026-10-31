@@ -55,9 +55,24 @@ export function originalsPull(services = [], rng = Math.random) {
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
 
+// Which page a pull asks for. pages is a memory the app keeps for the
+// session: each pull turns to its next page on every refill, so a long
+// session keeps reaching titles it hasn't seen instead of asking for page 1
+// again. Without one (tests, one-off calls) it's the page given.
+export function turnPage(pages, key, first) {
+  if (!pages) return first;
+  const had = pages[key];
+  pages[key] = had ? { first: had.first, n: had.n + 1 } : { first, n: 0 };
+  return Math.min(500, pages[key].first + pages[key].n);
+}
+
+// With this many loved titles from a source, ask "more like this" about 5
+// of them (not 3), so a big library spreads its seeds wider.
+const BIG_LIBRARY = 30;
+
 // The titles to ask "more like this" about: your strongest recent positives,
 // plus one wildcard from further down so the seeds rotate between sessions.
-export function pickSeeds(items, { now = Date.now(), rng = Math.random, perSource = 3 } = {}) {
+export function pickSeeds(items, { now = Date.now(), rng = Math.random, perSource = null } = {}) {
   const list = Object.values(items || {});
   const baseline = ratingBaseline(list);
   const scored = [];
@@ -69,8 +84,9 @@ export function pickSeeds(items, { now = Date.now(), rng = Math.random, perSourc
   }
   scored.sort((a, b) => b.strength - a.strength);
   const choose = (arr) => {
-    const top = arr.slice(0, perSource);
-    const rest = arr.slice(perSource, perSource + 7);
+    const n = perSource ?? (arr.length >= BIG_LIBRARY ? 5 : 3);
+    const top = arr.slice(0, n);
+    const rest = arr.slice(n, n + 7);
     if (rest.length) top.push(rest[Math.floor(rng() * rest.length)]);
     return top;
   };
@@ -123,7 +139,8 @@ export async function providerIdsFor(tmdb, services) {
 }
 
 // filters: the deck's session filters { short: boolean, decade: 2020 | ... | 'older' | null }.
-export async function gatherCandidates({ tmdb, anilist, items = {}, profile, settings = {}, filters = null, now = Date.now(), rng = Math.random }) {
+// pages: the session's page memory (turnPage), or null.
+export async function gatherCandidates({ tmdb, anilist, items = {}, profile, settings = {}, filters = null, now = Date.now(), rng = Math.random, pages = null }) {
   const pool = new Map();
   const errors = [];
   const mix = settings.mix || DEFAULT_MIX;
@@ -166,22 +183,25 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
       const dateParams = dates ? { from: dates.from, to: dates.to } : {};
       const runtimeMax = short && mediaType === 'movie' ? 120 : null;
       // Your services' catalogues: the titles here are known to be on one of
-      // them, so "Only show what I can stream" never runs dry.
+      // them, so "Only show what I can stream" never runs dry. The first pull
+      // is everything on them; with "only" on, a second leans to your genres.
       if (services.length) {
-        const pages = settings.streamOnly ? [1, 2 + Math.floor(rng() * 2)] : [page];
-        for (const pg of pages) {
+        const firsts = settings.streamOnly ? [1, 2 + Math.floor(rng() * 2)] : [page];
+        firsts.forEach((first, i) => {
+          const pg = turnPage(pages, `stream:${mediaType}:${i}`, first);
           run(`tmdb:stream:${mediaType}:${pg}`, async () => {
             const ids = await providerIds;
             if (!ids.length) return;
-            (await tmdb.discover(mediaType, { providerIds: ids, page: pg, minVotes: 100, genreIds: pg === 1 ? [] : genreIds, runtimeMax, ...dateParams }))
+            (await tmdb.discover(mediaType, { providerIds: ids, page: pg, minVotes: 100, genreIds: i === 0 ? [] : genreIds, runtimeMax, ...dateParams }))
               .forEach((t) => add({ ...t, streamHint: true }, { type: 'stream' }));
           });
-        }
+        });
       }
       // Deck filters: ask for exactly that, since this week's trending list
       // has no 1990s films in it.
       if (dates || runtimeMax) {
-        run(`tmdb:filtered:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page, minVotes: dates ? 300 : 150, runtimeMax, ...dateParams, sortBy: dates ? 'vote_count.desc' : 'popularity.desc' }))
+        const pg = turnPage(pages, `filtered:${mediaType}`, page);
+        run(`tmdb:filtered:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page: pg, minVotes: dates ? 300 : 150, runtimeMax, ...dateParams, sortBy: dates ? 'vote_count.desc' : 'popularity.desc' }))
           .forEach((t) => add(t, { type: 'popular' })));
       }
       // The top 40 this week, not just the top 20.
@@ -189,43 +209,56 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         run(`tmdb:trending:${mediaType}:${pg}`, async () => (await tmdb.trending(mediaType, pg)).forEach((t) => add(t, { type: 'trending' })));
       }
       if (genreIds.length) {
-        run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page, minVotes: MIN_VOTES[mediaType] })).forEach((t) => add(t, { type: 'genre' })));
+        const pg = turnPage(pages, `genre:${mediaType}:${genreIds.join(',')}`, page);
+        run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page: pg, minVotes: MIN_VOTES[mediaType] })).forEach((t) => add(t, { type: 'genre' })));
       } else if (mediaType === 'movie') {
-        run('tmdb:popular:movie', async () => (await tmdb.popular('movie', page)).forEach((t) => add(t, { type: 'popular' })));
+        const pg = turnPage(pages, 'popular:movie', page);
+        run('tmdb:popular:movie', async () => (await tmdb.popular('movie', pg)).forEach((t) => add(t, { type: 'popular' })));
       } else {
         // TMDB's own "popular TV" is mostly talk shows and soaps.
-        run('tmdb:popular:tv', async () => (await tmdb.discover('tv', { page, minVotes: MIN_VOTES.tv })).forEach((t) => add(t, { type: 'popular' })));
+        const pg = turnPage(pages, 'popular:tv', page);
+        run('tmdb:popular:tv', async () => (await tmdb.discover('tv', { page: pg, minVotes: MIN_VOTES.tv })).forEach((t) => add(t, { type: 'popular' })));
       }
       {
         const w = widerPull(mediaType, rng);
-        run(`tmdb:wider:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds: [], runtimeMax, ...dateParams, ...w.params }))
+        const params = { ...w.params, page: turnPage(pages, `wider:${mediaType}:${w.label}`, w.params.page) };
+        run(`tmdb:wider:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds: [], runtimeMax, ...dateParams, ...params }))
           .forEach((t) => add(t, { type: 'wider', label: w.label })));
       }
       // The last two years' films and series, past the first page: this
       // week's lists only reach the newest few.
       if (!dates) {
-        const pg = 1 + Math.floor(rng() * 4);
+        const pg = turnPage(pages, `recent:${mediaType}`, 1 + Math.floor(rng() * 4));
         run(`tmdb:recent:${mediaType}`, async () => (await tmdb.discover(mediaType, { from: isoDay(now - 730 * DAY), to: isoDay(now), minVotes: mediaType === 'movie' ? 100 : 30, page: pg, runtimeMax }))
           .forEach((t) => add(t, { type: 'fresh' })));
       }
       if (mediaType === 'tv') {
         const o = originalsPull(services, rng);
-        run(`tmdb:originals:${o.service}`, async () => (await tmdb.discover('tv', { ...dateParams, ...o.params }))
+        const params = { ...o.params, page: turnPage(pages, `originals:${o.service}`, o.params.page) };
+        run(`tmdb:originals:${o.service}`, async () => (await tmdb.discover('tv', { ...dateParams, ...params }))
           .forEach((t) => add(t, { type: 'originals', label: o.label, service: o.service })));
       }
       if (mediaType === 'movie') {
-        run('tmdb:fresh:movie', async () => (await tmdb.discover('movie', { from: isoDay(now - 120 * DAY), to: isoDay(now), minVotes: 20 }))
+        const pg = turnPage(pages, 'fresh:movie', 1);
+        run('tmdb:fresh:movie', async () => (await tmdb.discover('movie', { from: isoDay(now - 120 * DAY), to: isoDay(now), minVotes: 20, page: pg }))
           .forEach((t) => add(t, { type: 'fresh' })));
       } else {
         // Shows with an episode out in the last fortnight: new seasons of old shows included.
-        run('tmdb:fresh:tv', async () => (await tmdb.discover('tv', { airingFrom: isoDay(now - 14 * DAY), airingTo: isoDay(now + 7 * DAY), minVotes: 20 }))
+        const pg = turnPage(pages, 'fresh:tv', 1);
+        run('tmdb:fresh:tv', async () => (await tmdb.discover('tv', { airingFrom: isoDay(now - 14 * DAY), airingTo: isoDay(now + 7 * DAY), minVotes: 20, page: pg }))
           .forEach((t) => add({ ...t, airing: true }, { type: 'fresh' })));
       }
     }
     for (const s of seeds.tmdb) {
       const t = s.item.title;
       if (!wants(t.kind)) continue;
-      run(`tmdb:seed:${t.id}`, async () => (await tmdb.recommendations(t.mediaType, t.sourceId)).forEach((r) => add(r, seedVia(s))));
+      run(`tmdb:seed:${t.id}`, async () => {
+        let recs = await tmdb.recommendations(t.mediaType, t.sourceId);
+        // New and niche titles have few recommendations yet: similar ones
+        // (same genres and keywords) fill in.
+        if (recs.length < 10) recs = [...recs, ...(await tmdb.similar(t.mediaType, t.sourceId).catch(() => []))];
+        recs.forEach((r) => add(r, seedVia(s)));
+      });
     }
   }
 
@@ -235,7 +268,7 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         seeds: seeds.anime.map((s) => s.item.title.sourceId),
         sequels: sequelIdsToFetch(items),
         genres: genres.map(canonToAniList).filter(Boolean).slice(0, 2),
-        page,
+        page: turnPage(pages, 'anilist', page),
         now: new Date(now),
         filters,
       });
@@ -271,13 +304,17 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
 }
 
 // Film/TV list results lack cast, keywords and trailers; fetch full details for
-// the titles about to be shown. Anime already arrives complete.
-export async function hydrate(titles, { tmdb, concurrency = 4 } = {}) {
+// the titles about to be shown, and their review scores (js/sources/ratings.js)
+// when there's a key for them. Anime already arrives complete.
+export async function hydrate(titles, { tmdb, ratings = null, concurrency = 4 } = {}) {
   return mapLimit(titles, concurrency, async (t) => {
     if (t.detailed || t.source !== 'tmdb' || !tmdb || !tmdb.hasKey) return t;
     try {
-      const d = await tmdb.details(t.mediaType, t.sourceId);
-      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing, streamHint: t.streamHint || undefined } : t;
+      const [d, scores] = await Promise.all([
+        tmdb.details(t.mediaType, t.sourceId),
+        ratings && ratings.hasKey ? ratings.forTitle(t).catch(() => null) : null,
+      ]);
+      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing, streamHint: t.streamHint || undefined, ratings: scores || undefined } : t;
     } catch {
       return t;
     }

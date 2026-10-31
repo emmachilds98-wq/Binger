@@ -1,7 +1,7 @@
 // One swipeable card: artwork, title, why it was picked, synopsis, and the
 // people in it, with anyone you'd recognise from your own history first.
 
-import { h, icon, KIND_NAME, metaLine, publicScore, avatar, safeImg } from './dom.js';
+import { h, icon, KIND_NAME, metaLine, cardScore, avatar, safeImg } from './dom.js';
 import { trailerPlayer } from './trailer.js';
 
 export function knownFrom(person, profile, titleId) {
@@ -36,7 +36,7 @@ export function cardEl(card, { profile, showMatch = false, clipSeconds = 30, isT
   const people = keyPeople(t, profile, 3);
   const anyKnown = people.some((p) => p.known);
   const reason = card.reasons && card.reasons[0];
-  const score = publicScore(t);
+  const score = cardScore(t);
 
   const fallback = () => h('div', { class: 'art-fallback', 'aria-hidden': 'true' }, t.title);
   const art = h('div', { class: 'card-art', style: { '--art': t.color || null } },

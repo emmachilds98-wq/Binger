@@ -9,6 +9,7 @@ import * as L from './state/library.js';
 import { createCache, createMemoryCache } from './state/cache.js';
 import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
+import { createRatings } from './sources/ratings.js';
 import { gatherCandidates, hydrate } from './sources/candidates.js';
 import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
@@ -56,6 +57,7 @@ let welcome = null;
 let cache = createMemoryCache();
 let tmdb = null;
 let anilist = null;
+let ratings = null; // review scores (MDBList), when the site has a key for them
 let profile = buildProfile(store.get().items);
 
 const deck = {
@@ -68,6 +70,7 @@ const deck = {
   filter: 'all',
   filters: { short: false, decade: null }, // length and decade, this session only
   undo: [],          // [{ id, prev, title }]
+  pages: {},         // which page each pull has reached this session (turnPage)
   pendingRender: false,
   warnedKey: false,
 };
@@ -86,19 +89,23 @@ const wideQuery = window.matchMedia('(min-width: 900px)');
 
 // ---- sources ---------------------------------------------------------------
 
+// The key built into the site wins (decision 4): Settings has no key field
+// there, so nothing saved on a device can override it. A copy with no key
+// built in uses yours, or your household's.
 function tmdbKey() {
-  return store.get().settings.tmdbKey || device.tmdbKey || CONFIG.tmdbKey || '';
+  return CONFIG.tmdbKey || store.get().settings.tmdbKey || device.tmdbKey || '';
 }
 
 function makeSources() {
   const s = store.get().settings;
   tmdb = createTmdb({ key: tmdbKey(), region: s.region, cache });
   anilist = createAniList({ cache, voiceLanguage: s.voiceLanguage });
+  ratings = createRatings({ key: CONFIG.mdblistKey, cache });
 }
 
 async function enrich(t) {
   if (t.detailed) return t;
-  const [full] = await hydrate([t], { tmdb });
+  const [full] = await hydrate([t], { tmdb, ratings });
   return full;
 }
 
@@ -148,7 +155,7 @@ async function refill({ force = false } = {}) {
   deck.loading = true;
   renderDiscoverView();
   try {
-    const { pool, errors } = await gatherCandidates({ tmdb, anilist, items: store.get().items, profile, settings: store.get().settings, filters: deck.filters });
+    const { pool, errors } = await gatherCandidates({ tmdb, anilist, items: store.get().items, profile, settings: store.get().settings, filters: deck.filters, pages: deck.pages });
     for (const t of pool) {
       const had = deck.pool.get(t.id);
       if (!had) deck.pool.set(t.id, t);
@@ -161,7 +168,8 @@ async function refill({ force = false } = {}) {
     const rejected = errors.find((e) => e.source === 'tmdb' && e.status === 401);
     if (rejected && !deck.warnedKey) {
       deck.warnedKey = true;
-      toast('TMDB didn’t accept your key. Check it in Settings.', { action: { label: 'Settings', fn: showSettings } });
+      if (CONFIG.tmdbKey) toast('Films and TV can’t load right now: TMDB turned down this site’s key.');
+      else toast('TMDB didn’t accept your key. Check it in Settings.', { action: { label: 'Settings', fn: showSettings } });
     }
     rerank();
     await ensureDetails();
@@ -183,7 +191,7 @@ async function ensureDetails() {
   for (let round = 0; round < 3; round++) {
     const need = deck.cards.slice(0, DETAIL_AHEAD).map((c) => c.title).filter((t) => t.source === 'tmdb' && !t.detailed);
     if (!need.length) return;
-    const full = await hydrate(need, { tmdb });
+    const full = await hydrate(need, { tmdb, ratings });
     let changed = false;
     for (const t of full) {
       if (!t.detailed) continue;
@@ -264,6 +272,7 @@ function setFilter(key) {
 // saved setting, so it goes through the store.
 function applyDeckFilters(filters, streamOnly) {
   deck.filters = { short: !!filters.short, decade: filters.decade ?? null };
+  deck.pages = {}; // a new length or decade starts every list from its first pages again
   deck.topId = null;
   if (!!store.get().settings.streamOnly !== !!streamOnly) {
     store.update(L.updateSettings, { streamOnly: !!streamOnly }); // the subscriber refills
@@ -507,6 +516,7 @@ function useSharedKey(key) {
   if (tmdbKey() === before) return;
   makeSources();
   deck.pool.clear();
+  deck.pages = {};
   deck.topId = null;
   refill({ force: true });
   refreshSeasons();
@@ -645,7 +655,7 @@ function detailCtx(title, card) {
     profile,
     settings: store.get().settings,
     loadDetails: (t) => (t.source === 'tmdb'
-      ? (tmdb.hasKey ? tmdb.details(t.mediaType, t.sourceId) : Promise.resolve(null))
+      ? (tmdb.hasKey ? withScores(tmdb.details(t.mediaType, t.sourceId), t) : Promise.resolve(null))
       : (t.detailed ? Promise.resolve(null) : anilist.details(t.sourceId))),
     onWant: (t) => (card ? deckAction('right', { ...card, title: { ...t, via: card.title.via } }) : addToWatchlist(t)),
     onPass: card ? (t) => deckAction('left', { ...card, title: { ...t, via: card.title.via } }) : null,
@@ -656,6 +666,13 @@ function detailCtx(title, card) {
     onHideSeries: (t) => (hasFranchise(t) && !isSeriesHidden(t) ? hideSeries(t) : null),
     canHideSeries: (t) => hasFranchise(t) && !isSeriesHidden(t),
   };
+}
+
+// Details from TMDB plus review scores, fetched side by side; a failure to
+// get scores never holds up the details.
+async function withScores(details, t) {
+  const [d, scores] = await Promise.all([details, ratings && ratings.hasKey ? ratings.forTitle(t).catch(() => null) : null]);
+  return d && scores ? { ...d, ratings: scores } : d;
 }
 
 function showDetail(title, { card = null } = {}) {
@@ -694,6 +711,7 @@ function showSearch() {
     onOpen: (t) => showDetail(t),
     onWant: (t) => addToWatchlist(t),
     onSeen: (t) => logSeen(t),
+    onPerson: showPerson,
   });
 }
 
@@ -725,6 +743,7 @@ function showSettings() {
       : device.tmdbKey ? 'Using your household’s key.'
         : CONFIG.tmdbKey ? 'Using the key built into this deployment.' : 'No key yet: films and TV are off.'),
     currentKey: () => store.get().settings.tmdbKey || device.tmdbKey || '',
+    keyField: !CONFIG.tmdbKey,
     onPeople: showPeople,
     saveKey,
     onServices: showServices,
@@ -744,6 +763,7 @@ function showSettings() {
       try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
       store.replace(L.emptyState());
       deck.pool.clear();
+      deck.pages = {};
       deck.undo = [];
       cache.clear().catch(() => {});
       location.hash = '#discover';
@@ -876,11 +896,13 @@ store.subscribe((next, prev) => {
   if (changed('tmdbKey') || changed('region') || changed('voiceLanguage')) {
     makeSources();
     deck.pool.clear();
+    deck.pages = {};
     deck.topId = null;
     refill({ force: true });
   } else if (changed('services') || changed('streamOnly')) {
     // "Found on your services" hints belong to the old set of services.
     deck.pool.clear();
+    deck.pages = {};
     deck.topId = null;
     refill({ force: true });
   }

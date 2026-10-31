@@ -4,10 +4,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { serviceFromQuery, TMDB_NETWORKS, COMMON_SERVICES } from '../js/sources/services.js';
-import { createTmdb, fromTmdbList } from '../js/sources/tmdb.js';
+import { createTmdb, fromTmdbList, fromTmdbPersonHit } from '../js/sources/tmdb.js';
 import { createAniList } from '../js/sources/anilist.js';
-import { gatherCandidates, originalsPull } from '../js/sources/candidates.js';
-import { normaliseName, matchTier, rankSearch, searchTitles, starterTitles, serviceTitles, interleave } from '../js/sources/lookups.js';
+import { gatherCandidates, originalsPull, turnPage, pickSeeds } from '../js/sources/candidates.js';
+import { normaliseName, matchTier, rankSearch, searchTitles, starterTitles, serviceTitles, interleave, splitYear, matchingPeople } from '../js/sources/lookups.js';
 import { buildProfile, explain } from '../js/engine/index.js';
 
 const fx = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
@@ -205,4 +205,90 @@ test('a TV genre pull accepts newer shows with fewer ratings', async () => {
   await gatherCandidates({ tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: createAniList({ fetchImpl }), items, profile: buildProfile(items, { now: NOW }), settings: {}, now: NOW, rng: () => 0 });
   const genreTv = fetchImpl.calls.map((c) => c.url).find((u) => u.includes('/discover/tv') && u.includes('with_genres'));
   assert.equal(param(genreTv, 'vote_count.gte'), '50');
+});
+
+// ---- Step 2: people and years in search, "more like this", page memory ----
+
+test('a year at the end of a search narrows it; a title with a year in it stays a title', () => {
+  assert.deepEqual(splitYear('dune 2021', NOW), { text: 'dune', year: 2021 });
+  assert.deepEqual(splitYear('The Office (2005)', NOW), { text: 'The Office', year: 2005 });
+  assert.deepEqual(splitYear('blade runner 2049', NOW), { text: 'blade runner 2049', year: null });
+  assert.deepEqual(splitYear('1917', NOW), { text: '1917', year: null });
+  const dunes = [{ id: 'a', title: 'Dune', year: 1984, poster: 'p' }, { id: 'b', title: 'Dune', year: 2021, poster: 'p' }, { id: 'c', title: 'Dune: Part Two', year: 2024, poster: 'p' }];
+  assert.deepEqual(rankSearch(['dune 2021', 'dune'], [dunes], { year: 2021 }).map((t) => t.id), ['b', 'a', 'c']);
+});
+
+test('searching "dune 2021" asks TMDB for that year as well, and puts it first', async () => {
+  const fetchImpl = fakeFetch([
+    ['first_air_date_year=2021', { results: [] }],
+    ['year=2021', { results: [film(438631, 'Dune', { release_date: '2021-09-15', popularity: 80 })] }],
+    ['/search/movie', (url) => ({ results: param(url, 'query') === 'dune' ? [film(841, 'Dune', { release_date: '1984-12-14', popularity: 30 }), film(438631, 'Dune', { release_date: '2021-09-15', popularity: 80 })] : [] })],
+    ['/search/tv', { results: [] }],
+    ['/search/person', { results: [] }],
+  ]);
+  const { titles } = await searchTitles('dune 2021', { tmdb: createTmdb({ key: 'k', fetchImpl }), now: NOW });
+  assert.deepEqual(titles.map((t) => `${t.title} ${t.year}`), ['Dune 2021', 'Dune 1984']);
+  assert.ok(fetchImpl.calls.some((c) => c.url.includes('/search/movie') && param(c.url, 'year') === '2021'));
+});
+
+test('typing someone’s name brings them up (to open their page) and what they’re known for', async () => {
+  const person = (id, name, popularity, knownFor) => ({ id, name, popularity, known_for_department: 'Acting', profile_path: `/p${id}.jpg`, known_for: knownFor });
+  const fetchImpl = fakeFetch([
+    ['/search/person', (url) => ({ results: param(url, 'query') === 'adam scott'
+      ? [person(55536, 'Adam Scott', 30, [{ ...show(95396, 'Severance'), media_type: 'tv' }, { ...show(8592, 'Parks and Recreation'), media_type: 'tv' }, { ...film(129, 'Spirited Away', { genre_ids: [16], original_language: 'ja' }), media_type: 'movie' }]),
+        person(9999, 'Adam Scott', 2, [{ ...film(5555, 'Man of the West'), media_type: 'movie' }])]
+      : [person(1, 'Tom', 0.6, []), person(2, 'Tom Hanks', 60, [])] })],
+    ['/search/movie', { results: [film(7, 'Great Scott!', { popularity: 90 })] }],
+    ['/search/', { results: [] }],
+  ]);
+  const tmdb = createTmdb({ key: 'k', fetchImpl });
+  const adam = await searchTitles('adam scott', { tmdb });
+  assert.deepEqual(adam.people.map((p) => [p.id, p.name, p.known]), [['tmdb:p:55536', 'Adam Scott', 'Actor']], 'a far less known namesake is left out');
+  assert.deepEqual(adam.titles.map((t) => t.title), ['Severance', 'Parks and Recreation', 'Great Scott!'], 'his best-known shows first (anime left to AniList), then loose matches');
+  assert.deepEqual((await searchTitles('tom', { tmdb })).people, [], 'one word is more likely a title: an obscure "Tom" isn’t shown');
+  assert.deepEqual(matchingPeople('zendaya', [{ name: 'Zendaya', popularity: 40 }]).map((p) => p.name), ['Zendaya']);
+  assert.deepEqual(matchingPeople('pedro pas', [{ name: 'Pedro Pascal', popularity: 50 }]).map((p) => p.name), ['Pedro Pascal']);
+  assert.equal(fromTmdbPersonHit({ id: 9, adult: true }), null);
+});
+
+test('"more like this" falls back on similar titles when recommendations are thin', async () => {
+  const loved = fromTmdbList(film(999, 'A New Film'), 'movie');
+  const items = { [loved.id]: { id: loved.id, title: loved, status: 'watched', updatedAt: '2026-10-01', watches: [{ id: 'w', date: '2026-10-01', rating: 5 }] } };
+  const fetchImpl = fakeFetch([
+    ['/movie/999/recommendations', { results: [film(1, 'Only One Rec')] }],
+    ['/movie/999/similar', { results: [film(2, 'Similar One'), film(3, 'Similar Two')] }],
+    ['/discover/', { results: [] }], ['/trending/', { results: [] }], ['/popular', { results: [] }],
+  ]);
+  const { pool } = await gatherCandidates({ tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: null, items, profile: buildProfile(items, { now: NOW }), settings: {}, now: NOW, rng: () => 0 });
+  const seeded = pool.filter((t) => t.via.some((v) => v.type === 'seed' && v.seedTitle === 'A New Film')).map((t) => t.title).sort();
+  assert.deepEqual(seeded, ['Only One Rec', 'Similar One', 'Similar Two']);
+});
+
+test('a big library asks "more like this" about five titles, not three', () => {
+  const lib = (n) => Object.fromEntries(Array.from({ length: n }, (_, i) => {
+    const t = fromTmdbList(film(1000 + i, `Loved ${i}`), 'movie');
+    return [t.id, { id: t.id, title: t, status: 'watched', updatedAt: '2026-10-01', watches: [{ id: `w${i}`, date: '2026-10-01', rating: 5 }] }];
+  }));
+  assert.equal(pickSeeds(lib(10), { now: NOW, rng: () => 0 }).tmdb.length, 4, '3 + a wildcard');
+  assert.equal(pickSeeds(lib(30), { now: NOW, rng: () => 0 }).tmdb.length, 6, '5 + a wildcard');
+});
+
+test('with a page memory, each refill turns every list to its next page', async () => {
+  assert.equal(turnPage(null, 'x', 3), 3, 'no memory: the page given');
+  const mem = {};
+  assert.deepEqual([turnPage(mem, 'x', 2), turnPage(mem, 'x', 1), turnPage(mem, 'x', 3)], [2, 3, 4], 'the first page sticks, then it counts on');
+
+  const fetchImpl = fakeFetch([['/discover/', { results: [] }], ['/trending/', { results: [] }], ['/popular', { results: [] }]]);
+  const pages = {};
+  const refill = async () => {
+    fetchImpl.calls.length = 0;
+    await gatherCandidates({ tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: null, items: {}, profile: buildProfile([], { now: NOW }), settings: {}, now: NOW, rng: () => 0, pages });
+    return fetchImpl.calls.map((c) => c.url);
+  };
+  const recentPage = (urls) => param(urls.find((u) => u.includes('/discover/movie') && u.includes('primary_release_date.gte') && !u.includes('vote_count.gte=20')), 'page');
+  const first = await refill();
+  const second = await refill();
+  assert.equal(recentPage(first), '1');
+  assert.equal(recentPage(second), '2', 'the next refill asks for the next page');
+  assert.ok(second.some((u) => u.includes('/movie/popular') && param(u, 'page') === '2'));
 });
