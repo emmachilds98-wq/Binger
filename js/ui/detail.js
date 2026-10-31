@@ -127,6 +127,7 @@ function body(t, ctx, sheet) {
       onClick: () => { if (sheet) sheet.close(); ctx.onHideSeries(t); },
     }, 'Hide the whole series')) : null,
     h('p', { class: 'small muted links' },
+      ctx.onShare ? h('button', { type: 'button', class: 'link-btn share-btn', onClick: () => ctx.onShare(t) }, icon('upload', 14), 'Share') : null,
       t.trailer ? h('a', { href: fullTrailerUrl(t.trailer), target: '_blank', rel: 'noopener' }, 'Full trailer on YouTube', icon('external', 14)) : null,
       t.url ? h('a', { href: t.url, target: '_blank', rel: 'noopener' }, t.source === 'anilist' ? 'AniList page' : 'TMDB page', icon('external', 14)) : null));
 }

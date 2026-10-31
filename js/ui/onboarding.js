@@ -2,29 +2,44 @@
 // the very first deck already knows something about you. The grid is what
 // most people have seen (js/sources/lookups.js → starterTitles), with "Show
 // more" for the next lot; anything you've picked stays at the top of it.
+//
+// The same panel logs more watches later (Library → Log a watch, ctx.mode
+// 'log'): it can be closed, needs no minimum, leaves out what you've already
+// watched, and adds the picks to your diary instead of starting the deck.
 
 import { h, icon, clear, KIND_NAME, safeImg } from './dom.js';
-import { openSheet } from './sheet.js';
+import { openSheet, closeButton } from './sheet.js';
 import { serviceLine } from './search.js';
 
 export const MIN_PICKS = 3;
 
 export function openOnboarding(ctx) {
-  const sheet = openSheet({ label: 'Set up Binger', variant: 'full', className: 'onboarding', dismissible: false });
+  const log = ctx.mode === 'log';
+  const sheet = openSheet({ label: log ? 'Log what you’ve watched' : 'Set up Binger', variant: 'full', className: `onboarding${log ? ' log-picker' : ''}`, dismissible: log });
+  // Already in your diary: not offered again in the grid (search still finds it, for a rewatch).
+  const fresh = (list) => (log && ctx.isWatched ? list.filter((t) => !ctx.isWatched(t.id)) : list);
   const picked = new Map();
   let titles = [];
   let page = 1;
   let more = 'idle'; // 'idle' | 'loading' | 'done'
+  const seen = new Set(); // every title a page has brought, shown or not
 
   const grid = h('div', { class: 'tile-grid', role: 'group', 'aria-label': 'Popular titles' });
   const status = h('p', { class: 'small muted onboard-status', role: 'status' });
   const moreBtn = h('button', { type: 'button', class: 'btn btn-quiet onboard-more' }, 'Show more');
   const count = h('span', { class: 'muted grow', role: 'status' });
-  const start = h('button', { type: 'button', class: 'btn btn-primary btn-lg' }, 'Start swiping');
+  const start = h('button', { type: 'button', class: 'btn btn-primary btn-lg' }, log ? 'Add to your diary' : 'Start swiping');
   const input = h('input', { id: 'seed-search', type: 'search', placeholder: 'Films, shows, anime…', autocomplete: 'off', enterkeyhint: 'search' });
 
   function paintCount() {
     const n = picked.size;
+    if (log) {
+      count.textContent = n === 0 ? 'Nothing picked yet' : `${n} picked`;
+      start.textContent = n ? `Add ${n} to your diary` : 'Add to your diary';
+      start.disabled = n === 0;
+      start.classList.toggle('is-ready', n > 0);
+      return;
+    }
     count.textContent = n === 0 ? 'Nothing picked yet' : `${n} picked${n < MIN_PICKS ? ` · ${MIN_PICKS - n} more` : ''}`;
     start.classList.toggle('is-ready', n >= MIN_PICKS);
   }
@@ -66,10 +81,13 @@ export function openOnboarding(ctx) {
     paintHome();
     try {
       const next = await ctx.loadPopular(page + 1);
-      const fresh = next.filter((t) => !titles.some((x) => x.id === t.id));
+      // "Nothing new" means nothing this panel hasn't been given before; in
+      // log mode some of it may be left out because you've watched it.
+      const unseen = next.filter((t) => !seen.has(t.id));
+      unseen.forEach((t) => seen.add(t.id));
       page += 1;
-      titles = [...titles, ...fresh];
-      more = fresh.length ? 'idle' : 'done';
+      titles = [...titles, ...fresh(unseen)];
+      more = unseen.length ? 'idle' : 'done';
     } catch {
       more = 'idle';
     }
@@ -100,11 +118,16 @@ export function openOnboarding(ctx) {
     sheet.close();
   });
 
-  sheet.body.append(
-    h('header', { class: 'onboard-head' },
+  const head = log
+    ? h('header', { class: 'onboard-head' },
+      h('div', { class: 'row-between' }, h('h1', { class: 'page-title' }, 'What have you watched?'), closeButton(sheet)),
+      h('p', { class: 'muted' }, 'Tap everything you’ve seen and liked, or search for any title. They go in your diary as loved (4½★); review them there to tell Binger more.'))
+    : h('header', { class: 'onboard-head' },
       h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 12)), h('span', { class: 'brand-word small' }, 'binger')),
       h('h1', { class: 'page-title' }, 'What have you loved?'),
-      h('p', { class: 'muted' }, `Tap anything you've watched and enjoyed. ${MIN_PICKS} is enough to start. Binger keeps learning every time you swipe or rate.`)),
+      h('p', { class: 'muted' }, `Tap anything you've watched and enjoyed. ${MIN_PICKS} is enough to start. Binger keeps learning every time you swipe or rate.`));
+  sheet.body.append(
+    head,
     h('div', { class: 'onboard-search' },
       h('label', { class: 'eyebrow', for: 'seed-search' }, 'Find a favourite'),
       h('div', { class: 'search-box' }, icon('search', 18), input),
@@ -114,12 +137,14 @@ export function openOnboarding(ctx) {
         h('p', null, 'Anime works straight away. Films and TV need a free TMDB key; you can add it now or later in ',
           h('button', { type: 'button', class: 'link-btn', onClick: ctx.onSettings }, 'Settings'), '.')) : null),
     h('footer', { class: 'onboard-foot' }, count,
-      h('button', { type: 'button', class: 'link-btn', onClick: () => { ctx.onDone([]); sheet.close(); } }, 'Skip'),
+      log ? null : h('button', { type: 'button', class: 'link-btn', onClick: () => { ctx.onDone([]); sheet.close(); } }, 'Skip'),
       start));
 
   // From the first page again (a TMDB key added mid-way brings films and TV).
   const load = () => ctx.loadPopular(1).then((list) => {
-    titles = list;
+    seen.clear();
+    list.forEach((t) => seen.add(t.id));
+    titles = fresh(list);
     page = 1;
     more = 'idle';
     if (!input.value.trim()) paintHome();

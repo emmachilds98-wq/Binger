@@ -3,6 +3,23 @@
 
 import { h, icon, KIND_NAME, metaLine, cardScore, avatar, safeImg } from './dom.js';
 import { trailerPlayer } from './trailer.js';
+import { posterSrcset } from '../sources/tmdb.js';
+
+// How wide a card's poster is drawn (docs/DESIGN.md: the deck is the phone's
+// width, 480 px in the middle of a tablet, 440 px beside the details on a PC),
+// so the browser picks the right size from posterSrcset.
+const POSTER_SIZES = '(min-width: 900px) 440px, (min-width: 700px) 480px, 100vw';
+const posterProps = (t) => ({ srcset: posterSrcset(t.poster), sizes: posterSrcset(t.poster) ? POSTER_SIZES : null });
+
+// Fetch a coming card's poster before it reaches the deck, at the size the
+// card itself will ask for, so it's already there when it comes up.
+export function preloadPoster(t) {
+  if (!t || !t.poster) return;
+  const img = new Image();
+  const { srcset, sizes } = posterProps(t);
+  if (srcset) { img.srcset = srcset; img.sizes = sizes; }
+  img.src = t.poster;
+}
 
 export function knownFrom(person, profile, titleId) {
   const rec = profile && profile.people && profile.people.get(person.id);
@@ -40,7 +57,7 @@ export function cardEl(card, { profile, showMatch = false, clipSeconds = 30, isT
 
   const fallback = () => h('div', { class: 'art-fallback', 'aria-hidden': 'true' }, t.title);
   const art = h('div', { class: 'card-art', style: { '--art': t.color || null } },
-    t.poster ? safeImg(t.poster, { loading: isTop ? 'eager' : 'lazy', draggable: 'false' }, () => art.prepend(fallback())) : fallback(),
+    t.poster ? safeImg(t.poster, { ...posterProps(t), loading: isTop ? 'eager' : 'lazy', draggable: 'false' }, () => art.prepend(fallback())) : fallback(),
     h('div', { class: 'card-top' },
       h('span', { class: `badge badge-${t.kind}` }, KIND_NAME[t.kind] || t.kind),
       showMatch ? h('span', { class: 'pill-dark' }, `${matchPercent(card.score)}% match`) : null),

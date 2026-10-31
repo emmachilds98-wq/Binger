@@ -4,9 +4,10 @@
 //   tap / Enter = Details         Undo / Z = Undo
 
 import { h, icon, clear, prefersReducedMotion } from './dom.js';
-import { cardEl } from './card.js';
+import { cardEl, preloadPoster } from './card.js';
 import { filterSummary } from './filters.js';
 import { whoChip } from './people.js';
+import { flickDirection } from './gesture.js';
 
 const FILTERS = [['all', 'All'], ['film', 'Films'], ['tv', 'TV'], ['anime', 'Anime']];
 const THRESHOLD_X = 110;
@@ -50,6 +51,8 @@ export function renderDiscover(root, ctx) {
     deckEl.append(emptyState(ctx));
   }
   if (ctx.loading && cards.length) deckEl.append(h('div', { class: 'deck-loading', role: 'status' }, 'Finding more…'));
+  // The three cards on screen load their own posters; fetch the next two too.
+  ctx.cards.slice(3, 5).forEach((c) => preloadPoster(c.title));
 
   const top = cards[0] || null;
   const disabled = !top;
@@ -132,6 +135,7 @@ function attachGestures(el, { onSwipe, onTap }) {
   let justDragged = false;
   let dx = 0;
   let dy = 0;
+  let samples = []; // recent pointer positions, for a flick's speed
 
   const setStamps = () => {
     const horiz = Math.abs(dx) >= Math.abs(dy);
@@ -145,11 +149,14 @@ function attachGestures(el, { onSwipe, onTap }) {
     start = { x: e.clientX, y: e.clientY, id: e.pointerId, onButton: !!e.target.closest('button') };
     dragging = false;
     dx = 0; dy = 0;
+    samples = [{ x: e.clientX, y: e.clientY, t: e.timeStamp }];
   });
   el.addEventListener('pointermove', (e) => {
     if (!start || e.pointerId !== start.id) return;
     dx = e.clientX - start.x;
     dy = e.clientY - start.y;
+    samples.push({ x: e.clientX, y: e.clientY, t: e.timeStamp });
+    if (samples.length > 12) samples.shift();
     if (!dragging) {
       if (Math.hypot(dx, dy) < 8) return;
       dragging = true;
@@ -179,9 +186,17 @@ function attachGestures(el, { onSwipe, onTap }) {
       el.style.transform = '';
       dx = 0; dy = 0; setStamps();
     };
-    if (horiz && dx > THRESHOLD_X) onSwipe('right');
-    else if (horiz && dx < -THRESHOLD_X) onSwipe('left');
-    else if (!horiz && dy < -THRESHOLD_UP) { reset(); onSwipe('up'); }
+    // Far enough, or flicked: a quick short swipe counts too (js/ui/gesture.js).
+    const flick = flickDirection(samples, dx, dy);
+    const commit = (dir) => {
+      // A light tick on phones that can (Android); silently nothing elsewhere.
+      if (navigator.vibrate && !prefersReducedMotion()) { try { navigator.vibrate(8); } catch { /* not allowed */ } }
+      if (dir === 'up') reset();
+      onSwipe(dir);
+    };
+    if ((horiz && dx > THRESHOLD_X) || flick === 'right') commit('right');
+    else if ((horiz && dx < -THRESHOLD_X) || flick === 'left') commit('left');
+    else if ((!horiz && dy < -THRESHOLD_UP) || flick === 'up') commit('up');
     else reset();
   };
   el.addEventListener('pointerup', end);

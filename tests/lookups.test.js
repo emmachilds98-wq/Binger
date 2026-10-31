@@ -10,7 +10,7 @@ import { canonicalService, canonicalServices, isStoreOnly } from '../js/sources/
 import { fromTmdbDetail, fromTmdbList, fromTmdbPerson, fromTmdbCollection, fromTmdbProviders, collectionName, createTmdb } from '../js/sources/tmdb.js';
 import { fromAniList, parsePerson, parseFranchise, parseDeckBatch, decadeRange, createAniList } from '../js/sources/anilist.js';
 import { gatherCandidates, hydrate, decadeDates } from '../js/sources/candidates.js';
-import { loadPerson, loadFranchise, hasFranchise, serviceChoices, checkNewSeasons } from '../js/sources/lookups.js';
+import { loadPerson, loadFranchise, hasFranchise, serviceChoices, checkNewSeasons, loadTitle } from '../js/sources/lookups.js';
 import { buildProfile } from '../js/engine/index.js';
 
 const fx = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
@@ -247,4 +247,13 @@ test('checkNewSeasons fetches watched shows and reports a new season', async () 
   assert.equal(alerts.length, 1);
   assert.deepEqual([alerts[0].season, alerts[0].state, alerts[0].date], [3, 'soon', '2027-01-16']);
   assert.deepEqual(await checkNewSeasons({ tmdb: createTmdb({ key: '' }), items, now: NOW }), []);
+});
+
+test('loadTitle opens a shared title by its id, from TMDB or AniList', async () => {
+  const fetchImpl = fakeFetch([['/movie/693134', fx('tmdb-movie-detail.json')], ['graphql.anilist.co', fx('anilist-frieren.json')]]);
+  const ctx = { tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: createAniList({ fetchImpl }) };
+  assert.equal((await loadTitle('tmdb:movie:693134', ctx)).title, 'Dune: Part Two');
+  assert.equal((await loadTitle('anilist:154587', ctx)).id, 'anilist:154587');
+  assert.equal(await loadTitle('tmdb:movie:693134', { ...ctx, tmdb: createTmdb({ key: '' }) }), null, 'films need a TMDB key');
+  assert.equal(await loadTitle('nonsense', ctx), null);
 });

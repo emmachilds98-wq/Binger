@@ -579,3 +579,9 @@ kbd { font: 600 12px/1 var(--font-body); padding: 4px 7px; border-radius: 6px; b
   /* On a laptop the 16:9 trailer would fill most of the window. */
   .sheet-full.detail .detail-media { max-height: 42vh; }
 }
+
+/* Small phones (under 380 px): two faces on a card instead of three, so the
+   names have room rather than all being cut to "Atsumi Ta…". */
+@media (max-width: 379px) {
+  .card .people-row .person:nth-child(n+3) { display: none; }
+}

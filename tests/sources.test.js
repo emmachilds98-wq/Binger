@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fromTmdbList, fromTmdbDetail, pickTrailer, authFor, createTmdb, isAnimeLike } from '../js/sources/tmdb.js';
+import { fromTmdbList, fromTmdbDetail, pickTrailer, authFor, createTmdb, isAnimeLike, posterSrcset } from '../js/sources/tmdb.js';
 import { fromAniList, cleanDescription, parseDeckBatch, seasonOf, createAniList } from '../js/sources/anilist.js';
 import { canonicalGenres, tmdbGenreNames, canonToAniList } from '../js/sources/genres.js';
 import { gatherCandidates, hydrate, pickSeeds, sequelIdsToFetch, widerPull } from '../js/sources/candidates.js';
@@ -271,4 +271,11 @@ test('a TMDB response with no id is refused, not turned into a broken title', as
   const light = { ...fromTmdbList(fx('tmdb-trending-movie.json').results[3], 'movie'), via: [] };
   const [same] = await hydrate([light], { tmdb: createTmdb({ key: 'k', fetchImpl }) });
   assert.equal(same, light, 'hydrate keeps the original when details are unusable');
+});
+
+test('posters come in the sizes TMDB serves, for the screen to choose from', () => {
+  assert.equal(posterSrcset('https://image.tmdb.org/t/p/w500/abc.jpg'),
+    'https://image.tmdb.org/t/p/w342/abc.jpg 342w, https://image.tmdb.org/t/p/w500/abc.jpg 500w, https://image.tmdb.org/t/p/w780/abc.jpg 780w');
+  assert.equal(posterSrcset('https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/x.jpg'), null, 'AniList covers come in one size');
+  assert.equal(posterSrcset(null), null);
 });

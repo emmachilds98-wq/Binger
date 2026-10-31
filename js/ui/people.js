@@ -282,16 +282,16 @@ function group(title, ...children) {
   return h('section', { class: 'settings-group' }, h('h2', { class: 'eyebrow' }, title), children);
 }
 
-export async function shareOrCopy({ title, text, url }) {
+export async function shareOrCopy({ title, text, url, copied = 'Invite link copied', failed = 'Couldn’t copy. Long-press the code to copy it instead.' }) {
   if (navigator.share) {
     try { await navigator.share({ title, text, url }); return 'shared'; } catch (err) { if (err && err.name === 'AbortError') return 'cancelled'; }
   }
   try {
     await navigator.clipboard.writeText(url);
-    toast('Invite link copied');
+    toast(copied);
     return 'copied';
   } catch {
-    toast('Couldn’t copy. Long-press the code to copy it instead.');
+    toast(failed);
     return 'failed';
   }
 }

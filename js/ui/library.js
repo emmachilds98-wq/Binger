@@ -77,7 +77,7 @@ export function renderLibrary(root, ctx) {
       h('button', { type: 'button', class: 'row-main', onClick: () => ctx.onEditWatch(item, watch), 'aria-label': `Edit your entry for ${t.title}` },
         poster(t),
         h('span', { class: 'row-text' },
-          h('span', { class: 'row-title-line' }, h('span', { class: 'row-title' }, t.title), h('span', { class: 'small muted' }, watch.setup ? 'First run' : shortDate(watch.date))),
+          h('span', { class: 'row-title-line' }, h('span', { class: 'row-title' }, t.title), h('span', { class: 'small muted' }, watch.setup ? 'Picked' : shortDate(watch.date))),
           h('span', { class: 'stars small', 'aria-label': watch.rating ? `${watch.rating} out of 5` : 'Not rated' }, watch.rating ? starsText(watch.rating) : 'Not rated'),
           watch.review ? h('span', { class: 'row-review' }, watch.review) : null,
           watch.tags && watch.tags.length ? h('span', { class: 'small muted' }, watch.tags.join(' · ')) : null)),
@@ -90,7 +90,7 @@ export function renderLibrary(root, ctx) {
 // thoughts, when you watched). Each leaves this list once reviewed.
 function firstRunPicks(picks, ctx) {
   return h('section', { class: 'alerts first-picks', 'aria-labelledby': 'first-picks-title' },
-    h('h2', { id: 'first-picks-title', class: 'eyebrow' }, 'From your first run'),
+    h('h2', { id: 'first-picks-title', class: 'eyebrow' }, 'Picked, not reviewed yet'),
     h('p', { class: 'small muted' }, `${picks.length === 1 ? 'This is' : 'These are'} saved as loved (4½★). Review ${picks.length === 1 ? 'it' : 'them'} to tell Binger more.`),
     h('ul', { class: 'rows' }, picks.map(({ item, watch }) => {
       const t = item.title;
