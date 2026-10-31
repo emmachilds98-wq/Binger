@@ -29,6 +29,7 @@ const trending = fx('tmdb-trending-movie.json');
 const providersList = fx('tmdb-providers-movie.json');
 const personChalamet = fx('tmdb-person.json');
 const staffTanezaki = fx('anilist-staff-tanezaki.json');
+const duneCollection = fx('tmdb-collection.json');
 const tvList = { results: [{ ...tvDetail, genre_ids: tvDetail.genres.map((g) => g.id), media_type: 'tv' }] };
 const allAnime = Object.values(deckFx.data).flatMap((p) => p.media.flatMap((m) => (m.recommendations ? m.recommendations.nodes.map((n) => n.mediaRecommendation) : [m])));
 
@@ -77,6 +78,7 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p === '/configuration') return json({ images: {} });
   if (p.startsWith('/watch/providers/')) return json(providersList);
   if (p === '/person/1190668') return json(personChalamet);
+  if (p === '/collection/726871') return json(duneCollection);
   // "What's on these services": like real TMDB, only titles actually on them.
   // In the fixtures that's Dune (on "Netflix Standard with Ads" in GB) and nothing else.
   if (p.startsWith('/discover/') && url.searchParams.has('with_watch_providers')) {
@@ -303,6 +305,32 @@ const vaRows = await page.locator('.person-sheet .row').allInnerTexts();
 check(vaRows.some((r) => /Frieren[\s\S]*as Frieren/.test(r)), 'a voice actor\u2019s page (AniList) lists their shows with the character they voice');
 for (let i = 0; i < 3; i++) await page.keyboard.press('Escape');
 await page.waitForTimeout(300);
+
+console.log('Not this franchise');
+await page.goto(base + '#discover');
+await page.waitForFunction(() => document.querySelector('.deck .card:last-of-type h2')?.textContent === 'Dune: Part Two', null, { timeout: 10000 }).catch(() => {});
+await page.getByRole('button', { name: 'Pass', exact: true }).click();
+const offer = page.getByRole('button', { name: 'Hide all Dune films' });
+await offer.waitFor({ timeout: 4000 }).catch(() => {});
+check(await offer.count() === 1, 'passing Dune offers "Hide all Dune films"');
+await offer.click();
+await page.waitForFunction(() => /Dune is hidden/.test(document.querySelector('.toast')?.textContent || ''), null, { timeout: 4000 }).catch(() => {});
+const hiddenSeries = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).settings.hiddenFranchises);
+check(hiddenSeries.length === 1 && hiddenSeries[0].name === 'Dune' && hiddenSeries[0].ids.length === 3, `the whole collection is hidden (${hiddenSeries.map((f) => `${f.name}: ${f.ids.length} films`).join(', ')})`);
+check(/Dune is hidden/.test(await page.locator('.toast').innerText().catch(() => '')), 'a toast says Dune is hidden, with Undo');
+// Let go of "only what I can stream" so the deck moves on, as in the design.
+await page.getByRole('button', { name: 'Clear', exact: true }).click();
+await page.waitForSelector('.deck .card', { timeout: 8000 }).catch(() => {});
+await page.waitForTimeout(400);
+check(await page.locator('.deck .card h2', { hasText: /^Dune/ }).count() === 0, 'no Dune film comes back into the deck');
+await shot('10-hide-series');
+await page.click('a[href="#taste"]');
+const seriesPill = page.getByRole('button', { name: 'Show Dune again' });
+await seriesPill.waitFor({ timeout: 4000 }).catch(() => {});
+check(await seriesPill.count() === 1, 'Taste lists Dune under "Never show me"');
+await seriesPill.click();
+await page.waitForTimeout(200);
+check((await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).settings.hiddenFranchises.length)) === 0, 'tapping it shows Dune again');
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

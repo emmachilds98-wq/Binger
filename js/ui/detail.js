@@ -13,7 +13,7 @@ export function openDetail(initial, ctx) {
 
   function render() {
     clear(sheet.body);
-    sheet.body.append(media(title, ctx, sheet), body(title, ctx), footer(title, ctx, sheet));
+    sheet.body.append(media(title, ctx, sheet), body(title, ctx, sheet), footer(title, ctx, sheet));
   }
   render();
   sheet.focusFirst();
@@ -72,7 +72,7 @@ function crewLine(t, ctx) {
   return bits.length ? bits.flatMap((b, i) => [i ? ' \u00b7 ' : null, ...b]) : null;
 }
 
-function body(t, ctx) {
+function body(t, ctx, sheet) {
   const format = t.kind === 'anime' && t.format && t.format !== 'TV' ? t.formatLabel : null;
   const facts = [format, metaLine(t, { genres: 0 }), t.certification, publicScore(t)].filter(Boolean).join(' · ');
   const chips = [...(t.genres || []), ...(t.keywords || []).slice(0, 4)];
@@ -102,6 +102,10 @@ function body(t, ctx) {
       }))) : null,
     whereToWatch(t, ctx),
     history(t, ctx),
+    ctx.canHideSeries && ctx.canHideSeries(t) ? h('p', null, h('button', {
+      type: 'button', class: 'link-btn quiet-link',
+      onClick: () => { sheet.close(); ctx.onHideSeries(t); },
+    }, 'Hide the whole series')) : null,
     h('p', { class: 'small muted links' },
       t.trailer ? h('a', { href: fullTrailerUrl(t.trailer), target: '_blank', rel: 'noopener' }, 'Full trailer on YouTube', icon('external', 14)) : null,
       t.url ? h('a', { href: t.url, target: '_blank', rel: 'noopener' }, t.source === 'anilist' ? 'AniList page' : 'TMDB page', icon('external', 14)) : null));

@@ -89,7 +89,11 @@ export function renderTaste(root, ctx) {
     toggle('Surprise me sometimes', 'About 1 card in 7 is a well-rated title outside your usual taste', s.surprise, (v) => ctx.updateSettings({ surprise: v }))));
 
   const hidden = new Set(s.hiddenGenres);
-  page.append(section('Never show me', h('div', { class: 'pill-wrap' }, ALL_GENRES.map((g) => {
+  // Hidden series first (tap to show again), then the genres.
+  const series = (s.hiddenFranchises || []).map((f) => h('button', {
+    type: 'button', class: 'pill pill-series', 'aria-label': `Show ${f.name} again`, onClick: () => ctx.onUnhideSeries && ctx.onUnhideSeries(f),
+  }, f.name, icon('x', 14)));
+  page.append(section('Never show me', h('div', { class: 'pill-wrap' }, series, ALL_GENRES.map((g) => {
     const b = h('button', { type: 'button', class: 'pill pill-hide', 'aria-pressed': String(hidden.has(g)) }, g);
     b.addEventListener('click', () => {
       const next = new Set(ctx.getState().settings.hiddenGenres);

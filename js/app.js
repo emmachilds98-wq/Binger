@@ -22,7 +22,7 @@ import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices, loadPerson } from './sources/lookups.js';
+import { serviceChoices, loadPerson, hasFranchise, loadFranchise } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen } from './ui/sheet.js';
 
@@ -215,7 +215,25 @@ function deckAction(dir, card) {
   deck.topId = null;
   store.update(L.setStatus, t, dir === 'right' ? 'want' : 'passed', Date.now(), t.via);
   if (dir === 'right') toast('Added to your Watchlist', { action: { label: 'Undo', fn: undo } });
+  else if (hasFranchise(t)) toast('Passed', { action: { label: hideSeriesLabel(t), fn: () => hideSeries(t) }, ms: 4000 });
   afterDeckChange();
+}
+
+// "Not this franchise" (Phase 2 step 3): resolved once, when you hide it,
+// into every title in the series, so the deck never has to look it up again.
+function hideSeriesLabel(t) {
+  return t.source === 'tmdb' && t.collection ? `Hide all ${t.collection.name} films` : 'Hide this whole series';
+}
+
+async function hideSeries(t) {
+  const f = await loadFranchise(t, { tmdb, anilist });
+  if (!f) return;
+  store.update(L.hideFranchise, f);
+  toast(`${f.name} is hidden`, { action: { label: 'Undo', fn: () => store.update(L.unhideFranchise, f.key) }, ms: 4000 });
+}
+
+function isSeriesHidden(t) {
+  return store.get().settings.hiddenFranchises.some((f) => f.ids.includes(t.id));
 }
 
 function undo() {
@@ -313,6 +331,8 @@ function showDetail(title, { card = null } = {}) {
     onRemove: (t) => { store.update(L.removeItem, t.id); toast('Removed from your Watchlist'); },
     onPerson: showPerson,
     onEditWatch: editWatch,
+    onHideSeries: (t) => (hasFranchise(t) && !isSeriesHidden(t) ? hideSeries(t) : null),
+    canHideSeries: (t) => hasFranchise(t) && !isSeriesHidden(t),
   });
 }
 
@@ -481,6 +501,7 @@ function render() {
       onSettings: showSettings,
       onServices: () => showServices(),
       onPerson: showPerson,
+      onUnhideSeries: (f) => { store.update(L.unhideFranchise, f.key); toast(`${f.name} can come back now`); },
       onForgetPasses: () => { store.update(L.forgetPasses); toast('Passed titles can come back now'); refill({ force: true }); },
     });
   }
