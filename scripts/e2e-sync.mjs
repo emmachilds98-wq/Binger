@@ -134,6 +134,15 @@ const as = (uid, method, path, body) => fetch(docUrl(path), {
 console.log('Emma: sign in and start a household');
 const emma = await person('Emma');
 await emma.page.goto(base);
+// The welcome on a first visit: her name, then "Sync with friends" opens
+// People and sync on top of the first run.
+await emma.page.waitForSelector('.sheet.welcome');
+await emma.page.fill('#welcome-name', 'Emma');
+await emma.page.getByRole('button', { name: 'Sync with friends' }).click();
+await emma.page.waitForSelector('.sheet.people');
+check(await emma.page.locator('.sheet.people').isVisible() && await emma.page.locator('.onboarding').count() === 1, 'the welcome takes her name, then "Sync with friends" opens sign-in over the first run');
+await emma.page.keyboard.press('Escape');
+await emma.page.waitForTimeout(400);
 await emma.page.waitForSelector('.onboarding');
 await emma.page.getByRole('button', { name: 'Skip' }).click();
 await emma.page.waitForSelector('.deck .card');
@@ -152,9 +161,7 @@ await openPeople(emma.page);
 await createAccount(emma.page, 'emma@example.com');
 check(true, 'Emma creates an account (real Firebase Auth SDK, emulated)');
 await emma.page.getByRole('button', { name: 'Start a household' }).click();
-await emma.page.waitForSelector('#person-name');
-await emma.page.fill('#person-name', 'Emma');
-await emma.page.keyboard.press('Enter');
+// No "What's your name?" here: the welcome already asked.
 await emma.page.waitForSelector('.invite-code', { timeout: 15000 });
 const code = (await emma.page.locator('.invite-code').innerText()).replace(/-/g, '');
 check(/^[a-z0-9]{12}$/.test(code), `she gets an invite code (${code})`);
@@ -244,6 +251,8 @@ check(removed, `removing "${both[0]}" on Emma's browser removes it on Dave's too
 console.log("Emma's laptop: sign in with the same account");
 const laptop = await person('Laptop');
 await laptop.page.goto(base);
+await laptop.page.waitForSelector('.sheet.welcome');
+await laptop.page.getByRole('button', { name: 'Just me for now' }).click();
 await laptop.page.waitForSelector('.onboarding');
 await laptop.page.getByRole('button', { name: 'Skip' }).click();
 await openPeople(laptop.page);
@@ -267,6 +276,8 @@ check(JSON.stringify(names3) === '["Dave","Emma"]', `and the household still lis
 console.log('A wrong code');
 const stranger = await person('Stranger');
 await stranger.page.goto(base);
+await stranger.page.waitForSelector('.sheet.welcome');
+await stranger.page.getByRole('button', { name: 'Just me for now' }).click();
 await stranger.page.waitForSelector('.onboarding');
 await stranger.page.getByRole('button', { name: 'Skip' }).click();
 await openPeople(stranger.page);

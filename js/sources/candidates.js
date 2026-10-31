@@ -11,7 +11,31 @@ import { DECK_FORMATS } from './anilist.js';
 import { mapLimit, DAY } from './http.js';
 
 // When a title arrives by several routes, the most personal reason wins.
-const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, stream: 4, trending: 5, popular: 6, search: 7 };
+const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, stream: 4, trending: 5, wider: 6, popular: 7, search: 8 };
+
+// One "wider" pull per refill for films and one for TV, so the deck reaches
+// past what's trending: all-time classics, well-loved titles few people have
+// found, and films and series from other countries. Your profile still ranks
+// them, so only the ones that suit you come up.
+const WORLD = [['ko', 'Korean'], ['fr', 'French'], ['es', 'Spanish'], ['hi', 'Hindi'], ['it', 'Italian'], ['de', 'German'],
+  ['da', 'Danish'], ['sv', 'Swedish'], ['ja', 'Japanese'], ['zh', 'Chinese'], ['pt', 'Portuguese'], ['tr', 'Turkish']];
+const NOT_DRAMA = [10763, 10767]; // News and Talk: not what anyone swipes for
+
+export function widerPull(mediaType, rng = Math.random) {
+  const pick = (n) => Math.floor(rng() * n);
+  const kind = mediaType === 'movie' ? 'film' : 'series';
+  const without = mediaType === 'tv' ? NOT_DRAMA : [];
+  const mode = ['acclaimed', 'gems', 'world'][pick(3)];
+  if (mode === 'acclaimed') {
+    return { mode, label: 'Acclaimed: among TMDB’s best rated', params: { sortBy: 'vote_average.desc', minVotes: mediaType === 'movie' ? 2000 : 600, page: 1 + pick(10), withoutGenreIds: without } };
+  }
+  if (mode === 'gems') {
+    return { mode, label: 'A hidden gem: loved by the people who found it', params: { sortBy: 'vote_average.desc', minVotes: 150, maxVotes: 1500, minScore: 7.2, page: 1 + pick(5), withoutGenreIds: without } };
+  }
+  const [lang, name] = WORLD[pick(WORLD.length)];
+  // Japanese animation comes from AniList, so it's left out here.
+  return { mode, label: `A ${name} ${kind}, from further afield`, params: { originalLanguage: lang, minVotes: 100, page: 1 + pick(3), withoutGenreIds: lang === 'ja' ? [...without, 16] : without } };
+}
 
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
@@ -150,6 +174,11 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page })).forEach((t) => add(t, { type: 'genre' })));
       } else {
         run(`tmdb:popular:${mediaType}`, async () => (await tmdb.popular(mediaType, page)).forEach((t) => add(t, { type: 'popular' })));
+      }
+      {
+        const w = widerPull(mediaType, rng);
+        run(`tmdb:wider:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds: [], runtimeMax, ...dateParams, ...w.params }))
+          .forEach((t) => add(t, { type: 'wider', label: w.label })));
       }
       if (mediaType === 'movie') {
         run('tmdb:fresh:movie', async () => (await tmdb.discover('movie', { from: isoDay(now - 120 * DAY), to: isoDay(now), minVotes: 20 }))

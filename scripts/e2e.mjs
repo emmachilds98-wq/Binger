@@ -118,7 +118,16 @@ const libraryCount = () => page.evaluate(() => {
 
 console.log('First run');
 await page.goto(base);
+await page.waitForSelector('.sheet.welcome');
+check(await page.locator('.sheet.welcome h1').innerText() === 'Who’s this?', 'a first visit asks who you are');
+await page.waitForTimeout(400);
+await shot('20-welcome');
+await page.getByRole('button', { name: 'Sync with friends' }).click();
+check(await page.locator('.sheet.welcome').count() === 1 && /Add your name first/.test(await page.locator('.sheet.welcome [role=status]').innerText()), 'syncing with friends asks for your name first');
+await page.getByRole('button', { name: 'Just me for now' }).click();
 await page.waitForSelector('.onboarding .tile');
+const afterWelcome = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')));
+check(afterWelcome.welcomed === true && afterWelcome.profiles.list[0].name === '', '"Just me for now" goes on to the first run, and the welcome won’t ask again');
 check(await page.locator('.onboarding h1').innerText() === 'What have you loved?', 'onboarding opens on first visit');
 await page.waitForTimeout(800);
 await shot('01-onboarding');
@@ -497,6 +506,10 @@ await shot('18-desktop-taste');
 await page.setViewportSize({ width: 768, height: 1024 });
 await page.goto(base + '#discover');
 await page.waitForSelector('.deck .card');
+// Crossing the 900 px line re-renders Discover when the browser reports the
+// new width (a matchMedia change event), which can land just after the hash
+// change: wait for it rather than measuring mid-way.
+await page.waitForFunction(() => !document.querySelector('.deck-side'), null, { timeout: 5000 }).catch(() => {});
 const tabletDeck = await rectOf('.discover-main');
 check(await page.locator('.deck-side').count() === 0 && tabletDeck.width <= 480 && Math.abs((tabletDeck.left + tabletDeck.right) / 2 - 384) < 2, 'on a tablet the deck stays phone-sized in the middle, with the tab bar below');
 await fits('at 768 px');
@@ -504,6 +517,7 @@ await fits('at 768 px');
 await page.setViewportSize({ width: 360, height: 640 });
 await page.goto(base + '#discover');
 await page.waitForSelector('.deck .card');
+await page.waitForFunction(() => !document.querySelector('.deck-side'), null, { timeout: 5000 }).catch(() => {});
 const phoneTabs = await page.evaluate(() => getComputedStyle(document.getElementById('tabbar')).flexDirection);
 check(phoneTabs === 'row' && await page.locator('.deck-side').count() === 0 && !(await page.locator('.key-hint').first().isVisible()), 'on a small phone it is the phone layout: tabs at the bottom, no side panel, no key hints');
 await fits('at 360 px');

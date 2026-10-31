@@ -11,7 +11,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (name.startsWith('.') || name === 'node_modules') continue;
+    if (name.startsWith('.') || name === 'node_modules' || name === '_site') continue; // _site: a local build, may hold a key
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p, out); else out.push(p);
   }

@@ -45,6 +45,37 @@ export function openWhoIsWatching(ctx) {
   return sheet;
 }
 
+// First visit: who's this, and do they want to sync with friends? Resolves
+// to { name, choice: 'sync' | 'solo' } (name may be ''), however it closes.
+export function openWelcome({ name = '' } = {}) {
+  return new Promise((resolve) => {
+    let result = null;
+    const sheet = openSheet({ label: 'Welcome to Binger', variant: 'full', className: 'who welcome', onClose: () => resolve(result || { name: input.value.trim(), choice: 'solo' }) });
+    const input = h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', value: name, placeholder: 'Your name' });
+    const done = (choice) => {
+      const v = input.value.trim();
+      if (choice === 'sync' && !v) { input.focus(); hint.textContent = 'Add your name first, so your friends can tell whose library is whose.'; return; }
+      result = { name: v, choice };
+      sheet.close();
+    };
+    const hint = h('p', { class: 'small muted', role: 'status' }, 'Everyone gets their own watchlist, diary and suggestions. Sync keeps them on all your devices and lets friends and family see who’s who.');
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') done(input.value.trim() ? 'sync' : 'solo'); });
+    append(sheet.body, [
+      h('div', { class: 'who-body welcome-body' },
+        h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
+        h('h1', { class: 'page-title' }, 'Who’s this?'),
+        h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
+        input,
+        hint,
+        h('div', { class: 'welcome-actions' },
+          h('button', { type: 'button', class: 'btn btn-primary', onClick: () => done('sync') }, icon('people', 18), 'Sync with friends'),
+          h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => done('solo') }, 'Just me for now')),
+        h('p', { class: 'small muted' }, 'You can change either later in Settings → People and sync.')),
+    ]);
+    requestAnimationFrame(() => input.focus());
+  });
+}
+
 // A small sheet asking for a name. Resolves to the name, or null.
 export function askName({ title, label = 'Name', value = '', confirmLabel = 'Save', hint = null }) {
   return new Promise((resolve) => {
