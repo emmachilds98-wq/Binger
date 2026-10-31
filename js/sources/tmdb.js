@@ -29,6 +29,12 @@ export function isAnimeLike(r) {
   return ids.includes(16) && (r.original_language === 'ja' || (r.origin_country || []).includes('JP'));
 }
 
+// News and talk shows (TMDB TV genres 10763, 10767) are guest spots and
+// headlines, not something to swipe for; daily soaps (10766) air so often
+// they'd fill every "on now" list. Left out of the deck's TV lists.
+export const NOT_FOR_DECK = [10763, 10767, 10766];
+const forDeck = (r) => !(r.genre_ids || []).some((g) => NOT_FOR_DECK.includes(g));
+
 export function fromTmdbList(r, mediaType = r.media_type) {
   if (!r || r.id == null || (mediaType !== 'movie' && mediaType !== 'tv') || r.adult) return null;
   const date = (mediaType === 'movie' ? r.release_date : r.first_air_date) || null;
@@ -238,6 +244,8 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
   }
 
   const list = (json, mediaType) => ((json && json.results) || []).map((r) => fromTmdbList(r, mediaType)).filter(Boolean);
+  // Lists for the deck and the first-run grid: TV without news, talk or soaps.
+  const deckList = (json, mediaType) => list(mediaType === 'tv' && json && json.results ? { results: json.results.filter(forDeck) } : json, mediaType);
 
   return {
     hasKey: !!auth,
@@ -246,20 +254,24 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
       await get('/configuration', {}, 0);
       return true;
     },
-    async trending(mediaType) {
-      return list(await get(`/trending/${mediaType}/week`), mediaType);
+    async trending(mediaType, page = 1) {
+      return deckList(await get(`/trending/${mediaType}/week`, page > 1 ? { page } : {}), mediaType);
     },
     async popular(mediaType, page = 1) {
-      return list(await get(`/${mediaType}/popular`, { page, region: mediaType === 'movie' ? region : undefined }, 12 * HOUR), mediaType);
+      return deckList(await get(`/${mediaType}/popular`, { page, region: mediaType === 'movie' ? region : undefined }, 12 * HOUR), mediaType);
     },
     // providerIds: only titles included with these services (subscription or
-    // free) in your region. runtimeMax: films under N minutes.
-    // originalLanguage, minScore, maxVotes and withoutGenreIds reach past
-    // what's popular: classics, hidden gems, films from other countries.
-    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null, providerIds = [], runtimeMax = null, sortBy = 'popularity.desc', originalLanguage = null, minScore = null, maxVotes = null, withoutGenreIds = [] } = {}) {
+    // free) in your region. networkIds: TV made by these networks (a
+    // service's own shows: TMDB_NETWORKS in services.js). runtimeMax: films
+    // under N minutes. originalLanguage, minScore, maxVotes and
+    // withoutGenreIds reach past what's popular: classics, hidden gems,
+    // films from other countries. TV never includes news, talk or soaps.
+    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null, providerIds = [], networkIds = [], runtimeMax = null, sortBy = 'popularity.desc', originalLanguage = null, minScore = null, maxVotes = null, withoutGenreIds = [] } = {}) {
       const p = { sort_by: sortBy, include_adult: 'false', page, 'vote_count.gte': minVotes };
+      const without = mediaType === 'tv' ? [...withoutGenreIds, ...NOT_FOR_DECK] : withoutGenreIds;
       if (genreIds.length) p.with_genres = [...new Set(genreIds)].join('|');
-      if (withoutGenreIds.length) p.without_genres = [...new Set(withoutGenreIds)].join(',');
+      if (without.length) p.without_genres = [...new Set(without)].join(',');
+      if (mediaType === 'tv' && networkIds.length) p.with_networks = [...new Set(networkIds)].join('|');
       if (originalLanguage) p.with_original_language = originalLanguage;
       if (minScore) p['vote_average.gte'] = minScore;
       if (maxVotes) p['vote_count.lte'] = maxVotes;
@@ -278,10 +290,10 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
         if (airingFrom) p['air_date.gte'] = airingFrom;
         if (airingTo) p['air_date.lte'] = airingTo;
       }
-      return list(await get(`/discover/${mediaType}`, p), mediaType);
+      return deckList(await get(`/discover/${mediaType}`, p), mediaType);
     },
     async recommendations(mediaType, id) {
-      return list(await get(`/${mediaType}/${id}/recommendations`, {}, DAY), mediaType);
+      return deckList(await get(`/${mediaType}/${id}/recommendations`, {}, DAY), mediaType);
     },
     async details(mediaType, id) {
       const append = mediaType === 'movie'
@@ -302,11 +314,22 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
     async collection(id) {
       return fromTmdbCollection(await get(`/collection/${id}`, {}, 7 * DAY));
     },
+    // Films and series asked for separately: /search/multi shares its 20
+    // results with people, so a show could miss out to an actor's namesake.
+    // Merged most popular first; js/sources/lookups.js ranks by closeness.
     async search(query) {
       const q = String(query || '').trim();
       if (!q) return [];
-      const json = await get('/search/multi', { query: q, include_adult: 'false' }, HOUR);
-      return ((json && json.results) || []).map((r) => fromTmdbList(r, r.media_type)).filter((t) => t && !t.animeLike);
+      // One half failing still returns the other; both failing is an error.
+      const settled = await Promise.allSettled(['movie', 'tv'].map((m) => get(`/search/${m}`, { query: q, include_adult: 'false' }, HOUR).then((json) => list(json, m))));
+      const ok = settled.filter((r) => r.status === 'fulfilled').flatMap((r) => r.value);
+      if (settled.every((r) => r.status === 'rejected')) throw settled[0].reason;
+      return ok.filter((t) => !t.animeLike).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+    },
+    // id: a TMDB network id (TMDB_NETWORKS in services.js), for the live check.
+    async network(id) {
+      const d = await get(`/network/${id}`, {}, 7 * DAY);
+      return d && d.id ? { id: d.id, name: d.name || '' } : null;
     },
   };
 }

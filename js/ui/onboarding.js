@@ -1,8 +1,11 @@
 // First run: "What have you loved?" Tap a few titles (or search for them) so
-// the very first deck already knows something about you.
+// the very first deck already knows something about you. The grid is what
+// most people have seen (js/sources/lookups.js → starterTitles), with "Show
+// more" for the next lot; anything you've picked stays at the top of it.
 
 import { h, icon, clear, KIND_NAME, safeImg } from './dom.js';
 import { openSheet } from './sheet.js';
+import { serviceLine } from './search.js';
 
 export const MIN_PICKS = 3;
 
@@ -10,8 +13,12 @@ export function openOnboarding(ctx) {
   const sheet = openSheet({ label: 'Set up Binger', variant: 'full', className: 'onboarding', dismissible: false });
   const picked = new Map();
   let titles = [];
+  let page = 1;
+  let more = 'idle'; // 'idle' | 'loading' | 'done'
 
   const grid = h('div', { class: 'tile-grid', role: 'group', 'aria-label': 'Popular titles' });
+  const status = h('p', { class: 'small muted onboard-status', role: 'status' });
+  const moreBtn = h('button', { type: 'button', class: 'btn btn-quiet onboard-more' }, 'Show more');
   const count = h('span', { class: 'muted grow', role: 'status' });
   const start = h('button', { type: 'button', class: 'btn btn-primary btn-lg' }, 'Start swiping');
   const input = h('input', { id: 'seed-search', type: 'search', placeholder: 'Films, shows, anime…', autocomplete: 'off', enterkeyhint: 'search' });
@@ -42,14 +49,49 @@ export function openOnboarding(ctx) {
     list.forEach((t) => grid.append(tile(t)));
   }
 
+  // Not searching: your picks first (including any found by search), then
+  // the popular grid, then "Show more".
+  function paintHome(note = '') {
+    status.textContent = note;
+    const mine = [...picked.values()].filter((t) => !titles.some((x) => x.id === t.id));
+    paintGrid(titles.length ? [...mine, ...titles] : []);
+    moreBtn.hidden = !titles.length || more === 'done';
+    moreBtn.disabled = more === 'loading';
+    moreBtn.textContent = more === 'loading' ? 'Loading…' : 'Show more';
+  }
+
+  moreBtn.addEventListener('click', async () => {
+    if (more !== 'idle') return;
+    more = 'loading';
+    paintHome();
+    try {
+      const next = await ctx.loadPopular(page + 1);
+      const fresh = next.filter((t) => !titles.some((x) => x.id === t.id));
+      page += 1;
+      titles = [...titles, ...fresh];
+      more = fresh.length ? 'idle' : 'done';
+    } catch {
+      more = 'idle';
+    }
+    if (!input.value.trim()) paintHome();
+  });
+
   let timer = null;
   input.addEventListener('input', () => {
     clearTimeout(timer);
     timer = setTimeout(async () => {
       const q = input.value.trim();
-      if (q.length < 2) { paintGrid(titles); return; }
-      const { titles: found } = await ctx.search(q);
-      if (input.value.trim() === q) paintGrid(found.length ? found : titles);
+      if (q.length < 2) { paintHome(); return; }
+      status.textContent = 'Searching…';
+      const { titles: found, errors, service } = await ctx.search(q);
+      if (input.value.trim() !== q) return;
+      if (!found.length) {
+        paintHome(errors.length ? 'Search failed. Check your connection.' : `Nothing found for “${q}”. Try another spelling, or pick from these.`);
+        return;
+      }
+      status.textContent = service ? serviceLine(service) : '';
+      moreBtn.hidden = true;
+      paintGrid(found);
     }, 350);
   });
 
@@ -66,7 +108,7 @@ export function openOnboarding(ctx) {
     h('div', { class: 'onboard-search' },
       h('label', { class: 'eyebrow', for: 'seed-search' }, 'Find a favourite'),
       h('div', { class: 'search-box' }, icon('search', 18), input)),
-    h('div', { class: 'page-scroll' }, grid,
+    h('div', { class: 'page-scroll' }, status, grid, moreBtn,
       !ctx.hasKey ? h('div', { class: 'notice' }, icon('info', 18),
         h('p', null, 'Anime works straight away. Films and TV need a free TMDB key; you can add it now or later in ',
           h('button', { type: 'button', class: 'link-btn', onClick: ctx.onSettings }, 'Settings'), '.')) : null),
@@ -74,14 +116,16 @@ export function openOnboarding(ctx) {
       h('button', { type: 'button', class: 'link-btn', onClick: () => { ctx.onDone([]); sheet.close(); } }, 'Skip'),
       start));
 
-  paintCount();
-  paintGrid([]);
-  ctx.loadPopular().then((list) => {
+  // From the first page again (a TMDB key added mid-way brings films and TV).
+  const load = () => ctx.loadPopular(1).then((list) => {
     titles = list;
-    if (!input.value.trim()) paintGrid(titles);
-  }).catch(() => grid.replaceChildren(h('p', { class: 'muted' }, 'Couldn’t load popular titles. Search above instead.')));
-  return {
-    sheet,
-    refresh: () => ctx.loadPopular().then((list) => { titles = list; if (!input.value.trim()) paintGrid(titles); }),
-  };
+    page = 1;
+    more = 'idle';
+    if (!input.value.trim()) paintHome();
+  });
+
+  paintCount();
+  paintHome();
+  load().catch(() => grid.replaceChildren(h('p', { class: 'muted' }, 'Couldn’t load popular titles. Search above instead.')));
+  return { sheet, refresh: load };
 }

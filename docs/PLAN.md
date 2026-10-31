@@ -14,12 +14,13 @@ and the decisions that shouldn't be quietly undone. Update the
 - Rules for anyone (human or agent) changing the code: [../CLAUDE.md](../CLAUDE.md)
 - Screenshots from the last end-to-end run: [screenshots/](screenshots/)
 - Upgrade plan for PC and mobile (milestones M0 to M7, after Phase 2): [UPGRADE-PLAN.md](UPGRADE-PLAN.md)
+- Coverage plan (more films and shows: search, first run, deck): [COVERAGE-PLAN.md](COVERAGE-PLAN.md)
 
 ---
 
 ## Start here (next session)
 
-Where things stand on 2026-10-31 (third session):
+Where things stand on 2026-10-31 (fourth session):
 
 - **The site is live** at https://emmachilds98-wq.github.io/Binger/
   (GitHub Pages, deployed from `main`).
@@ -30,7 +31,7 @@ Where things stand on 2026-10-31 (third session):
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
 - **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
   people and sync with the owner's Firebase project are live.
-- **Checks:** `npm test` 104 passing, `npm run e2e` all passing,
+- **Checks:** `npm test` 120 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
@@ -49,7 +50,10 @@ Do these in order:
    the PC layout is done (step 2), so 3. films and TV for everyone, then
    4. mobile polish. If someone with canvas access is around, add a desktop
    row to the canvas from DESIGN.md → "PC and tablet layout".
-5. Tick the boxes here and add a [status log](#status-log) entry.
+5. **Coverage** ([COVERAGE-PLAN.md](COVERAGE-PLAN.md)): step 1 is built
+   (search, first run, wider deck); check its TMDB live run is green, then
+   carry on with step 2. Step 3 lists what the owner can connect.
+6. Tick the boxes here and add a [status log](#status-log) entry.
 
 ### New to the project? (human engineers)
 
@@ -184,6 +188,15 @@ Everything technical you need is in this file,
     buttons and a Settings link to piracy streaming sites (r/Piracy's
     megathread) on 2026-10-31; declined, and the legal Watch button built
     instead. Don't add piracy sites or lists of them.
+16. **Talk shows, news and daily soaps never reach the deck** (TMDB TV genres
+    10767, 10763, 10766: `NOT_FOR_DECK` in `tmdb.js`). They air daily, so
+    they filled "on now" and "popular TV". Search still finds them, so
+    anyone can log one.
+17. **A service's shows = its TMDB networks + what's on it where you live.**
+    "Apple TV+ originals" are asked for by network (`TMDB_NETWORKS` in
+    `services.js`, same in every country; each id checked weekly by the live
+    check); "what's on Netflix" by watch provider, in your region. Typing a
+    service into search lists both, first.
 
 ---
 
@@ -342,6 +355,14 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - [ ] Mobile polish
 Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
+### Coverage: more films and shows ◐ ([COVERAGE-PLAN.md](COVERAGE-PLAN.md))
+- [x] Step 1: search finds any film or show (and "apple tv" lists Apple's),
+      a first-run grid of what most people have seen with "Show more", a
+      newer and wider deck (recent hits, streamers' originals, no talk shows)
+- [ ] Step 2: people and years in search, `/similar` fallback, browse by
+      service on the first run (design first), coming soon
+- [ ] Step 3 (owner): `TMDB_API_KEY` in the cloud environment; Trakt later, maybe
+
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
 - [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
@@ -357,6 +378,34 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session): coverage, more films and shows
+- The owner couldn't find Apple TV+ shows they like, saw gaps in newer
+  titles, found the first-run picks slim, and asked for a full upgrade plan
+  (and to be asked about connections). Wrote [COVERAGE-PLAN.md](COVERAGE-PLAN.md).
+- Found: the live site has its TMDB key, so the gaps were in how Binger asks
+  TMDB: one shared page of search results, a first-run grid of this week's
+  trending only (30 tiles), "on now" TV full of talk shows and soaps, nothing
+  from the last two years beyond the newest 20, a 150-rating floor most
+  newer series miss, and no route to a streamer's own shows.
+- Built step 1: search by films and series separately plus anime, ranked by
+  closeness; type a service ("apple tv") for its shows; first-run grid of
+  trending + all-time most-rated + last three years + anime, with "Show
+  more", picks kept at the front and "Nothing found" said; deck adds
+  trending page 2, a two-year "recent" pull, one streamer's originals a
+  refill ("An Apple TV+ original"), lower TV vote floors, and drops talk,
+  news and soaps (decisions 16 and 17).
+- The live check (`scripts/tmdb-live.mjs`, GitHub Actions) now also checks
+  each network id, Apple originals, "on now" without talk shows, search
+  results and the first-run grid. This session had no `TMDB_API_KEY`, so it
+  ran on PR #9 with the repository secret: all passed (14 network ids right,
+  Apple originals back, right first result for each search, 112 first-run
+  titles plus 111 behind "Show more").
+- Tests: 120 unit (was 109), e2e all passing (101 checks), new screenshots
+  `21-onboarding-search`, `22-search-service`. `e2e:sync` not needed (no
+  sync files changed).
+- **Next:** COVERAGE-PLAN step 2. **Owner:** add `TMDB_API_KEY` to the cloud
+  environment (COVERAGE-PLAN step 3) so sessions can check against live TMDB.
 
 ### 2026-10-31 (third session, end): sign in on the welcome, Watch button
 - The owner asked for sign-in on the first visit (so nobody links devices

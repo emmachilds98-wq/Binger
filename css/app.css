@@ -315,6 +315,8 @@ input[type="range"] { accent-color: var(--accent); }
 .search-box input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0; outline: none; color: var(--text); }
 .search-box:focus-within { border-color: var(--accent); }
 .search-hint { padding: 0 16px 10px; }
+/* Inside the results, which have their own padding. */
+.search .search-service { padding: 0 0 12px; }
 .search-status { padding: 24px 4px; text-align: center; }
 
 /* settings */
@@ -359,6 +361,10 @@ input[type="range"] { accent-color: var(--accent); }
 .tile-check { position: absolute; top: 6px; right: 6px; z-index: 1; width: 24px; height: 24px; border-radius: 12px; background: var(--accent); color: var(--on-accent); display: none; align-items: center; justify-content: center; }
 .tile[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--accent); }
 .tile[aria-pressed="true"] .tile-check { display: flex; }
+.onboard-status { margin: 0 0 10px; }
+.onboard-status:empty { display: none; }
+.onboard-more { width: 100%; margin-top: 14px; }
+.onboard-more[hidden] { display: none; }
 .onboard-foot { display: flex; align-items: center; gap: 14px; padding: 12px 20px calc(16px + var(--safe-bottom)); border-top: 1px solid var(--surface-2); }
 .onboard-foot .btn-primary:not(.is-ready) { background: var(--surface-2); color: var(--muted); }
 

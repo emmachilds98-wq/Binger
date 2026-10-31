@@ -22,7 +22,7 @@ import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices, loadPerson, hasFranchise, loadFranchise, checkNewSeasons } from './sources/lookups.js';
+import { serviceChoices, loadPerson, hasFranchise, loadFranchise, checkNewSeasons, searchTitles, starterTitles } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen, choiceSheet } from './ui/sheet.js';
 import { loadDevice, saveDevice } from './state/device.js';
@@ -102,34 +102,14 @@ async function enrich(t) {
   return full;
 }
 
-async function searchAll(q) {
-  const jobs = [anilist.search(q)];
-  if (tmdb.hasKey) jobs.unshift(tmdb.search(q));
-  const settled = await Promise.allSettled(jobs);
-  const lists = settled.filter((r) => r.status === 'fulfilled').map((r) => r.value);
-  const errors = settled.filter((r) => r.status === 'rejected').map((r) => r.reason);
-  const merged = [];
-  for (let i = 0; i < 20; i++) for (const list of lists) if (list[i]) merged.push(list[i]);
-  const needle = q.trim().toLowerCase();
-  const closeness = (t) => {
-    const name = t.title.toLowerCase();
-    return name === needle ? 0 : name.startsWith(needle) ? 1 : 2;
-  };
-  merged.sort((x, y) => closeness(x) - closeness(y));
-  return { titles: merged.slice(0, 30), errors };
+// Search and the first-run grid live in js/sources/lookups.js (ranking,
+// service names, which lists to ask for); these just pass the sources in.
+function searchAll(q) {
+  return searchTitles(q, { tmdb, anilist });
 }
 
-async function loadPopular() {
-  const jobs = [anilist.popular()];
-  if (tmdb.hasKey) jobs.unshift(tmdb.trending('movie'), tmdb.trending('tv'));
-  const settled = await Promise.allSettled(jobs);
-  const lists = settled.filter((r) => r.status === 'fulfilled').map((r) => r.value.filter((t) => !t.animeLike));
-  if (!lists.length) throw new Error('Nothing loaded');
-  const out = [];
-  for (let i = 0; i < 30 && out.length < 30; i++) {
-    for (const list of lists) if (list[i] && !out.some((t) => t.id === list[i].id)) out.push(list[i]);
-  }
-  return out;
+function loadPopular(page = 1) {
+  return starterTitles({ tmdb, anilist, page });
 }
 
 // ---- deck ------------------------------------------------------------------

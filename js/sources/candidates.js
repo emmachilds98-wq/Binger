@@ -8,10 +8,15 @@ import { itemSignal, latestRating, ratingBaseline, topFeatures, DEFAULT_MIX } fr
 import { decay } from '../engine/profile.js';
 import { CANON_TO_TMDB, canonToAniList } from './genres.js';
 import { DECK_FORMATS } from './anilist.js';
+import { TMDB_NETWORKS, originalLabel } from './services.js';
 import { mapLimit, DAY } from './http.js';
 
 // When a title arrives by several routes, the most personal reason wins.
-const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, stream: 4, trending: 5, wider: 6, popular: 7, search: 8 };
+const VIA_RANK = { sequel: 0, seed: 1, fresh: 2, genre: 3, stream: 4, originals: 5, trending: 6, wider: 7, popular: 8, search: 9 };
+
+// TMDB has far fewer ratings for series than for films: a new show people
+// love may have 40. Vote floors for the deck's TV pulls are lower to match.
+const MIN_VOTES = { movie: 150, tv: 50 };
 
 // One "wider" pull per refill for films and one for TV, so the deck reaches
 // past what's trending: all-time classics, well-loved titles few people have
@@ -35,6 +40,16 @@ export function widerPull(mediaType, rng = Math.random) {
   const [lang, name] = WORLD[pick(WORLD.length)];
   // Japanese animation comes from AniList, so it's left out here.
   return { mode, label: `A ${name} ${kind}, from further afield`, params: { originalLanguage: lang, minVotes: 100, page: 1 + pick(3), withoutGenreIds: lang === 'ja' ? [...without, 16] : without } };
+}
+
+// One streaming service's own series per refill (Apple TV+, Netflix, BBC…),
+// so the deck covers what the streamers make, not only what's trending.
+// Your services first when you've picked any that make shows; otherwise any.
+export function originalsPull(services = [], rng = Math.random) {
+  const yours = (services || []).filter((s) => TMDB_NETWORKS[s]);
+  const from = yours.length ? yours : Object.keys(TMDB_NETWORKS);
+  const service = from[Math.floor(rng() * from.length)];
+  return { service, label: originalLabel(service), params: { networkIds: TMDB_NETWORKS[service], minVotes: 20, page: 1 + Math.floor(rng() * 3) } };
 }
 
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
@@ -169,16 +184,34 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         run(`tmdb:filtered:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page, minVotes: dates ? 300 : 150, runtimeMax, ...dateParams, sortBy: dates ? 'vote_count.desc' : 'popularity.desc' }))
           .forEach((t) => add(t, { type: 'popular' })));
       }
-      run(`tmdb:trending:${mediaType}`, async () => (await tmdb.trending(mediaType)).forEach((t) => add(t, { type: 'trending' })));
+      // The top 40 this week, not just the top 20.
+      for (const pg of [1, 2]) {
+        run(`tmdb:trending:${mediaType}:${pg}`, async () => (await tmdb.trending(mediaType, pg)).forEach((t) => add(t, { type: 'trending' })));
+      }
       if (genreIds.length) {
-        run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page })).forEach((t) => add(t, { type: 'genre' })));
+        run(`tmdb:genre:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page, minVotes: MIN_VOTES[mediaType] })).forEach((t) => add(t, { type: 'genre' })));
+      } else if (mediaType === 'movie') {
+        run('tmdb:popular:movie', async () => (await tmdb.popular('movie', page)).forEach((t) => add(t, { type: 'popular' })));
       } else {
-        run(`tmdb:popular:${mediaType}`, async () => (await tmdb.popular(mediaType, page)).forEach((t) => add(t, { type: 'popular' })));
+        // TMDB's own "popular TV" is mostly talk shows and soaps.
+        run('tmdb:popular:tv', async () => (await tmdb.discover('tv', { page, minVotes: MIN_VOTES.tv })).forEach((t) => add(t, { type: 'popular' })));
       }
       {
         const w = widerPull(mediaType, rng);
         run(`tmdb:wider:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds: [], runtimeMax, ...dateParams, ...w.params }))
           .forEach((t) => add(t, { type: 'wider', label: w.label })));
+      }
+      // The last two years' films and series, past the first page: this
+      // week's lists only reach the newest few.
+      if (!dates) {
+        const pg = 1 + Math.floor(rng() * 4);
+        run(`tmdb:recent:${mediaType}`, async () => (await tmdb.discover(mediaType, { from: isoDay(now - 730 * DAY), to: isoDay(now), minVotes: mediaType === 'movie' ? 100 : 30, page: pg, runtimeMax }))
+          .forEach((t) => add(t, { type: 'fresh' })));
+      }
+      if (mediaType === 'tv') {
+        const o = originalsPull(services, rng);
+        run(`tmdb:originals:${o.service}`, async () => (await tmdb.discover('tv', { ...dateParams, ...o.params }))
+          .forEach((t) => add(t, { type: 'originals', label: o.label, service: o.service })));
       }
       if (mediaType === 'movie') {
         run('tmdb:fresh:movie', async () => (await tmdb.discover('movie', { from: isoDay(now - 120 * DAY), to: isoDay(now), minVotes: 20 }))

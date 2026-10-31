@@ -68,7 +68,11 @@ await context.route('https://graphql.anilist.co/**', async (route) => {
     data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
   }
   else if (body.includes('Staff(id')) data = staffTanezaki.data;
-  else if (body.includes('search:')) data = { Page: { media: allAnime.filter((m) => /frieren|attack|vinland/i.test(JSON.stringify(m.title))) } };
+  else if (body.includes('search:')) {
+    // Like AniList: only titles whose name has the words typed in.
+    const q = String((JSON.parse(body).variables || {}).q || '').toLowerCase();
+    data = { Page: { media: allAnime.filter((m) => /frieren|attack|vinland/i.test(JSON.stringify(m.title)) && JSON.stringify(m.title).toLowerCase().includes(q)) } };
+  }
   else if (body.includes('Media(id')) data = frieren.data;
   else data = { Page: { media: allAnime.slice(0, 12) } };
   await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data }) });
@@ -91,7 +95,8 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p === '/trending/tv/week' || p === '/tv/popular' || p === '/discover/tv') return json(tvList);
   if (p === '/movie/693134') return json(movieDetail);
   if (p === '/tv/95396') return json(severanceNow);
-  if (p === '/search/multi') return json({ results: [...trending.results, ...tvList.results] });
+  if (p === '/search/movie') return json(trending);
+  if (p === '/search/tv') return json(tvList);
   // Details for any other listed title: its list entry, with no streaming in GB.
   const other = p.match(/^\/(movie|tv)\/(\d+)$/);
   if (other) {
@@ -137,6 +142,25 @@ await page.waitForTimeout(800);
 await shot('01-onboarding');
 const tiles = page.locator('.onboarding .tile');
 check((await tiles.count()) >= 6, `onboarding shows popular anime without a key (${await tiles.count()} tiles)`);
+// A favourite found by search stays at the top of the grid once you clear it.
+await page.fill('#seed-search', 'Frieren');
+await page.waitForSelector('.onboarding .tile[aria-label^="Frieren: Beyond Journey’s End Season 2"]');
+await page.locator('.onboarding .tile[aria-label^="Frieren: Beyond Journey’s End Season 2"]').click();
+await shot('21-onboarding-search');
+await page.fill('#seed-search', '');
+await page.waitForFunction(() => (document.querySelector('.onboarding .tile')?.getAttribute('aria-label') || '').startsWith('Frieren: Beyond Journey’s End Season 2'));
+check(await tiles.first().getAttribute('aria-pressed') === 'true', 'a pick found by search stays at the top, still picked, after the search is cleared');
+await tiles.first().click();
+await page.fill('#seed-search', 'zzzz');
+await page.waitForFunction(() => /Nothing found for “zzzz”/.test(document.querySelector('.onboard-status')?.textContent || ''));
+check((await tiles.count()) >= 6, 'a search that finds nothing says so, and keeps the popular grid');
+await page.fill('#seed-search', '');
+await page.waitForFunction(() => !(document.querySelector('.onboard-status')?.textContent));
+const before = await tiles.count();
+check(await page.getByRole('button', { name: 'Show more' }).isVisible(), 'the grid offers "Show more"');
+await page.getByRole('button', { name: 'Show more' }).click();
+await page.waitForFunction(() => document.querySelector('.onboard-more')?.hidden === true);
+check((await tiles.count()) === before, '"Show more" hides itself when there’s nothing new (the mock repeats its one page)');
 for (let i = 0; i < 3; i++) await tiles.nth(i).click();
 check(await page.locator('.onboard-foot [role=status]').innerText() === '3 picked', 'picking three tiles counts them');
 const tileNames = await tiles.evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')));
@@ -351,6 +375,17 @@ check(await seriesPill.count() === 1, 'Taste lists Dune under "Never show me"');
 await seriesPill.click();
 await page.waitForTimeout(200);
 check((await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).settings.hiddenFranchises.length)) === 0, 'tapping it shows Dune again');
+
+console.log('Search by service');
+await page.goto(base + '#discover');
+await page.getByRole('button', { name: 'Search', exact: true }).click();
+await page.fill('#search-q', 'apple tv');
+await page.waitForSelector('.search .search-service');
+check(/Apple TV\+ shows and films first/.test(await page.locator('.search .search-service').innerText()), 'typing "apple tv" says Apple TV+’s shows come first');
+check(await page.locator('.search .row-title').first().innerText() === 'Severance', 'and Severance (an Apple original) leads the results');
+await shot('22-search-service');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(200);
 
 console.log('New seasons');
 await page.goto(base + '#discover');
