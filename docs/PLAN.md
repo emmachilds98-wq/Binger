@@ -20,7 +20,7 @@ and the decisions that shouldn't be quietly undone. Update the
 
 ## Start here (next session)
 
-Where things stand at the end of 2026-10-31 (fourth session, handover):
+Where things stand at the end of 2026-10-31 (sixth session; see the status log):
 
 - **The site is live** at https://emmachilds98-wq.github.io/Binger/,
   published from `main` by the "Deploy site" workflow with the TMDB key
@@ -52,11 +52,13 @@ Do these in order:
 3. **Firebase is connected and live-checked** (`binger-5cee3`). Sign-in is
    now required where sync is set up (decision 20): the main e2e run plays a
    copy without sync; signing in is covered by `npm run e2e:sync`.
-4. **Next work, in order:** mobile polish is done (2026-10-31, fifth
-   session). The leftovers in COVERAGE-PLAN: anime
-   rated on IMDb or Letterboxd should map to AniList (known gap), Coming
-   soon (the owner said "not now"), Trakt (the owner's call). Phase 3's
-   shared deck ("match with Dave") after that.
+4. **Next work, in order:** mobile polish and Watch together ("match
+   with Dave") are done (2026-10-31, sixth session). Next: the
+   COVERAGE-PLAN leftover (anime rated on IMDb or Letterboxd should map to
+   AniList), a smaller first download (subset the 77 KB Bricolage font), and
+   "A new version is ready" when the service worker falls back to its
+   cached copy. Coming soon (the owner said "not now") and Trakt (the
+   owner's call) wait.
 5. If someone with canvas access is around, add the PC layout, the import
    sheet and the new welcome to the design canvas (they're written up in
    DESIGN.md) and copy the canvas to `docs/design/canvas/`.
@@ -225,6 +227,15 @@ Everything technical you need is in this file,
     of starting one; signing out brings the welcome back. A copy without a
     Firebase config (forks, local development, the main e2e run) asks just
     a name. Supersedes the "Just my name" route of the third session.
+21. **Watch together blends scores so the least keen person counts most**
+    (`js/engine/together.js`: 60% the lowest score, 40% the average). Two
+    people's average would happily pick a film one loves and the other
+    hates. Anything either has watched or passed stays out; what's on a
+    partner's watchlist joins the deck and is lifted. Reasons name the
+    person ("Dave loves Comedy", "On Dave's watchlist") and never guess
+    pronouns. Together mode lasts for the session, like the pills. A save
+    that someone else here also wants is a match, said in the toast and
+    listed first on Library → Watchlist.
 
 ---
 
@@ -400,7 +411,7 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
 - [x] Import history: IMDb and Letterboxd CSVs, MyAnimeList export, AniList username (Trakt not yet)
-- [ ] Shared watchlist / "match with a friend" deck (two profiles, one deck)
+- [x] Shared watchlist / "match with a friend" deck: **Watch together** on Discover, matches in Library (decision 21)
 
 ### Phase 4: AI assist (optional, needs a tiny backend for the API key)
 - [ ] Claude-written taste summary from your reviews
@@ -412,6 +423,28 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (sixth session): watch together, and never a blank start
+- The owner confirmed they have the new version and asked to keep upgrading
+  functionality and design.
+- **Watch together** (Phase 3, "match with Dave", decision 21): the
+  Together pill on Discover blends your taste with whoever you pick
+  (`js/engine/together.js`, unit-tested in `tests/together.test.js`);
+  "It's a match" toast; Library opens with "You and Dave both want to
+  watch". e2e + screenshots `31-together`, `32-matches`.
+- **Start-up:** on a slow phone the screen was blank for 3 to 4 s. Now a
+  branded splash shows from the HTML until the first screen draws, and every
+  module is `modulepreload`ed (the shell test keeps that list complete). The
+  dev server gzips, so local timings match GitHub Pages; measured on a
+  throttled connection, total bytes (about 230 KB) set the pace, not the
+  import chain.
+- Checks: `npm test` 167, `npm run e2e` all passing, `npm run e2e:sync`
+  passing on the emulators.
+- **Next:** COVERAGE-PLAN leftovers (anime rated on IMDb or Letterboxd →
+  AniList); a smaller first download (subset the Bricolage font, 77 KB);
+  "A new version is ready" when the service worker had to fall back to its
+  cached copy (it waits 4 s for the network); design-canvas artboards for
+  the PC layout, welcome, import sheet and Watch together.
 
 ### 2026-10-31 (fifth session, last): combined pills, deeper reviews
 - The owner asked to pick several Discover pills at once (Films and TV, not

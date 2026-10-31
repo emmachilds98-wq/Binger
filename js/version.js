@@ -1,4 +1,4 @@
 // The one place the app version lives. Shown in Settings → About.
 // Bump with `npm run bump` (sets both from the real UTC clock).
-self.BINGER_VERSION = '2026.10.31-18';
-self.BINGER_BUILD_TIME = '2026-10-31T15:26:11Z';
+self.BINGER_VERSION = '2026.10.31-19';
+self.BINGER_BUILD_TIME = '2026-10-31T17:31:05Z';

@@ -39,6 +39,7 @@ const SHELL = [
   'js/engine/rank.js',
   'js/engine/seasons.js',
   'js/engine/timeline.js',
+  'js/engine/together.js',
   'js/sources/genres.js',
   'js/sources/services.js',
   'js/sources/http.js',

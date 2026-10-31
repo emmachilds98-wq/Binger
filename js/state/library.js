@@ -257,6 +257,14 @@ export function watchlist(state) {
     .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)));
 }
 
+// Your watchlist titles that someone else in the household wants to watch
+// too (a match). others: [{ name, items }].
+export function sharedWatchlist(state, others = []) {
+  return watchlist(state)
+    .map((item) => ({ item, with: others.filter((o) => o.items && o.items[item.id] && o.items[item.id].status === 'want').map((o) => o.name) }))
+    .filter((x) => x.with.length);
+}
+
 // One diary row per watch (a rewatch is its own entry), newest first.
 // History brought in from IMDb, Letterboxd, MyAnimeList or AniList
 // (js/sources/imports.js: resolvePlan's matched entries). It never undoes

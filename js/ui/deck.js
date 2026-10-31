@@ -6,7 +6,7 @@
 import { h, icon, clear, prefersReducedMotion } from './dom.js';
 import { cardEl, preloadPoster } from './card.js';
 import { filterSummary } from './filters.js';
-import { whoChip } from './people.js';
+import { whoChip, personAvatar } from './people.js';
 import { flickDirection } from './gesture.js';
 
 // All, or any mix of the three (Films and TV but not Anime, say).
@@ -31,7 +31,14 @@ export function renderDiscover(root, ctx) {
     h('div', { class: 'pills', role: 'group', 'aria-label': 'What to show' },
       FILTERS.map(([key, label]) => h('button', {
         type: 'button', class: 'pill', 'aria-pressed': String(key === 'all' ? !ctx.kinds.size : ctx.kinds.has(key)), onClick: () => ctx.setFilter(key),
-      }, label))),
+      }, label)),
+      // Watch together (Phase 3): one deck for you and someone else here.
+      ctx.onTogether ? h('button', {
+        type: 'button', class: 'pill pill-together', 'aria-label': 'Watch together', 'aria-pressed': String(!!(ctx.together && ctx.together.length)), onClick: ctx.onTogether,
+      }, icon('people', 16), h('span', { class: 'pill-label' }, 'Together')) : null),
+    ctx.together && ctx.together.length ? h('div', { class: 'filter-line together-line' },
+      h('span', { class: 'together-who' }, ctx.together.map((p) => personAvatar(p, 'xs')), `Watching with ${names(ctx.together)}: what you’d all enjoy`),
+      h('button', { type: 'button', class: 'link-btn', onClick: ctx.onStopTogether }, 'Stop')) : null,
     active.length ? h('div', { class: 'filter-line' },
       h('span', null, active.join(' · ')),
       h('button', { type: 'button', class: 'link-btn', onClick: ctx.onClearFilters }, 'Clear')) : null);
@@ -208,4 +215,9 @@ function attachGestures(el, { onSwipe, onTap }) {
   });
   // A drag that began on the play button must not also "click" it.
   el.addEventListener('click', (e) => { if (justDragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+}
+
+function names(people) {
+  const n = people.map((p) => p.name);
+  return n.length < 2 ? n.join('') : `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}`;
 }

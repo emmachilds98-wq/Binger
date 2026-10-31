@@ -100,6 +100,13 @@ export strips the TMDB key.
 
 ## The engine
 
+**Watch together** (`together.js`): with partners passed to `buildDeck`,
+each title is also scored with each partner's profile and the scores are
+blended, `0.6 × lowest + 0.4 × average`, plus a lift for titles on a
+partner's watchlist. Partners' libraries come from this device's storage
+(synced from their phones), read by `app.js`; the engine stays pure.
+
+
 All in `js/engine/`, pure functions, run on every change (fast enough: a few
 hundred items × ~30 features).
 

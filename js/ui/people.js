@@ -295,3 +295,37 @@ export async function shareOrCopy({ title, text, url, copied = 'Invite link copi
     return 'failed';
   }
 }
+
+// "Watch together": pick who's watching with you. The deck then ranks what
+// you'd all enjoy. ctx: { people: [{ id, name, colour, count }], picked: [id],
+// onDone(ids) }. Picking nobody turns it off.
+export function openTogether(ctx) {
+  const sheet = openSheet({ label: 'Watch together', variant: 'bottom', className: 'together' });
+  const picked = new Set(ctx.picked || []);
+  const tiles = ctx.people.map((p) => {
+    const b = h('button', {
+      type: 'button', class: 'who-tile together-tile', 'aria-pressed': String(picked.has(p.id)),
+      onClick: () => {
+        if (picked.has(p.id)) picked.delete(p.id); else picked.add(p.id);
+        b.setAttribute('aria-pressed', String(picked.has(p.id)));
+        go.disabled = !picked.size && !(ctx.picked || []).length;
+        go.textContent = picked.size ? 'Show our deck' : 'Just me';
+      },
+    }, personAvatar(p, 'lg'), h('span', { class: 'who-tile-name' }, displayName(p)),
+    h('span', { class: 'small muted' }, p.count ? `${p.count} rated or saved` : 'Nothing rated yet'));
+    return h('li', null, b);
+  });
+  const go = h('button', {
+    type: 'button', class: 'btn btn-primary', disabled: !picked.size,
+    onClick: () => { sheet.close(); ctx.onDone([...picked]); },
+  }, picked.size ? 'Show our deck' : 'Just me');
+  append(sheet.body, [
+    h('div', { class: 'grabber', 'aria-hidden': 'true' }),
+    h('h2', { class: 'sheet-title' }, 'Watch together'),
+    h('p', { class: 'muted small' }, 'Pick who’s watching with you. The deck shows what you’d all enjoy, leaves out what any of you has seen or passed, and lifts what’s already on their watchlists.'),
+    h('ul', { class: 'who-grid together-grid' }, tiles),
+    h('div', { class: 'row-end' }, h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => sheet.close() }, 'Cancel'), go),
+  ]);
+  sheet.focusFirst();
+  return sheet;
+}
