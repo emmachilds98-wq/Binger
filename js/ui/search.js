@@ -22,13 +22,15 @@ export function openSearch(ctx) {
     const mine = ++seq;
     if (q.length < 2) { clear(results); return; }
     clear(results).append(h('p', { class: 'muted search-status' }, 'Searching…'));
-    const { titles, errors } = await ctx.search(q);
+    const { titles, errors, service } = await ctx.search(q);
     if (mine !== seq) return;
     clear(results);
     if (!titles.length) {
       results.append(h('p', { class: 'muted search-status' }, errors.length ? 'Search failed. Check your connection.' : `Nothing found for “${q}”.`));
     } else {
-      results.append(h('ul', { class: 'rows' }, titles.map((t) => resultRow(t, ctx, sheet))));
+      append(results, [
+        service ? h('p', { class: 'small muted search-hint search-service' }, serviceLine(service)) : null,
+        h('ul', { class: 'rows' }, titles.map((t) => resultRow(t, ctx, sheet)))]);
     }
     if (!ctx.hasKey) results.append(h('p', { class: 'small muted search-hint' }, 'Only anime is searched until you add a TMDB key in Settings.'));
   };
@@ -36,6 +38,11 @@ export function openSearch(ctx) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(timer); run(); } });
   sheet.focusFirst();
   return sheet;
+}
+
+// Typing a service's name lists its shows first (js/sources/lookups.js).
+export function serviceLine(service) {
+  return `${service} shows and films first, then everything else that matches.`;
 }
 
 function resultRow(t, ctx, sheet) {

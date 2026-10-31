@@ -73,6 +73,8 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3, ser
     const on = (title.streaming || []).filter((x) => services.includes(x));
     push('stream', on.length ? `On ${on.slice(0, 2).join(' and ')}` : 'On one of your services');
   }
+  // A streaming service's own series ("An Apple TV+ original").
+  if (out.length < max && viaOf(title, 'originals')) push('stream', viaOf(title, 'originals').label);
   if (out.length < max && viaOf(title, 'trending')) push('trending', 'Trending this week');
   // Reached by a "wider" pull (js/sources/candidates.js): say how.
   if (out.length < max && viaOf(title, 'wider')) push('explore', viaOf(title, 'wider').label);

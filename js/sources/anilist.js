@@ -289,15 +289,16 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
       const key = `anilist:deck:${voiceLanguage}:${JSON.stringify(vars)}`;
       return parseDeckBatch(await gql(buildDeckQuery(voiceLanguage), vars, key, 6 * HOUR));
     },
-    async popular() {
-      const q = `${fragment(voiceLanguage)} query { Page(perPage: 30) { media(type: ANIME, sort: [POPULARITY_DESC], isAdult: false, format_in: [TV, MOVIE]) { ...M } } }`;
-      const data = await gql(q, {}, `anilist:popular:${voiceLanguage}`, DAY);
+    // The most-watched anime of all time, 30 a page (the first-run grid).
+    async popular(page = 1) {
+      const q = `${fragment(voiceLanguage)} query ($page: Int) { Page(page: $page, perPage: 30) { media(type: ANIME, sort: [POPULARITY_DESC], isAdult: false, format_in: [TV, MOVIE]) { ...M } } }`;
+      const data = await gql(q, { page }, `anilist:popular:${voiceLanguage}${page > 1 ? `:${page}` : ''}`, DAY);
       return ((data && data.Page && data.Page.media) || []).map(fromAniList).filter(Boolean);
     },
     async search(text) {
       const q = String(text || '').trim();
       if (!q) return [];
-      const query = `${fragment(voiceLanguage)} query ($q: String) { Page(perPage: 15) { media(search: $q, type: ANIME, isAdult: false, sort: [SEARCH_MATCH]) { ...M } } }`;
+      const query = `${fragment(voiceLanguage)} query ($q: String) { Page(perPage: 25) { media(search: $q, type: ANIME, isAdult: false, sort: [SEARCH_MATCH]) { ...M } } }`;
       const data = await gql(query, { q }, `anilist:search:${voiceLanguage}:${q.toLowerCase()}`, HOUR);
       return ((data && data.Page && data.Page.media) || []).map(fromAniList).filter(Boolean);
     },

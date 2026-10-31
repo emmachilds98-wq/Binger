@@ -64,6 +64,48 @@ export function canonicalService(name) {
   return alias || n;
 }
 
+// The TMDB "networks" that make each service's own shows, so Binger can ask
+// for, say, Apple TV+ originals wherever you live. ("What's on Netflix in your
+// country" is a different question, answered by watch providers.) Each id is
+// checked against TMDB's name for it by scripts/tmdb-live.mjs, weekly.
+export const TMDB_NETWORKS = {
+  'Apple TV+': [2552],
+  Netflix: [213],
+  'Amazon Prime Video': [1024],
+  'Disney+': [2739],
+  Max: [3186, 49],          // Max / HBO Max, and HBO itself
+  Hulu: [453],
+  'Paramount+': [4330],
+  Peacock: [3353],
+  'BBC iPlayer': [4, 332],  // BBC One, BBC Two
+  ITVX: [9],                // ITV1
+  'Channel 4': [26],
+  NOW: [1063],              // Sky Atlantic
+};
+
+// "An Apple TV+ original", "A BBC original": who made it, in the words people
+// use (iPlayer shows are the BBC's; NOW's are Sky's; Max's are HBO's).
+const MAKER = { 'Apple TV+': 'An Apple TV+', 'Amazon Prime Video': 'A Prime Video', Max: 'An HBO', 'BBC iPlayer': 'A BBC', ITVX: 'An ITV', NOW: 'A Sky' };
+export const originalLabel = (service) => `${MAKER[service] || `A ${service}`} original`;
+
+// Extra ways people type a service into search ("apple", "iplayer", "hbo").
+const SEARCH_ALIASES = {
+  apple: 'Apple TV+', 'apple tv': 'Apple TV+', 'appletv': 'Apple TV+', 'apple tv+': 'Apple TV+', 'apple tv plus': 'Apple TV+', 'apple originals': 'Apple TV+',
+  amazon: 'Amazon Prime Video', 'amazon prime': 'Amazon Prime Video', prime: 'Amazon Prime Video',
+  disney: 'Disney+', hbo: 'Max', iplayer: 'BBC iPlayer', bbc: 'BBC iPlayer', itv: 'ITVX', sky: 'NOW',
+};
+
+// "apple tv", "Netflix originals", "on disney+" -> the service, or null when
+// the words aren't a service's name.
+export function serviceFromQuery(query) {
+  const q = String(query || '').toLowerCase().trim().replace(/\s+/g, ' ')
+    .replace(/^(on|from) /, '').replace(/ (originals?|shows|series|films|movies)$/, '').trim();
+  if (q.length < 2) return null;
+  if (SEARCH_ALIASES[q]) return SEARCH_ALIASES[q];
+  const c = canonicalService(q);
+  return [...COMMON_SERVICES, ...Object.keys(TMDB_NETWORKS)].find((s) => s.toLowerCase() === String(c).toLowerCase()) || null;
+}
+
 // Shops and guides, not subscriptions: TMDB's region list includes them
 // ("Apple TV Store", "JustWatch TV Store"), but nobody subscribes to them, so
 // they don't belong in "Your streaming services".

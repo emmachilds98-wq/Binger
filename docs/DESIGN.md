@@ -28,7 +28,7 @@ Kind badges are always labelled (FILM / TV / ANIME), never colour alone.
 
 ## Screens
 
-1. **First run**: "What have you loved?" poster grid + search; 3 picks to start.
+1. **First run**: "What have you loved?" poster grid + search; 3 picks to start. Built additions (2026-10-31): titles you pick from a search stay at the front of the grid; a search that finds nothing says so above the grid; a full-width quiet "Show more" button ends the grid.
 2. **Discover**: filter pills, card stack, actions: Undo · Pass · Seen it · Want · Info.
 3. **Detail**: trailer on top, why it was picked, synopsis, cast (people you know ringed in amber), where to watch, your diary entries.
 4. **Rate (bottom sheet)**: stars (tap twice for a half), what the rating will do ("Binger will look for more like this…"), feeling tags, review, date.
@@ -97,6 +97,11 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
 - **"Wider" picks** (built): a card reached by the deck's wider pull says how,
   in the sky "explore" style: "Acclaimed: among TMDB's best rated", "A hidden
   gem: loved by the people who found it", "A Korean series, from further afield".
+- **Streamers' own shows** (built): a card from the deck's originals pull
+  says "An Apple TV+ original" (or Netflix, BBC iPlayer…), in the plain
+  reason style. Typing a service into search adds a muted line above the
+  results, "Apple TV+ shows and films first, then everything else that
+  matches." Screenshots `21-onboarding-search`, `22-search-service`.
 - **PC layout** (built; see below). Designed here rather than on the canvas,
   which the 2026-10-31 session couldn't open from its account. Add a desktop
   row to the canvas when someone with access can, and copy it to `design/canvas/`.

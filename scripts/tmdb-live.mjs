@@ -10,7 +10,9 @@
 // ready to replace the fixtures in tests/fixtures/.
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { createTmdb, fromTmdbDetail, fromTmdbPerson, fromTmdbCollection, fromTmdbProviders } from '../js/sources/tmdb.js';
+import { createTmdb, fromTmdbDetail, fromTmdbPerson, fromTmdbCollection, fromTmdbProviders, NOT_FOR_DECK } from '../js/sources/tmdb.js';
+import { TMDB_NETWORKS } from '../js/sources/services.js';
+import { searchTitles, starterTitles } from '../js/sources/lookups.js';
 
 const KEY = process.env.TMDB_API_KEY || '';
 if (!KEY) {
@@ -125,6 +127,52 @@ await step('discover', async () => {
   const nineties = await tmdb.discover('movie', { providerIds: [8], runtimeMax: 120, from: '1990-01-01', to: '1999-12-31' });
   console.log(`    Netflix GB, 1990s, under 2 h: ${nineties.slice(0, 5).map((t) => `${t.title} ${t.year}`).join('; ')}`);
   check(nineties.length > 0 && nineties.every((t) => t.year >= 1990 && t.year <= 1999), `discover by service, length and decade keeps to the 1990s (${nineties.length} found)`);
+});
+
+// Coverage (docs/COVERAGE-PLAN.md): the network ids behind "An Apple TV+
+// original", search, and the first-run grid.
+const NETWORK_NAMES = { 2552: /apple/i, 213: /netflix/i, 1024: /prime|amazon/i, 2739: /disney/i, 3186: /max/i, 49: /hbo/i, 453: /hulu/i, 4330: /paramount/i, 3353: /peacock/i, 4: /bbc one/i, 332: /bbc two/i, 9: /itv/i, 26: /channel 4/i, 1063: /sky atlantic/i };
+await step('networks', async () => {
+  for (const [service, ids] of Object.entries(TMDB_NETWORKS)) {
+    for (const id of ids) {
+      const n = await tmdb.network(id);
+      const want = NETWORK_NAMES[id];
+      check(!!(n && want && want.test(n.name)), `network ${id} for ${service} is TMDB's "${n && n.name}"`);
+    }
+  }
+});
+
+await step('originals', async () => {
+  const apple = await tmdb.discover('tv', { networkIds: TMDB_NETWORKS['Apple TV+'], minVotes: 20 });
+  console.log(`    Apple TV+ originals: ${apple.slice(0, 8).map((t) => t.title).join('; ')}`);
+  check(apple.length > 10 && apple.some((t) => /Severance|Slow Horses|Ted Lasso|Silo|Shrinking|The Studio|Pluribus/.test(t.title)), `Apple TV+ originals come back by network (${apple.length})`);
+});
+
+await step('TV without talk shows', async () => {
+  const day = 86400000;
+  const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
+  await tmdb.discover('tv', { airingFrom: iso(Date.now() - 14 * day), airingTo: iso(Date.now() + 7 * day), minVotes: 20 });
+  const results = JSON.parse(raw.get('/discover/tv')).results || [];
+  console.log(`    on now: ${results.slice(0, 8).map((r) => r.name).join('; ')}`);
+  check(results.length > 5 && results.every((r) => !(r.genre_ids || []).some((g) => NOT_FOR_DECK.includes(g))), 'TMDB honours without_genres: no news, talk shows or soaps in "on now"');
+});
+
+await step('search', async () => {
+  for (const [q, want] of [['slow horses', /^Slow Horses$/], ['severance', /^Severance$/], ['the studio', /^The Studio$/], ['pokemon detective', /Detective Pikachu/]]) {
+    const { titles } = await searchTitles(q, { tmdb });
+    check(!!(titles[0] && want.test(titles[0].title)), `search "${q}" → first result ${titles[0] ? `"${titles[0].title}" (${titles[0].kind} ${titles[0].year})` : 'none'}`);
+  }
+  const apple = await searchTitles('apple tv', { tmdb });
+  console.log(`    "apple tv": ${apple.titles.slice(0, 8).map((t) => t.title).join('; ')}`);
+  check(apple.service === 'Apple TV+' && apple.titles.length > 10, `search "apple tv" lists Apple TV+'s shows (${apple.titles.length})`);
+});
+
+await step('first-run grid', async () => {
+  const grid = await starterTitles({ tmdb });
+  const more = await starterTitles({ tmdb, page: 2 });
+  console.log(`    ${grid.length} titles, then ${more.length} more: ${grid.slice(0, 10).map((t) => t.title).join('; ')}`);
+  check(grid.length >= 60 && more.filter((t) => !grid.some((g) => g.id === t.id)).length >= 30, 'the first-run grid has 60+ titles and "Show more" brings 30+ new ones');
+  check(grid.some((t) => /Breaking Bad|Game of Thrones|Stranger Things|Friends/.test(t.title)), 'it includes the series most people have seen');
 });
 
 if (capDir) {

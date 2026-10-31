@@ -29,12 +29,12 @@ each one only talks to the one below it.
 | `js/engine/seasons.js` | New seasons of TV you've watched (`seasonAlert`, `seasonAlerts`, `showsToCheck`) |
 | `js/engine/timeline.js` | Your profile replayed at past dates (`tasteTimeline`, `itemAsOf`) |
 | `js/sources/genres.js` | TMDB / AniList genre vocabularies → one canonical set |
-| `js/sources/services.js` | TMDB / AniList streaming-service names → one canonical name each |
+| `js/sources/services.js` | TMDB / AniList streaming-service names → one canonical name each; each service's TMDB networks (its own shows); service names typed into search |
 | `js/sources/http.js` | `fetchJSON` (timeout, 429 retry), `cached` (stale-on-error), `mapLimit` |
 | `js/sources/tmdb.js` | TMDB client + normalisers (films, TV) |
 | `js/sources/anilist.js` | AniList client + normaliser (anime); one batched deck query |
 | `js/sources/candidates.js` | Builds the candidate pool from both sources (incl. your services and deck filters); `hydrate` fetches TMDB details |
-| `js/sources/lookups.js` | On-demand lookups: a person's work, a whole franchise, service choices, new-season checks |
+| `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, service choices, new-season checks |
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |
 | `js/state/store.js` | localStorage persistence + change notifications |
 | `js/state/cache.js` | IndexedDB key-value cache with expiry (memory fallback) |
@@ -73,7 +73,7 @@ Every adapter turns its API's response into this shape, and nothing outside
   nextEpisode: { season, episode, date },    // when the next episode airs (AniList adds `at`, ms)
   lastEpisode, seasonList: [{ number, date, episodes, name }],   // TMDB TV details
   url, detailed: boolean,                    // false = list data (no cast/keywords/runtime/streaming yet)
-  via: [{ type: 'seed' | 'sequel' | 'fresh' | 'genre' | 'stream' | 'trending' | 'popular', seedTitle, ... }]
+  via: [{ type: 'seed' | 'sequel' | 'fresh' | 'genre' | 'stream' | 'originals' | 'trending' | 'wider' | 'popular', seedTitle, label, ... }]
 }
 ```
 
@@ -179,21 +179,40 @@ On every refill (deck below 8 cards, a filter change, or "Fetch fresh cards"):
 
 | Source | Films / TV (TMDB, needs key) | Anime (AniList, one batched request) |
 |---|---|---|
-| Trending | `/trending/{movie,tv}/week` | `TRENDING_DESC` |
+| Trending | `/trending/{movie,tv}/week`, pages 1 and 2 | `TRENDING_DESC` |
 | New | discover: released in the last 120 days; TV with an episode in the last 14 days | current season, by popularity |
-| Your genres | discover with your top genres (random page 1-3 for variety) | `genre_in` your top anime genres |
+| Recent | discover: first released in the last two years, a random page 1-4 (TV from 30 ratings, films from 100) | (current season covers it) |
+| A streamer's own shows | discover TV `with_networks` for one service a refill (yours first, else any of `TMDB_NETWORKS`): "An Apple TV+ original" | |
+| Wider | one of: all-time acclaimed, hidden gems, another country's (`widerPull`) | |
+| Your genres | discover with your top genres (random page 1-3 for variety; TV from 50 ratings) | `genre_in` your top anime genres |
 | Because you liked | `/recommendations` for your top 3 seeds + 1 rotating | `recommendations` for anime seeds |
 | Next seasons | (TV keeps one id: see engine/seasons.js) | `SEQUEL` ids of anime you've watched |
 | Your services | discover with `with_watch_providers` (your services' ids in your region); 2 pages with "only" on | (AniList links checked per title) |
 | Deck filters | discover with `with_runtime.lte=120` and/or the decade's dates | a `filtered` page: `episodes_lesser`, `startDate` range |
-| Cold start | `/popular` | (trending covers it) |
+| Cold start | `/movie/popular`; TV by discover (TMDB's own popular TV is mostly talk shows) | (trending covers it) |
 
-Then: TMDB copies of Japanese animation are dropped, AniList OVAs/specials and
+TV lists for the deck never include news, talk shows or daily soaps
+(`NOT_FOR_DECK` in `tmdb.js`: asked for with `without_genres`, and filtered
+again from lists that can't take it, like trending). Then: TMDB copies of Japanese animation are dropped, AniList OVAs/specials and
 adult titles are dropped, anything already in your library is dropped, and
 "Season 2" of something you haven't watched is dropped (but kept, marked as
 the next part, when you have). The top few TMDB titles are then *hydrated*
 (one detail call each, with credits, keywords, videos, watch providers and
 certificates appended) so their cards have cast and trailers.
+
+## Search and the first-run grid (`sources/lookups.js`)
+
+- **Search** (`searchTitles`): TMDB `/search/movie` and `/search/tv` (20 each;
+  `/search/multi` shared its 20 with people) and AniList (25), ranked by how
+  closely the name matches (`matchTier`: same name, starts with it, has every
+  word; accents, punctuation and a leading "The" ignored), then each source's
+  own order. Typing a service's name ("apple tv", "netflix originals",
+  "iplayer": `serviceFromQuery`) lists that service's shows first: its TMDB
+  networks' series, then what's included with it in your region.
+- **First run** (`starterTitles`): this week's trending, TMDB's most-rated
+  films and series of all time, the most-rated of the last three years, and
+  AniList's most popular anime; films, TV and anime take turns. "Show more"
+  asks every list for its next page.
 
 ## Caching and offline
 
