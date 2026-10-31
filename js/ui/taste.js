@@ -6,6 +6,7 @@ import { h, icon, clear, KIND_NAME, titleCase } from './dom.js';
 import { topFeatures } from '../engine/index.js';
 import { servicesSummary } from './services.js';
 import { tasteMoved, howYouWatch } from './timeline.js';
+import { whoChip } from './people.js';
 
 const ALL_GENRES = [
   'Action', 'Adventure', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror',
@@ -22,7 +23,7 @@ export function renderTaste(root, ctx) {
   const head = h('header', { class: 'page-head' },
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Your taste'),
-      h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings'))));
+      h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings')))));
   const page = h('div', { class: 'page-scroll taste' });
   root.append(head, page);
 

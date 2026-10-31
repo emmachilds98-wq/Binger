@@ -22,7 +22,7 @@ export function openSettings(ctx) {
   const s = ctx.getState().settings;
 
   // --- TMDB key ---
-  const keyInput = h('input', { id: 'tmdb-key', type: 'password', autocomplete: 'off', spellcheck: 'false', placeholder: 'API key or Read Access Token', value: s.tmdbKey || '' });
+  const keyInput = h('input', { id: 'tmdb-key', type: 'password', autocomplete: 'off', spellcheck: 'false', placeholder: 'API key or Read Access Token', value: (ctx.currentKey ? ctx.currentKey() : s.tmdbKey) || '' });
   const keyStatus = h('p', { class: 'small muted', role: 'status' }, ctx.keySource());
   const show = h('button', { type: 'button', class: 'btn btn-chip', onClick: () => { keyInput.type = keyInput.type === 'password' ? 'text' : 'password'; show.textContent = keyInput.type === 'password' ? 'Show' : 'Hide'; } }, 'Show');
   const testBtn = h('button', { type: 'button', class: 'btn btn-primary' }, 'Test & save');
@@ -76,6 +76,10 @@ export function openSettings(ctx) {
   sheet.body.append(
     h('div', { class: 'sheet-head' }, h('h1', { class: 'page-title' }, 'Settings'), closeButton(sheet)),
     h('div', { class: 'page-scroll settings-body' },
+      ctx.onPeople ? group('People and sync',
+        h('button', { type: 'button', class: 'row-btn', onClick: ctx.onPeople },
+          h('span', { class: 'switch-text' }, h('span', { class: 'switch-label' }, 'Who uses Binger, and sync'), h('span', { class: 'small muted' }, 'Separate libraries for each of you, the same on every device')),
+          icon('forward', 18))) : null,
       group('Films & TV (TMDB key)',
         h('p', { class: 'small muted' }, 'Films and TV come from TMDB, which needs a free key. Make an account at themoviedb.org, then Settings → API. Paste either the API Key or the Read Access Token. It’s stored only on this device.'),
         h('div', { class: 'key-row' }, h('label', { class: 'sr-only', for: 'tmdb-key' }, 'TMDB key'), keyInput, show),

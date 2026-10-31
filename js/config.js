@@ -4,4 +4,9 @@ export const CONFIG = {
   // this deployment without them pasting their own in Settings. Leave it
   // empty if the repository is public: anything here is visible to anyone.
   tmdbKey: '',
+  // Optional. The Firebase project's web config, for sync between people and
+  // devices (docs/FIREBASE.md). Unlike the TMDB key this isn't a secret:
+  // anyone can see it in the page, and the security rules (firestore.rules)
+  // decide who can read what. With it here, nobody has to paste it.
+  firebase: null,
 };

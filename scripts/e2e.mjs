@@ -395,6 +395,38 @@ check(/Sweet spot/.test(how) && /Funny ×6/.test(how), 'how you like to watch: s
 check(/Slow, so long films count against them/.test(how) && /Overhyped, so "Trending this week" counts for less/.test(how), 'one plain line each on what Slow and Overhyped do');
 await shot('12-taste-time');
 
+console.log('People: you and Dave');
+await page.goto(base + '#taste');
+await page.getByRole('button', { name: 'Settings' }).first().click();
+await page.getByRole('button', { name: /Who uses Binger, and sync/ }).click();
+await page.getByRole('button', { name: 'Add a person' }).click();
+await page.fill('#person-name', 'Emma');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(300);
+await page.fill('#person-name', 'Dave');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(300);
+const people = await page.locator('.people .person-row .row-title').allInnerTexts();
+check(JSON.stringify(people) === '["Emma","Dave"]', `you name yourself, then add Dave (${people.join(', ')})`);
+check(/Sync across devices/i.test(await page.locator('.people').innerText()), 'the sheet offers sync across devices');
+await shot('13-people');
+const wantsBefore = (await libraryCount()).watched;
+await page.locator('.people .person-row', { hasText: 'Dave' }).getByRole('button', { name: 'Switch' }).click();
+await page.waitForSelector('.onboarding', { timeout: 8000 }).catch(() => {});
+check(await page.locator('.onboarding').count() === 1, 'switching to Dave starts his own first run');
+await page.getByRole('button', { name: 'Skip' }).click();
+await page.waitForSelector('.who-chip');
+check((await page.locator('.who-chip').first().getAttribute('aria-label')) === 'Watching as Dave. Switch person', 'the chip says whose library this is');
+check((await page.locator('.who-chip').first().textContent()).includes('Dave'), 'and carries his name and colour (just the initial on a narrow phone)');
+await page.reload();
+await page.waitForSelector('.who .who-tile', { timeout: 8000 }).catch(() => {});
+check(await page.locator('.who .who-tile').count() === 3, '"Who\u2019s watching?" asks on open, with Emma, Dave and Add a person');
+await shot('14-whos-watching');
+await page.locator('.who .who-tile', { hasText: 'Emma' }).click();
+await page.waitForSelector('.who-chip');
+await page.waitForTimeout(300);
+check((await page.locator('.who-chip').first().getAttribute('aria-label')).includes('Emma') && (await libraryCount()).watched === wantsBefore, 'back to Emma, with her library untouched');
+
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 
 console.log('Offline support');

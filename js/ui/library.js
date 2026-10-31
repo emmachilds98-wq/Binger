@@ -3,6 +3,7 @@
 
 import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel } from './dom.js';
 import { latestWatch } from '../engine/index.js';
+import { whoChip } from './people.js';
 import { watchlist, diary } from '../state/library.js';
 import { rankWatchlist } from '../engine/index.js';
 
@@ -20,7 +21,7 @@ export function renderLibrary(root, ctx) {
   root.append(h('header', { class: 'page-head' },
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Library'),
-      h('button', { type: 'button', class: 'btn btn-chip', onClick: ctx.onLog }, icon('plus', 16), 'Log a watch')),
+      h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'btn btn-chip', onClick: ctx.onLog }, icon('plus', 16), 'Log a watch'))),
     tabs));
 
   const list = h('div', { class: 'page-scroll', role: 'tabpanel' });

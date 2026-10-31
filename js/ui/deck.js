@@ -6,6 +6,7 @@
 import { h, icon, clear, prefersReducedMotion } from './dom.js';
 import { cardEl } from './card.js';
 import { filterSummary } from './filters.js';
+import { whoChip } from './people.js';
 
 const FILTERS = [['all', 'All'], ['film', 'Films'], ['tv', 'TV'], ['anime', 'Anime']];
 const THRESHOLD_X = 110;
@@ -23,7 +24,8 @@ export function renderDiscover(root, ctx) {
           type: 'button', class: `icon-btn${active.length ? ' is-on has-dot' : ''}`,
           'aria-label': active.length ? 'Filters (on)' : 'Filters', onClick: ctx.onFilters,
         }, icon('sliders')),
-        h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Fresh cards', onClick: ctx.onRefresh }, icon('refresh')))),
+        h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Fresh cards', onClick: ctx.onRefresh }, icon('refresh')),
+        whoChip(ctx.who))),
     h('div', { class: 'pills', role: 'group', 'aria-label': 'What to show' },
       FILTERS.map(([key, label]) => h('button', {
         type: 'button', class: 'pill', 'aria-pressed': String(ctx.filter === key), onClick: () => ctx.setFilter(key),

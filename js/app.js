@@ -24,7 +24,15 @@ import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
 import { serviceChoices, loadPerson, hasFranchise, loadFranchise, checkNewSeasons } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
-import { toast, anySheetOpen } from './ui/sheet.js';
+import { toast, anySheetOpen, choiceSheet } from './ui/sheet.js';
+import { loadDevice, saveDevice } from './state/device.js';
+import {
+  currentProfile, displayName, addProfile, renameProfile, removeProfile, pickProfile, claimProfile,
+  parseCode, parseFirebaseConfig, formatCode,
+} from './state/profiles.js';
+import { connectFirebase, authMessage } from './sync/firebase.js';
+import { startSync, findHousehold, createHousehold, joinHousehold } from './sync/sync.js';
+import { openWhoIsWatching, openPeople, askName, shareOrCopy } from './ui/people.js';
 
 // ---- state -----------------------------------------------------------------
 
@@ -35,7 +43,13 @@ const DECK_SIZE = 30;
 const REFILL_BELOW = 8;
 const DETAIL_AHEAD = 6;
 
-const store = createStore({ onSaveError: () => toast('Couldn’t save: this browser’s storage is full or blocked.') });
+// This device: who uses it (each person has their own library), the TMDB key
+// and the sync setup. The library loaded is the current person's.
+const device = loadDevice();
+const store = createStore({ key: currentProfile(device.profiles).key, onSaveError: () => toast('Couldn’t save: this browser’s storage is full or blocked.') });
+// Sync across devices (Firebase), once set up and signed in.
+const sync = { fb: null, loading: null, user: null, ctl: null, status: '', error: '', busy: false, pendingCode: null };
+let peopleSheet = null;
 let cache = createMemoryCache();
 let tmdb = null;
 let anilist = null;
@@ -67,7 +81,7 @@ const timelineMemo = { items: null, value: null };
 // ---- sources ---------------------------------------------------------------
 
 function tmdbKey() {
-  return store.get().settings.tmdbKey || CONFIG.tmdbKey || '';
+  return store.get().settings.tmdbKey || device.tmdbKey || CONFIG.tmdbKey || '';
 }
 
 function makeSources() {
@@ -357,6 +371,265 @@ function dismissSeason(alert) {
   store.update(L.dismissAlert, alert.id, alert.key);
 }
 
+// ---- people and sync --------------------------------------------------------
+
+// The chip on each screen: whose library this is. Shown once there's more
+// than one person (or sync is on).
+function who() {
+  const p = device.profiles;
+  return p.list.length > 1 || device.household ? { profile: currentProfile(p), onClick: showWho } : null;
+}
+
+function setProfiles(next, { fromSync = false } = {}) {
+  if (JSON.stringify(next) === JSON.stringify(device.profiles)) return;
+  device.profiles = next;
+  saveDevice(device);
+  if (!fromSync && sync.ctl) sync.ctl.saveProfiles(next).catch(() => {});
+  if (ui.tab === 'discover') renderDiscoverView({ force: true }); else render();
+  refreshPeople();
+}
+
+// "Who's watching?": picking someone else loads their library (a reload is
+// the simplest way to swap every piece of state at once).
+function showWho({ atStart = false } = {}) {
+  openWhoIsWatching({
+    profiles: device.profiles,
+    onAskWho: (v) => setProfiles({ ...device.profiles, askWho: v }),
+    onDone: (choice) => {
+      if (atStart) afterWho();
+      if (choice === 'add') addPerson();
+      else if (choice === 'manage') showPeople();
+      else if (choice) switchTo(choice);
+    },
+  });
+}
+
+async function switchTo(id) {
+  if (id === device.profiles.current) return;
+  setProfiles(pickProfile(device.profiles, id));
+  if (sync.ctl) await Promise.race([sync.ctl.flush(), new Promise((r) => setTimeout(r, 1500))]);
+  try { sessionStorage.setItem('binger:switched', id); } catch { /* private mode */ }
+  location.hash = '#discover';
+  location.reload();
+}
+
+async function nameMe() {
+  const me = currentProfile(device.profiles);
+  if (me.name) return true;
+  const name = await askName({ title: 'What’s your name?', hint: 'So everyone can tell whose library is whose.' });
+  if (!name) return false;
+  setProfiles(renameProfile(device.profiles, me.id, name));
+  return true;
+}
+
+async function addPerson() {
+  if (!(await nameMe())) return;
+  const name = await askName({ title: 'Add a person', label: 'Their name', confirmLabel: 'Add', hint: 'They get their own watchlist, diary and suggestions.' });
+  if (!name) return;
+  const next = addProfile(device.profiles, { name });
+  setProfiles(next);
+  const added = next.list[next.list.length - 1];
+  toast(`${name} added`, { action: { label: `Switch to ${name}`, fn: () => switchTo(added.id) }, ms: 4000 });
+}
+
+function readLibrary(key) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch { return null; }
+}
+function writeLibrary(key, state) {
+  try { localStorage.setItem(key, JSON.stringify(state)); } catch { toast('Couldn’t save: this browser’s storage is full or blocked.'); }
+}
+
+function firebaseConfig() {
+  return CONFIG.firebase || device.firebase || null;
+}
+
+function refreshPeople() {
+  if (peopleSheet) peopleSheet.refresh();
+}
+function syncStatus(text) { sync.status = text; sync.error = ''; refreshPeople(); }
+function syncError(text) { sync.error = text; refreshPeople(); }
+
+// Firebase loads only for people who sync.
+function ensureFirebase() {
+  if (!firebaseConfig()) return Promise.resolve(null);
+  if (!sync.loading) {
+    sync.loading = connectFirebase(firebaseConfig()).then((fb) => {
+      sync.fb = fb;
+      fb.onUser(onUser);
+      return fb;
+    }).catch(() => {
+      sync.loading = null;
+      syncError('Couldn’t load Firebase. Check your connection, or the config you pasted.');
+      return null;
+    });
+  }
+  return sync.loading;
+}
+
+async function onUser(user) {
+  sync.user = user;
+  if (!user) { stopSync(); refreshPeople(); return; }
+  if (!device.household) {
+    const code = await findHousehold(sync.fb, user.uid).catch(() => null);
+    if (code) { device.household = code; saveDevice(device); }
+  }
+  if (device.household) await beginSync();
+  refreshPeople();
+}
+
+async function beginSync() {
+  stopSync();
+  try {
+    sync.ctl = await startSync({
+      fb: sync.fb, uid: sync.user.uid, code: device.household, store, currentId: device.profiles.current,
+      getProfiles: () => device.profiles,
+      setProfiles: (p) => setProfiles(p, { fromSync: true }),
+      readLocal: (p) => readLibrary(p.key),
+      writeLocal: (p, state) => writeLibrary(p.key, state),
+      getKey: () => store.get().settings.tmdbKey || device.tmdbKey || '',
+      setKey: useSharedKey,
+      onStatus: syncStatus,
+    });
+  } catch (err) {
+    if (err.code === 'not-found') { device.household = null; saveDevice(device); }
+    syncError(err.code === 'not-found' ? err.message : authMessage(err));
+  }
+  if (ui.tab !== 'discover') render(); else renderDiscoverView({ force: true });
+}
+
+function stopSync() {
+  if (sync.ctl) { sync.ctl.stop(); sync.ctl = null; }
+}
+
+// The household's TMDB key arrived: films and TV come on for this person.
+function useSharedKey(key) {
+  const before = tmdbKey();
+  device.tmdbKey = key || '';
+  saveDevice(device);
+  if (tmdbKey() === before) return;
+  makeSources();
+  deck.pool.clear();
+  deck.topId = null;
+  refill({ force: true });
+  refreshSeasons();
+  if (onboarding) onboarding.refresh().catch(() => {});
+  if (key) toast('Films and TV are on, with your household’s TMDB key');
+}
+
+// Runs fn with the sheet showing it's busy, and any error in plain words.
+async function syncAction(fn) {
+  sync.busy = true;
+  sync.error = '';
+  refreshPeople();
+  try { await fn(); } catch (err) { syncError(err.code === 'not-found' || err.code === 'bad-code' ? err.message : authMessage(err)); }
+  sync.busy = false;
+  refreshPeople();
+}
+
+function inviteUrl() {
+  return `${location.origin}${location.pathname}#join=${device.household}`;
+}
+
+function showPeople() {
+  if (peopleSheet && peopleSheet.sheet.el.isConnected) return;
+  if (firebaseConfig()) ensureFirebase();
+  peopleSheet = openPeople({
+    get: () => ({
+      profiles: device.profiles,
+      hasConfig: !!firebaseConfig(),
+      configFromDeploy: !!CONFIG.firebase,
+      user: sync.user,
+      household: device.household && sync.user ? device.household : null,
+      status: sync.status,
+      error: sync.error,
+      busy: sync.busy || (!!firebaseConfig() && !sync.fb && !!sync.loading),
+      pendingCode: sync.pendingCode,
+    }),
+    onSwitch: switchTo,
+    onAdd: addPerson,
+    onAskWho: (v) => setProfiles({ ...device.profiles, askWho: v }),
+    onRename: async (x) => {
+      const name = await askName({ title: `Rename ${displayName(x)}`, value: x.name });
+      if (name) setProfiles(renameProfile(device.profiles, x.id, name));
+    },
+    onRemove: (x) => {
+      const wasCurrent = x.id === device.profiles.current;
+      try { localStorage.removeItem(x.key); } catch { /* ignore */ }
+      if (sync.ctl) sync.ctl.removeProfile(x.id);
+      setProfiles(removeProfile(device.profiles, x.id));
+      toast(`${displayName(x)} removed`);
+      if (wasCurrent) { location.hash = '#discover'; location.reload(); }
+    },
+    onConfig: (text) => {
+      const cfg = parseFirebaseConfig(text);
+      if (!cfg) { syncError('That doesn’t look like a Firebase web config: it needs apiKey, projectId and appId.'); return; }
+      device.firebase = cfg;
+      saveDevice(device);
+      sync.error = '';
+      ensureFirebase();
+      refreshPeople();
+    },
+    onForgetConfig: () => {
+      stopSync();
+      device.firebase = null;
+      device.household = null;
+      saveDevice(device);
+      location.reload();
+    },
+    onGoogle: () => syncAction(async () => { const fb = await ensureFirebase(); if (fb) await fb.signInGoogle(); }),
+    onEmail: (email, password, create) => syncAction(async () => {
+      if (!email || !password) throw Object.assign(new Error(), { code: 'auth/invalid-email' });
+      const fb = await ensureFirebase();
+      if (fb) await (create ? fb.createAccount(email, password) : fb.signInEmail(email, password));
+    }),
+    onCreate: () => syncAction(async () => {
+      if (!(await nameMe())) return;
+      device.household = await createHousehold(sync.fb, sync.user.uid, device.profiles);
+      saveDevice(device);
+      await beginSync();
+      toast('Household started. Now invite whoever you watch with.');
+    }),
+    onJoin: (text) => syncAction(async () => {
+      const code = parseCode(text);
+      if (!code) throw Object.assign(new Error('That isn’t an invite code. They look like abcd-efgh-jkmn.'), { code: 'bad-code' });
+      const hh = await joinHousehold(sync.fb, sync.user.uid, code);
+      sync.pendingCode = null;
+      const remote = (hh && hh.profiles) || [];
+      const me = currentProfile(device.profiles);
+      if (remote.length && !remote.some((r) => r.id === me.id)) {
+        // Which of the household's people is this device's library?
+        const pick = await choiceSheet({
+          title: 'Which one is you?',
+          message: 'What you’ve saved and rated on this device joins your library.',
+          options: [...remote.map((r) => ({ value: r.id, label: r.name || 'Unnamed' })), { value: 'new', label: 'Someone new' }],
+        });
+        const r = remote.find((x) => x.id === pick);
+        if (r) setProfiles(claimProfile(device.profiles, me.id, r), { fromSync: true });
+        else await nameMe();
+      }
+      device.household = code;
+      saveDevice(device);
+      await beginSync();
+      toast(`Joined. Watching as ${displayName(currentProfile(device.profiles))}`);
+    }),
+    onShareInvite: () => shareOrCopy({
+      title: 'Join me on Binger',
+      text: `Join my Binger household so we each keep our own watchlist. Code: ${formatCode(device.household)}`,
+      url: inviteUrl(),
+    }),
+    onCopyInvite: async () => {
+      try { await navigator.clipboard.writeText(inviteUrl()); toast('Invite link copied'); } catch { toast('Couldn’t copy. Select the code and copy it instead.'); }
+    },
+    onSignOut: () => syncAction(async () => {
+      stopSync();
+      device.household = null;
+      saveDevice(device);
+      if (sync.fb) await sync.fb.signOut();
+      toast('Signed out. Everyone’s library stays on this device.');
+    }),
+  });
+}
+
 // ---- actions shared by every screen ----------------------------------------
 
 function showDetail(title, { card = null } = {}) {
@@ -418,6 +691,8 @@ function showSearch() {
 
 async function saveKey(key) {
   if (!key) {
+    device.tmdbKey = '';
+    saveDevice(device);
     store.update(L.updateSettings, { tmdbKey: '' });
     return { ok: true, message: CONFIG.tmdbKey ? 'Key removed. Using the key built into this deployment.' : 'Key removed. Films and TV are off.' };
   }
@@ -427,7 +702,10 @@ async function saveKey(key) {
     return { ok: false, message: err.status === 401 ? 'TMDB didn’t accept that key. Check you copied all of it.' : 'Couldn’t reach TMDB. Check your connection and try again.' };
   }
   deck.warnedKey = false;
+  device.tmdbKey = key;
+  saveDevice(device);
   store.update(L.updateSettings, { tmdbKey: key });
+  if (sync.ctl) sync.ctl.shareKey(key).catch(() => {});
   if (onboarding) onboarding.refresh().catch(() => {});
   return { ok: true, message: 'Key works. Films and TV are on.' };
 }
@@ -435,7 +713,11 @@ async function saveKey(key) {
 function showSettings() {
   openSettings({
     getState: store.get,
-    keySource: () => (store.get().settings.tmdbKey ? 'Using your key.' : CONFIG.tmdbKey ? 'Using the key built into this deployment.' : 'No key yet: films and TV are off.'),
+    keySource: () => (store.get().settings.tmdbKey ? `Using your key${sync.ctl ? ', shared with your household' : ''}.`
+      : device.tmdbKey ? 'Using your household’s key.'
+        : CONFIG.tmdbKey ? 'Using the key built into this deployment.' : 'No key yet: films and TV are off.'),
+    currentKey: () => store.get().settings.tmdbKey || device.tmdbKey || '',
+    onPeople: showPeople,
     saveKey,
     onServices: showServices,
     updateSettings: (patch) => store.update(L.updateSettings, patch),
@@ -515,6 +797,7 @@ function renderDiscoverView({ force = false } = {}) {
     onSearch: showSearch,
     onRefresh: () => refill({ force: true }),
     onSettings: showSettings,
+    who: who(),
   });
 }
 
@@ -536,6 +819,7 @@ function render() {
       onOpen: (item) => showDetail(item.title),
       onWatched: (item) => logSeen(item.title),
       onEditWatch: editWatch,
+      who: who(),
       alerts: seasons.alerts,
       onAlertWatched: (a) => { const item = store.get().items[a.id]; if (item) logSeen({ ...item.title, ...a.title, via: item.title.via }); },
       onAlertDismiss: dismissSeason,
@@ -551,6 +835,7 @@ function render() {
       onServices: () => showServices(),
       onPerson: showPerson,
       timeline: timelineFor(state.items),
+      who: who(),
       onUnhideSeries: (f) => { store.update(L.unhideFranchise, f.key); toast(`${f.name} can come back now`); },
       onForgetPasses: () => { store.update(L.forgetPasses); toast('Passed titles can come back now'); refill({ force: true }); },
     });
@@ -576,6 +861,8 @@ function route() {
 
 store.subscribe((next, prev) => {
   profile = buildProfile(next.items);
+  // Sync brought this person's library from another device: no need to start over.
+  if (onboarding && next.onboarded && !prev.onboarded) { onboarding.sheet.close(); onboarding = null; }
   const changed = (k) => JSON.stringify(next.settings[k]) !== JSON.stringify(prev.settings[k]);
   if (changed('tmdbKey') || changed('region') || changed('voiceLanguage')) {
     makeSources();
@@ -614,14 +901,32 @@ document.addEventListener('pointerup', () => {
 
 window.addEventListener('hashchange', route);
 
+// After "Who's watching?" (or straight away): first run for a new person, or
+// the join screen for someone who opened an invite link.
+function afterWho() {
+  if (!store.get().onboarded && !sync.pendingCode) startOnboarding();
+  if (sync.pendingCode) showPeople();
+}
+
 async function init() {
+  saveDevice(device); // keep the first person's id stable from now on
+  if (/^#join=/.test(location.hash)) {
+    sync.pendingCode = parseCode(location.hash);
+    history.replaceState(null, '', `${location.pathname}${location.search}#discover`);
+  }
+  let switched = null;
+  try { switched = sessionStorage.getItem('binger:switched'); sessionStorage.removeItem('binger:switched'); } catch { /* private mode */ }
   cache = await createCache();
   makeSources();
   rerank();
   route();
-  if (!store.get().onboarded) startOnboarding();
+  const p = device.profiles;
+  if (switched) toast(`Watching as ${displayName(currentProfile(p))}`);
+  if (p.list.length > 1 && p.askWho && !switched && !sync.pendingCode) showWho({ atStart: true });
+  else afterWho();
   refill({ force: true });
   refreshSeasons();
+  if (firebaseConfig() && device.household) ensureFirebase();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('service-worker.js').catch(() => {});
   }

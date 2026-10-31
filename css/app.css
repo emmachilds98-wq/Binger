@@ -449,3 +449,26 @@ button.cast-item:hover .cast-name { text-decoration: underline; }
 .trend-readout { padding-left: 122px; }
 .trend-axis { display: flex; justify-content: space-between; width: 140px; margin-left: 127px; font-size: 11px; color: var(--muted); }
 .how-lines { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--text-2); }
+
+/* people and sync: who's watching, the chip, People and sync */
+.who-avatar { flex: none; border-radius: 50%; background: var(--who, var(--accent)); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; }
+.who-sm { width: 28px; height: 28px; font-size: 14px; }
+.who-md { width: 40px; height: 40px; font-size: 18px; }
+.who-xl { width: 96px; height: 96px; font-size: 40px; }
+.who-plus { background: var(--surface-2); color: var(--muted); border: 1px dashed var(--line); }
+.who-chip { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; border-radius: 22px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; font-size: 14px; max-width: 150px; }
+.who-chip .who-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-actions .who-chip { margin-left: 4px; }
+@media (max-width: 420px) { .topbar-actions .who-chip { padding: 0 8px; } .topbar-actions .who-chip .who-name { display: none; } }
+.who-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 24px 20px calc(24px + var(--safe-bottom)); text-align: center; }
+.who-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+.who-tile { width: 120px; display: flex; flex-direction: column; align-items: center; gap: 10px; border: 0; background: transparent; color: var(--text); padding: 8px; border-radius: 20px; }
+.who-tile:hover .who-avatar, .who-tile:focus-visible .who-avatar { box-shadow: 0 0 0 3px var(--text); }
+.who-tile.is-current .who-avatar { box-shadow: 0 0 0 3px var(--accent); }
+.who-tile-name { font-weight: 700; font-size: 16px; }
+.who-body .switch-row { max-width: 360px; }
+.people-body { display: flex; flex-direction: column; gap: 22px; padding-top: 8px; }
+.person-row { gap: 10px; }
+.sync-status { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; }
+.invite-code { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: 1px; user-select: all; -webkit-user-select: all; }
+.or { text-align: center; }
