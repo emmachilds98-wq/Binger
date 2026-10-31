@@ -76,3 +76,15 @@ test('no TMDB key is committed in config.js', () => {
   const src = readFileSync(join(ROOT, 'js', 'config.js'), 'utf8');
   assert.match(src, /tmdbKey: ''/, 'leave CONFIG.tmdbKey empty in the repo; set keys in the app\u2019s Settings');
 });
+
+// The Firebase web config may be committed (it isn't a secret), but a broken
+// or test-only one would stop sync for everyone.
+test('the committed Firebase config is a whole web config, never the emulators', async () => {
+  const { CONFIG } = await import('../js/config.js');
+  if (!CONFIG.firebase) return;
+  const f = CONFIG.firebase;
+  for (const k of ['apiKey', 'authDomain', 'projectId', 'appId']) assert.equal(typeof f[k], 'string', `config.firebase.${k}`);
+  assert.equal(f.authDomain, `${f.projectId}.firebaseapp.com`, 'authDomain belongs to the same project');
+  assert.ok(!('emulators' in f), 'config.firebase must not point at the emulators');
+  assert.ok(!/^demo-/.test(f.projectId), 'a demo- project only exists in the emulators');
+});

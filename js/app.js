@@ -31,7 +31,7 @@ import {
   parseCode, parseFirebaseConfig, formatCode,
 } from './state/profiles.js';
 import { connectFirebase, authMessage } from './sync/firebase.js';
-import { startSync, findHousehold, createHousehold, joinHousehold } from './sync/sync.js';
+import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
 import { openWhoIsWatching, openPeople, askName, shareOrCopy } from './ui/people.js';
 
 // ---- state -----------------------------------------------------------------
@@ -439,8 +439,10 @@ function writeLibrary(key, state) {
   try { localStorage.setItem(key, JSON.stringify(state)); } catch { toast('Couldn’t save: this browser’s storage is full or blocked.'); }
 }
 
+// A config pasted on this device wins over the deployment's, like the TMDB
+// key (and it's how the sync test points the app at the emulators).
 function firebaseConfig() {
-  return CONFIG.firebase || device.firebase || null;
+  return device.firebase || CONFIG.firebase || null;
 }
 
 function refreshPeople() {
@@ -471,7 +473,14 @@ async function onUser(user) {
   if (!user) { stopSync(); refreshPeople(); return; }
   if (!device.household) {
     const code = await findHousehold(sync.fb, user.uid).catch(() => null);
-    if (code) { device.household = code; saveDevice(device); }
+    if (code) {
+      // Signed in on another device of yours: say who you are first, or this
+      // device's person would join the household as someone new.
+      const hh = await readHousehold(sync.fb, code).catch(() => null);
+      await whichOneIsYou((hh && hh.profiles) || []);
+      device.household = code;
+      saveDevice(device);
+    }
   }
   if (device.household) await beginSync();
   refreshPeople();
@@ -526,6 +535,22 @@ async function syncAction(fn) {
   refreshPeople();
 }
 
+// Joining a household, or signing in on another device: which of the
+// household's people is this device's library? (Nothing to ask if this
+// device's person is already one of them.)
+async function whichOneIsYou(remote) {
+  const me = currentProfile(device.profiles);
+  if (!remote.length || remote.some((r) => r.id === me.id)) return;
+  const pick = await choiceSheet({
+    title: 'Which one is you?',
+    message: 'What you’ve saved and rated on this device joins your library.',
+    options: [...remote.map((r) => ({ value: r.id, label: r.name || 'Unnamed' })), { value: 'new', label: 'Someone new' }],
+  });
+  const r = remote.find((x) => x.id === pick);
+  if (r) setProfiles(claimProfile(device.profiles, me.id, r), { fromSync: true });
+  else await nameMe();
+}
+
 function inviteUrl() {
   return `${location.origin}${location.pathname}#join=${device.household}`;
 }
@@ -537,7 +562,7 @@ function showPeople() {
     get: () => ({
       profiles: device.profiles,
       hasConfig: !!firebaseConfig(),
-      configFromDeploy: !!CONFIG.firebase,
+      configFromDeploy: !device.firebase && !!CONFIG.firebase,
       user: sync.user,
       household: device.household && sync.user ? device.household : null,
       status: sync.status,
@@ -594,19 +619,7 @@ function showPeople() {
       if (!code) throw Object.assign(new Error('That isn’t an invite code. They look like abcd-efgh-jkmn.'), { code: 'bad-code' });
       const hh = await joinHousehold(sync.fb, sync.user.uid, code);
       sync.pendingCode = null;
-      const remote = (hh && hh.profiles) || [];
-      const me = currentProfile(device.profiles);
-      if (remote.length && !remote.some((r) => r.id === me.id)) {
-        // Which of the household's people is this device's library?
-        const pick = await choiceSheet({
-          title: 'Which one is you?',
-          message: 'What you’ve saved and rated on this device joins your library.',
-          options: [...remote.map((r) => ({ value: r.id, label: r.name || 'Unnamed' })), { value: 'new', label: 'Someone new' }],
-        });
-        const r = remote.find((x) => x.id === pick);
-        if (r) setProfiles(claimProfile(device.profiles, me.id, r), { fromSync: true });
-        else await nameMe();
-      }
+      await whichOneIsYou((hh && hh.profiles) || []);
       device.household = code;
       saveDevice(device);
       await beginSync();

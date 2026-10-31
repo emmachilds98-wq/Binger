@@ -80,11 +80,21 @@ export function openPeople(ctx) {
   const scroll = h('div', { class: 'page-scroll people-body' });
   append(sheet.body, [h('div', { class: 'sheet-head' }, h('h1', { class: 'page-title' }, 'People and sync'), closeButton(sheet)), scroll]);
 
+  // The sheet re-renders whenever sync's state changes (Firebase finishing
+  // loading, a sign-in landing), often while someone is typing. What they've
+  // typed, and where the cursor is, must survive that.
   function render() {
     const st = ctx.get();
     const keep = scroll.scrollTop;
+    const typed = new Map([...scroll.querySelectorAll('input[id], textarea[id]')].map((el) => [el.id, el.value]));
+    const focused = document.activeElement && scroll.contains(document.activeElement) ? document.activeElement.id : null;
     clear(scroll);
     append(scroll, [peopleSection(st), syncSection(st)]);
+    for (const [id, value] of typed) {
+      const el = scroll.querySelector(`#${id}`);
+      if (el && value && el.type !== 'checkbox') el.value = value;
+    }
+    if (focused) { const el = scroll.querySelector(`#${focused}`); if (el) el.focus(); }
     scroll.scrollTop = keep;
   }
 

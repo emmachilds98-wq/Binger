@@ -6,14 +6,21 @@ Each person signs in with their own account; one person starts a
 **household** and invites the others with a code or link. Inside the app this
 is **Settings → People and sync**.
 
-The code is done and unit-tested against a stand-in for Firebase
-(`tests/sync.test.js`). **It has not yet been run against a real Firebase
-project.** The first person to do the steps below should also do
-[the live check](#live-check).
+The code is done, unit-tested against a stand-in for Firebase
+(`tests/sync.test.js`), and **the whole [live check](#live-check) passes
+against the real Firebase JS SDK and this repo's `firestore.rules`, on the
+local Firebase emulators** (`npm run e2e:sync`, also in CI). What's left is
+the owner's project itself: the console steps below and its web config.
 
 ## 1. In the Firebase console (the owner, once, about 10 minutes)
 
-The project already exists: **binger**.
+The project already exists: **binger** (project id `binger-5cee3`), and
+its web config is in `js/config.js`.
+
+**All five steps are done** (the owner, 2026-10-31), and the
+[live check on the real project](#on-the-real-project) passed the same day.
+Google sign-in is switched on but can't be tested by a script (it needs a real
+Google account): try it once on the live site.
 
 1. **Add a web app.** ⚙ Project settings → General → Your apps → `</>` (Web).
    Nickname "Binger". No Firebase Hosting needed (the app is on GitHub Pages).
@@ -29,6 +36,9 @@ The project already exists: **binger**.
    the contents of [`firestore.rules`](../firestore.rules) → Publish.
    These let only household members read a household, and let someone with
    an invite code add only themselves.
+   (Or from a terminal in this repo: `npx firebase-tools@15.34.2 login`, then
+   `npx firebase-tools@15.34.2 deploy --only firestore:rules --project binger-5cee3`;
+   `firebase.json` already points at `firestore.rules`.)
 
 ## 2. Put the config in the app
 
@@ -51,6 +61,9 @@ Either:
    "Someone new" if Emma hasn't added him on her device).
 4. Both libraries sync from then on. The TMDB key is shared through the
    household, so Dave gets films and TV without his own key.
+
+On another device of your own, just sign in with the same account: Binger
+finds your household and asks "Which one is you?" once.
 
 On a shared computer, add both people (People and sync → Add a person) and
 "Who's watching?" asks each time Binger opens. On a phone only one of you
@@ -77,7 +90,40 @@ households/{code}/profiles/{id}   { state: <library JSON>, updatedAt, by }
 
 ## Live check
 
-With the steps above done, on two browsers (or a normal and a private window):
+### On the emulators (no Firebase project needed)
+
+`scripts/e2e-sync.mjs` does everything below, plus a second device for Emma
+and eight probes of the security rules as a stranger, with the real Firebase
+JS SDK against the local Auth and Firestore emulators. It needs Java 11+.
+
+```bash
+npx -y firebase-tools@15.34.2 emulators:exec --project demo-binger --only auth,firestore "npm run e2e:sync"
+```
+
+(Or `npm run emulators` in one terminal and `npm run e2e:sync` in another.)
+CI runs it on every push. Run it whenever `js/sync/`, `js/state/profiles.js`,
+`js/ui/people.js` or `firestore.rules` change. The emulator hook is the
+`emulators` key in a config (`js/sync/firebase.js`); a pasted config never
+has one.
+
+First run (2026-10-31) found and fixed two bugs: typing in the sign-in form
+while Firebase was loading lost what you'd typed, and signing in on a second
+device added a nameless person to the household instead of asking who you are.
+
+### On the real project
+
+**Passed on 2026-10-31** against `binger-5cee3`, run by a script from
+`localhost` with throwaway email accounts that were deleted afterwards: email
+sign-up; a household created (so the rules allow it) and synced; an invite
+link joined, with "Which one is you?"; the second device lists both people and
+gets the first one's watchlist; a save on it reached the first device live in
+about 4 s; a signed-in stranger can't read the household, a library or
+`users/{uid}`, while a member can (so the published rules are this repo's,
+not deny-all). Clean-up can't delete a household under the rules, so one
+empty `households/qwcban3dsbcv` (no members, unreadable) was left; delete it in
+the console if you like.
+
+To repeat it by hand, on two browsers (or a normal and a private window):
 
 1. Browser A: sign in, start a household, add a title to the watchlist.
 2. Browser B: open the invite link, sign in as someone else, join, pick a person.

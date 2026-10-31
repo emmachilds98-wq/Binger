@@ -303,7 +303,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .rating-word { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
 .field { display: flex; flex-direction: column; gap: 8px; }
 .field-inline { flex-direction: row; align-items: center; justify-content: space-between; }
-textarea, input[type="search"], input[type="password"], input[type="text"], input[type="date"], select {
+textarea, input[type="search"], input[type="password"], input[type="email"], input[type="text"], input[type="date"], select {
   border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--text); padding: 12px 14px; font-size: 16px;
 }
 textarea { resize: vertical; min-height: 84px; }

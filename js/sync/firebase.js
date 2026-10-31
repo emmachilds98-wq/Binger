@@ -12,9 +12,17 @@ export async function connectFirebase(config) {
     import(`${CDN}/firebase-auth.js`),
     import(`${CDN}/firebase-firestore.js`),
   ]);
-  const app = appMod.getApps().find((a) => a.name === 'binger') || appMod.initializeApp(config, 'binger');
+  const { emulators, ...web } = config;
+  const app = appMod.getApps().find((a) => a.name === 'binger') || appMod.initializeApp(web, 'binger');
   const auth = authMod.getAuth(app);
   const db = fs.getFirestore(app);
+  // For tests only (`npm run e2e:sync`): the local Firebase emulators stand
+  // in for the real project. A pasted config never has this key.
+  if (emulators) {
+    authMod.connectAuthEmulator(auth, emulators.auth, { disableWarnings: true });
+    const [host, port] = emulators.firestore.split(':');
+    fs.connectFirestoreEmulator(db, host, Number(port));
+  }
   const ref = (path) => fs.doc(db, ...path);
   // Finish a sign-in that had to go via a redirect (popups blocked).
   authMod.getRedirectResult(auth).catch(() => {});
@@ -62,6 +70,7 @@ export function authMessage(err) {
   if (/invalid-email/.test(code)) return 'That doesn’t look like an email address.';
   if (/unauthorized-domain/.test(code)) return 'Firebase doesn’t allow sign-in from this address yet. Add it under Authentication → Settings → Authorised domains.';
   if (/operation-not-allowed/.test(code)) return 'That sign-in method is switched off in Firebase (Authentication → Sign-in method).';
+  if (/configuration-not-found/.test(code)) return 'Sign-in isn’t set up in Firebase yet (Authentication → Get started, then switch on Google and Email).';
   if (/permission-denied/.test(code)) return 'Firebase refused: check the security rules are published (docs/FIREBASE.md).';
   if (/network|unavailable/.test(code)) return 'Couldn’t reach Firebase. Check your connection.';
   if (/popup-closed-by-user|cancelled-popup/.test(code)) return 'Sign-in was cancelled.';

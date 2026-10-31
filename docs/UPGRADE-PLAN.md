@@ -43,14 +43,17 @@ the upgrade work.
 The owner has a Firebase project called **binger**. Nobody in the build
 sessions had access to it, so this is the one piece that needs a person.
 
-- [ ] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
+- [x] The live check, run for real on the Firebase emulators with the real
+      SDK and `firestore.rules` (`npm run e2e:sync`, in CI as the `sync` job):
+      34 checks, two bugs found and fixed (FIREBASE.md → Live check).
+- [x] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
       (web app, Google + Email sign-in, authorised domain
       `emmachilds98-wq.github.io`, Firestore, publish `firestore.rules`).
-- [ ] Put the web config in `js/config.js` → `firebase: { … }` (it isn't a
-      secret; see FIREBASE.md §2). Update the shell test if you want to
-      assert its shape.
-- [ ] Do the [live check](FIREBASE.md#live-check) with two browsers, and
-      fix anything it turns up in `js/sync/`.
+- [x] Put the web config in `js/config.js` → `firebase: { … }` (project
+      `binger-5cee3`, 2026-10-31). A shell test checks its shape, and that
+      it never points at the emulators.
+- [x] The [live check on the real project](FIREBASE.md#on-the-real-project)
+      passed (2026-10-31). Google sign-in still wants one try by a person.
 
 ### 2. A proper PC layout — ASAP
 
