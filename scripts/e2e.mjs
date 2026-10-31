@@ -60,12 +60,15 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
 
+// The seeds each AniList deck request asked "more like this" about.
+const deckSeeds = [];
 await context.route('https://graphql.anilist.co/**', async (route) => {
   const body = route.request().postData() || '';
   let data;
   if (body.includes('trending: Page')) {
     // The deck batch: its "filtered" page answers only when a deck filter is on.
     const vars = JSON.parse(body).variables || {};
+    deckSeeds.push(vars.seeds || []);
     data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
   }
   else if (body.includes('Staff(id')) data = staffTanezaki.data;
@@ -173,6 +176,34 @@ check(new Set(tileNames).size === tileNames.length, 'no duplicate tiles');
 await page.getByRole('button', { name: 'Start swiping' }).click();
 await page.waitForSelector('.deck .card');
 check((await libraryCount()).watched === 3, 'the three picks are saved as watched and loved');
+const pickedIds = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('binger:v1')).items).filter((i) => i.status === 'watched').map((i) => i.title.sourceId));
+await page.waitForFunction(() => true);
+await page.waitForTimeout(300);
+check(deckSeeds.some((seeds) => pickedIds.every((id) => seeds.includes(id))), 'the deck then asks "more like this" about every pick');
+
+console.log('Reviewing first-run picks');
+await page.click('a[href="#library"]');
+await page.getByRole('tab', { name: /Diary/ }).click();
+await page.waitForSelector('.first-picks .row');
+check(await page.locator('.first-picks .row').count() === 3, 'Library → Diary lists the three first-run picks to review');
+check(await page.locator('.row-title-line', { hasText: 'First run' }).count() === 3, 'their diary entries say "First run" where the date would be');
+await page.waitForFunction(() => !document.querySelector('#toast .toast'), null, { timeout: 8000 }).catch(() => {});
+await shot('26-first-run-picks');
+const reviewed = (await page.locator('.first-picks .row-title').first().innerText()).trim();
+await page.locator('.first-picks').getByRole('button', { name: `Review ${reviewed}` }).click();
+await page.waitForSelector('.rate .stars-input');
+check(/review your pick/i.test(await page.locator('.rate').innerText()), 'Review opens the same sheet as "Seen it": stars, how it felt, your thoughts, the date');
+await page.locator('.rate .star').nth(4).click();
+await page.locator('.rate .pill', { hasText: 'Rewatchable' }).click();
+await page.fill('#review', 'Even better the second time.');
+await shot('25-first-run-review');
+await page.getByRole('button', { name: 'Save review' }).click();
+await page.waitForTimeout(300);
+check(await page.locator('.first-picks .row').count() === 2, 'once reviewed, it leaves "From your first run"');
+const entry = await page.evaluate((name) => Object.values(JSON.parse(localStorage.getItem('binger:v1')).items).find((i) => i.title.title === name).watches[0], reviewed);
+check(entry.rating === 5 && entry.review === 'Even better the second time.' && entry.tags.includes('Rewatchable') && !entry.setup, `and its diary entry has the full review (${entry.rating}★, ${entry.tags.join(', ')})`);
+await page.click('a[href="#discover"]');
+await page.waitForSelector('.deck .card');
 
 console.log('Adding a TMDB key');
 await page.goto(base + '#taste');

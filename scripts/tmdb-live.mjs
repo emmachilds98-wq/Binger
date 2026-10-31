@@ -238,6 +238,15 @@ await step('first-run grid', async () => {
   console.log(`    ${grid.length} titles, then ${more.length} more: ${grid.slice(0, 10).map((t) => t.title).join('; ')}`);
   check(grid.length >= 60 && more.filter((t) => !grid.some((g) => g.id === t.id)).length >= 30, 'the first-run grid has 60+ titles and "Show more" brings 30+ new ones');
   check(grid.some((t) => /Breaking Bad|Game of Thrones|Stranger Things|Friends/.test(t.title)), 'it includes the series most people have seen');
+  // Every service's shows are woven in, so the first screenfuls show most of them.
+  const byService = {};
+  for (const [service, networkIds] of Object.entries(TMDB_NETWORKS)) {
+    byService[service] = new Set((await tmdb.discover('tv', { networkIds, sortBy: 'vote_count.desc', minVotes: 50 })).map((t) => t.id));
+  }
+  const early = grid.slice(0, 36);
+  const shown = Object.entries(byService).filter(([, ids]) => early.some((t) => ids.has(t.id))).map(([s]) => s);
+  console.log(`    services in the first 36 tiles: ${shown.join(', ')}`);
+  check(shown.length >= 9, `the first 36 tiles show ${shown.length} of ${Object.keys(TMDB_NETWORKS).length} services’ own shows`);
 });
 
 if (capDir) {

@@ -31,7 +31,7 @@ Where things stand on 2026-10-31 (fourth session):
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
 - **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
   people and sync with the owner's Firebase project are live.
-- **Checks:** `npm test` 134 passing, `npm run e2e` all passing,
+- **Checks:** `npm test` 136 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
@@ -209,6 +209,9 @@ Everything technical you need is in this file,
     `MDBLIST_API_KEY` like the TMDB key (decision 4), each title's scores are
     cached for a week (free plan: 1,000 lookups a day), and without a key
     nothing shows. Scores are shown, not yet used by the engine.
+19. **First-run picks are 4½★ diary entries marked `setup`** until you
+    review them (Library → Diary → "From your first run"): loved enough to
+    steer the deck at once, and honest about not being a real review yet.
 
 ---
 
@@ -374,9 +377,10 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 - [x] Step 2: people and years in search, `/similar` fallback, page memory,
       review scores (IMDb, Rotten Tomatoes critics + audience, Metacritic,
       Letterboxd via MDBList), no TMDB key field where one is built in
-- [x] Step 3 (part): scores in the engine, anime scores (MyAnimeList)
-- [ ] Step 3 (rest): browse by service on the first run and coming soon
-      (both design first: the owner's OK)
+- [x] Step 3: scores in the engine, anime scores (MyAnimeList), every
+      service woven into the first-run grid (the owner's choice), first-run
+      picks reviewable from Library → Diary
+- [ ] Coming soon: "not now" (the owner, 2026-10-31)
 - [ ] Step 4 (owner): `MDBLIST_API_KEY` repository secret (switches scores
       on); `TMDB_API_KEY` + `MDBLIST_API_KEY` in the cloud environment; Trakt later, maybe
 
@@ -404,9 +408,16 @@ Newest first. One entry per working session: what changed, what's next, what's b
   MDBList by MyAnimeList id (AniList's `idMal`, checked live). Library
   snapshots keep `imdbId` and `malId`. All inert until the owner's
   `MDBLIST_API_KEY` secret exists.
-- Browse by service on the first run and Coming soon need a design: put to
-  the owner.
-- Tests: 134 unit; e2e and e2e:sync passing.
+- Asked the owner about the two design-first items. Browse by service:
+  "mix all streaming services within the grid with no defined structure",
+  so one first-run tile in three is a service's own series, the 12 services
+  taking turns. Coming soon: "not now".
+- The owner also asked that first-run picks steer the swipe deck (they do:
+  now proven by a test and a browser check) and can get full reviews.
+  They're marked `setup` (decision 19); Library → Diary lists them under
+  "From your first run" with a Review button that opens the "Seen it" sheet.
+- Tests: 136 unit; e2e (new: picks seed the deck, reviewing a pick;
+  screenshots 25, 26) and e2e:sync passing.
 
 ### 2026-10-31 (fourth session, later): coverage step 2, review scores
 - The owner merged #9 ("merge it and start"), then asked for more sources

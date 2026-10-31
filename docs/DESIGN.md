@@ -28,7 +28,7 @@ Kind badges are always labelled (FILM / TV / ANIME), never colour alone.
 
 ## Screens
 
-1. **First run**: "What have you loved?" poster grid + search; 3 picks to start. Built additions (2026-10-31): titles you pick from a search stay at the front of the grid; a search that finds nothing says so above the grid; a full-width quiet "Show more" button ends the grid.
+1. **First run**: "What have you loved?" poster grid + search; 3 picks to start. Built additions (2026-10-31): titles you pick from a search stay at the front of the grid; a search that finds nothing says so above the grid; a full-width quiet "Show more" button ends the grid. The grid has no sections: one tile in three is a streaming service's own series, services taking turns (the owner's choice over a row of service chips).
 2. **Discover**: filter pills, card stack, actions: Undo · Pass · Seen it · Want · Info.
 3. **Detail**: trailer on top, why it was picked, synopsis, cast (people you know ringed in amber), where to watch, your diary entries.
 4. **Rate (bottom sheet)**: stars (tap twice for a half), what the rating will do ("Binger will look for more like this…"), feeling tags, review, date.
@@ -115,6 +115,13 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   Anime: "MAL 9.3" on the card, a "MyAnimeList 9.3" chip in details. A card
   picked for being well rated says by whom: "Highly rated: IMDb 8.6".
   Screenshot `24-review-scores`.
+- **Reviewing first-run picks** (built): Library → Diary opens with "From
+  your first run" (eyebrow), a muted line "These are saved as loved (4½★).
+  Review them to tell Binger more.", and a row per pick in the alert-row
+  style with a sky "Review" chip. Review opens the "Seen it" sheet with the
+  eyebrow "Review your pick" and the button "Save review". Their diary rows
+  say "First run" where the date would be. Screenshots
+  `25-first-run-review`, `26-first-run-picks`.
 - **Settings** (built): no "Films & TV (TMDB key)" group where a key is
   built into the site, which is the live site.
 - **PC layout** (built; see below). Designed here rather than on the canvas,

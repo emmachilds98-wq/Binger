@@ -222,9 +222,12 @@ MDBList key, their review scores (`ratings.js`, one call each, cached a week).
   and adds what they're known for; a year at the end (`splitYear`: "dune
   2021") asks TMDB for that year too and ranks it first.
 - **First run** (`starterTitles`): this week's trending, TMDB's most-rated
-  films and series of all time, the most-rated of the last three years, and
-  AniList's most popular anime; films, TV and anime take turns. "Show more"
-  asks every list for its next page.
+  films and series of all time, the most-rated of the last three years,
+  every streaming service's most-rated series (`TMDB_NETWORKS`), and
+  AniList's most popular anime, woven film, service, TV, service, anime,
+  service (`GRID_PATTERN`). "Show more" asks every list for its next page.
+  Picks are logged as 4½★ watches marked `setup` until reviewed
+  (`setupPicks` in `library.js`; Library → Diary).
 
 ## Caching and offline
 

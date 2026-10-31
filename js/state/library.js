@@ -15,7 +15,8 @@
 //   id, title: Snapshot,                  // a trimmed copy of the Title
 //   status: 'want' | 'watched' | 'passed',
 //   addedAt, updatedAt,                   // ISO strings
-//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '' }],
+//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '', setup?: true }],
+//     (setup: picked on the first-run screen and not reviewed yet)
 //   via: [...],                           // why Binger showed it (if it did)
 //   dismissed: ['s3'],                    // new-season alerts you've waved away
 //   changedAt,                            // set by undo, which puts back an older copy
@@ -115,7 +116,9 @@ export function setStatus(state, title, status, now = Date.now(), via = null) {
   return withItem(state, title.id, item);
 }
 
-export function logWatch(state, title, { rating = null, tags = [], review = '', date = null } = {}, now = Date.now()) {
+// setup: a pick from the first-run screen ("What have you loved?"), logged
+// as loved until you review it properly (setupPicks, updateWatch).
+export function logWatch(state, title, { rating = null, tags = [], review = '', date = null, setup = false } = {}, now = Date.now()) {
   const prev = state.items[title.id];
   const watch = {
     id: newId(now),
@@ -123,6 +126,7 @@ export function logWatch(state, title, { rating = null, tags = [], review = '', 
     rating: typeof rating === 'number' ? Math.max(0.5, Math.min(5, Math.round(rating * 2) / 2)) : null,
     tags: [...new Set(tags)].filter((t) => typeof t === 'string').slice(0, 10),
     review: String(review || '').slice(0, 4000),
+    ...(setup ? { setup: true } : {}),
   };
   const item = {
     ...(prev || { id: title.id, addedAt: iso(now), watches: [] }),
@@ -141,6 +145,8 @@ export function updateWatch(state, id, watchId, patch, now = Date.now()) {
     if (w.id !== watchId) return w;
     const next = { ...w, ...patch };
     if (typeof next.rating === 'number') next.rating = Math.max(0.5, Math.min(5, Math.round(next.rating * 2) / 2));
+    // Saved from the rating sheet: a first-run pick is now a proper review.
+    delete next.setup;
     return next;
   });
   return withItem(state, id, { ...prev, watches, updatedAt: iso(now) });
@@ -206,6 +212,12 @@ export function watchlist(state) {
 }
 
 // One diary row per watch (a rewatch is its own entry), newest first.
+// First-run picks you haven't reviewed yet, newest first: Library → Diary
+// asks you to rate and review them with the same sheet as "Seen it".
+export function setupPicks(state) {
+  return diary(state).filter((r) => r.watch.setup);
+}
+
 export function diary(state) {
   const rows = [];
   for (const it of Object.values(state.items)) {

@@ -23,7 +23,7 @@ const todayIso = () => {
 export function openRate(title, { watch = null, onSave, onSkip = null, onDelete = null, onCancel = null } = {}) {
   let saved = false;
   const sheet = openSheet({
-    label: watch ? `Edit diary entry: ${title.title}` : `Rate ${title.title}`,
+    label: watch && watch.setup ? `Review ${title.title}` : watch ? `Edit diary entry: ${title.title}` : `Rate ${title.title}`,
     variant: 'bottom',
     className: 'rate',
     onClose: () => { if (!saved && onCancel) onCancel(); },
@@ -74,7 +74,8 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
   review.value = watch ? watch.review || '' : '';
   const date = h('input', { id: 'watch-date', type: 'date', max: todayIso(), value: watch ? watch.date : todayIso() });
 
-  const save = h('button', { type: 'button', class: 'btn btn-primary grow' }, watch ? 'Save changes' : 'Save to diary');
+  // A first-run pick (watch.setup) is reviewed for the first time here.
+  const save = h('button', { type: 'button', class: 'btn btn-primary grow' }, watch && watch.setup ? 'Save review' : watch ? 'Save changes' : 'Save to diary');
   save.addEventListener('click', () => {
     saved = true;
     onSave({ rating, tags: [...tags], review: review.value.trim(), date: date.value || todayIso() });
@@ -86,7 +87,7 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
     h('div', { class: 'rate-head' },
       poster(title, 'thumb thumb-sm'),
       h('div', { class: 'grow' },
-        h('div', { class: 'eyebrow sky' }, watch ? 'Edit diary entry' : 'Seen it'),
+        h('div', { class: 'eyebrow sky' }, watch && watch.setup ? 'Review your pick' : watch ? 'Edit diary entry' : 'Seen it'),
         h('h2', { class: 'sheet-title' }, title.title),
         h('div', { class: 'small muted' }, [KIND_NAME[title.kind], title.year].filter(Boolean).join(' · '))),
       closeButton(sheet)),

@@ -122,19 +122,32 @@ it's built in.
        they say whether critics approved, not how much people enjoy it. A
        "Highly rated" card says by whom ("Highly rated: IMDb 8.6"). Inert
        until the MDBList key is in.
-2. [ ] **Browse by service on the first run** (design first: owner's OK). A row of service chips above
-       the grid (Apple TV+, Netflix, Prime Video, Disney+, BBC iPlayer…); a
-       tap fills the grid with that service's shows (`serviceTitles`, page by
-       page). **Design first**: add it to canvas artboard 1, or sketch it in
-       DESIGN.md and get the owner's OK.
-3. [ ] **Coming soon** (design first: owner's OK). Films and series not out yet (TMDB discover with
-       future dates, most anticipated first), so they can go on the
-       watchlist now. Needs a place on screen: design first.
+2. [x] **Every service in the first-run grid** (built, PR #11). Asked
+       how to browse by service, the owner chose no structure at all: "mix
+       all streaming services within the grid … so you don't miss other
+       streaming services' options if you don't scroll". One tile in three
+       is a service's own series, the 12 services taking turns
+       (`GRID_PATTERN`, `weave` in `lookups.js`), so the first two dozen
+       tiles show nearly all of them. The live check counts them.
+3. [ ] **Coming soon.** The owner: "not now" (2026-10-31). Kept for later:
+       films and series not out yet, to save before release.
 4. [x] **Anime scores** (built, PR #11). AniList's `idMal` (checked live:
        Frieren is 52991) asks MDBList by MyAnimeList id; cards say "MAL 9.3"
        and details add a MyAnimeList chip. Anime arrives complete, so only
        its scores are fetched, once per session (a failed lookup counts as
        none, so a used-up daily quota doesn't mean asking on every swipe).
+
+### First-run picks (the owner's asks, 2026-10-31)
+
+- [x] **They steer the deck.** Each pick is saved as a 4½★ diary entry, so
+      it shapes your taste profile and seeds "more like this" (TMDB
+      recommendations, AniList's for anime). Now checked end to end: a test
+      and a browser check that the first deck asks about every pick.
+- [x] **Full reviews for them.** Picks are marked "picked at setup"
+      (`watch.setup`). Library → Diary opens with "From your first run":
+      each pick with a **Review** button that opens the same sheet as "Seen
+      it" (half stars, how it felt, your thoughts, when you watched). Saving
+      it makes it a normal diary entry. Screenshots 25 and 26.
 
 ## Step 4: needs the owner (connections)
 

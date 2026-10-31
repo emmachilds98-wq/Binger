@@ -9,6 +9,8 @@ import { createAniList } from '../js/sources/anilist.js';
 import { gatherCandidates, originalsPull, turnPage, pickSeeds } from '../js/sources/candidates.js';
 import { normaliseName, matchTier, rankSearch, searchTitles, starterTitles, serviceTitles, interleave, splitYear, matchingPeople } from '../js/sources/lookups.js';
 import { buildProfile, explain } from '../js/engine/index.js';
+import { fromAniList } from '../js/sources/anilist.js';
+import * as L from '../js/state/library.js';
 
 const fx = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
 const NOW = Date.parse('2026-10-31T12:00:00Z');
@@ -128,13 +130,14 @@ test('searchTitles without a key searches anime only; a failing source is report
   assert.deepEqual(await serviceTitles('Apple TV+', { tmdb: createTmdb({ key: '' }) }), []);
 });
 
-test('the first-run grid mixes this week, all-time favourites, recent hits and anime', async () => {
+test('the first-run grid mixes this week, all-time favourites, recent hits, every service’s shows and anime', async () => {
   const anime = fx('anilist-deck.json').data.trending.media.slice(0, 3);
   const fetchImpl = fakeFetch([
     ['/trending/movie/week', { results: [film(1, 'This Week Film')] }],
     ['/trending/tv/week', { results: [show(2, 'This Week Show')] }],
     ['primary_release_date.gte', { results: [film(3, 'Oppenheimer'), film(1, 'This Week Film')] }],
     ['first_air_date.gte', { results: [show(4, 'Shrinking')] }],
+    ['with_networks=', (url) => ({ results: [show(10000 + Number(param(url, 'with_networks').split('|')[0]), `Original from network ${param(url, 'with_networks')}`)] })],
     ['/discover/movie', { results: [film(5, 'Inception')] }],
     ['/discover/tv', { results: [show(6, 'Breaking Bad')] }],
     ['graphql.anilist.co', { data: { Page: { media: anime } } }],
@@ -145,7 +148,10 @@ test('the first-run grid mixes this week, all-time favourites, recent hits and a
   const names = grid.map((t) => t.title);
   for (const n of ['This Week Film', 'This Week Show', 'Inception', 'Breaking Bad', 'Oppenheimer', 'Shrinking']) assert.ok(names.includes(n), n);
   assert.equal(new Set(grid.map((t) => t.id)).size, grid.length, 'no repeats');
-  assert.deepEqual(grid.slice(0, 3).map((t) => t.kind), ['film', 'tv', 'anime'], 'films, TV and anime take turns');
+  const original = (t) => /^Original from network/.test(t.title);
+  assert.deepEqual(grid.slice(0, 6).map((t) => (original(t) ? 'service' : t.kind)), ['film', 'service', 'tv', 'service', 'anime', 'service'], 'films, TV, anime and the services take turns');
+  assert.equal(grid.filter(original).length, Object.keys(TMDB_NETWORKS).length, 'every service’s shows are in the grid');
+  assert.ok(grid.slice(0, 24).filter(original).length >= 9, 'most of them in the first screenfuls');
   const recent = fetchImpl.calls.find((c) => c.url.includes('primary_release_date.gte')).url;
   assert.equal(param(recent, 'primary_release_date.gte'), '2023-11-01', 'recent: the last three years');
   assert.equal(param(recent, 'sort_by'), 'vote_count.desc');
@@ -153,7 +159,7 @@ test('the first-run grid mixes this week, all-time favourites, recent hits and a
   fetchImpl.calls.length = 0;
   await starterTitles({ tmdb, anilist, page: 2, now: NOW });
   const tmdbCalls = fetchImpl.calls.filter((c) => c.url.includes('themoviedb'));
-  assert.ok(tmdbCalls.length === 6 && tmdbCalls.every((c) => param(c.url, 'page') === '2'), '"Show more" asks every list for its next page');
+  assert.ok(tmdbCalls.length === 6 + Object.keys(TMDB_NETWORKS).length && tmdbCalls.every((c) => param(c.url, 'page') === '2'), '"Show more" asks every list for its next page');
   assert.equal(JSON.parse(fetchImpl.calls.find((c) => c.url.includes('anilist')).init.body).variables.page, 2);
 
   await assert.rejects(starterTitles({ tmdb: createTmdb({ key: '' }), anilist: createAniList({ fetchImpl: fakeFetch([]) }) }), /Nothing loaded/);
@@ -291,4 +297,36 @@ test('with a page memory, each refill turns every list to its next page', async 
   assert.equal(recentPage(first), '1');
   assert.equal(recentPage(second), '2', 'the next refill asks for the next page');
   assert.ok(second.some((u) => u.includes('/movie/popular') && param(u, 'page') === '2'));
+});
+
+// ---- First-run picks: they steer the deck, and can be reviewed properly ----
+
+test('first-run picks are saved as loved, listed for review, and leave the list once reviewed', () => {
+  const t = fromTmdbList(show(95396, 'Severance'), 'tv');
+  let s = L.logWatch(L.emptyState(NOW), t, { rating: 4.5, setup: true }, NOW);
+  const [pick] = L.setupPicks(s);
+  assert.equal(pick.item.id, 'tmdb:tv:95396');
+  assert.equal(pick.watch.rating, 4.5);
+  assert.equal(pick.watch.setup, true);
+  s = L.updateWatch(s, pick.item.id, pick.watch.id, { rating: 5, tags: ['Gripping'], review: 'Loved it', date: '2024-03-01' }, NOW + 1000);
+  assert.deepEqual(L.setupPicks(s), [], 'reviewed: no longer a setup pick');
+  const w = s.items['tmdb:tv:95396'].watches[0];
+  assert.deepEqual([w.rating, w.review, w.date, 'setup' in w], [5, 'Loved it', '2024-03-01', false]);
+  assert.equal(L.logWatch(L.emptyState(NOW), t, { rating: 4 }, NOW).items['tmdb:tv:95396'].watches[0].setup, undefined, 'a normal "Seen it" isn’t a setup pick');
+  const synced = L.mergeStates(L.logWatch(L.emptyState(NOW), t, { rating: 4.5, setup: true }, NOW), L.emptyState(NOW), NOW);
+  assert.equal(L.setupPicks(synced).length, 1, 'the mark survives sync');
+});
+
+test('first-run picks steer the deck: "more like this" is asked about them', async () => {
+  const picks = [film(27205, 'Inception'), film(157336, 'Interstellar')].map((r) => fromTmdbList(r, 'movie'));
+  const frieren = fromAniList(fx('anilist-frieren.json').data.Media);
+  const s = [...picks, frieren].reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5, setup: true }, NOW), L.emptyState(NOW));
+  const fetchImpl = fakeFetch([['graphql.anilist.co', fx('anilist-deck.json')], ['/discover/', { results: [] }], ['/trending/', { results: [] }], ['/popular', { results: [] }], ['/recommendations', { results: [film(1, 'A Rec')] }]]);
+  const { pool } = await gatherCandidates({ tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: createAniList({ fetchImpl }), items: s.items, profile: buildProfile(s.items, { now: NOW }), settings: {}, now: NOW, rng: () => 0 });
+  const asked = fetchImpl.calls.map((c) => c.url).filter((u) => u.includes('/recommendations'));
+  assert.ok(asked.some((u) => u.includes('/movie/27205/')) && asked.some((u) => u.includes('/movie/157336/')), 'both films seed recommendations');
+  const body = JSON.parse(fetchImpl.calls.find((c) => c.url.includes('anilist')).init.body);
+  assert.deepEqual(body.variables.seeds, [frieren.sourceId], 'and the anime pick seeds AniList’s');
+  const rec = pool.find((t) => t.title === 'A Rec');
+  assert.ok(rec.via.some((v) => v.type === 'seed' && v.seedRating === 4.5), 'cards from them say "Because you loved…"');
 });

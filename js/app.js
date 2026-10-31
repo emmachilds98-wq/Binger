@@ -699,7 +699,7 @@ function logSeen(t) {
 function editWatch(item, watch) {
   openRate(item.title, {
     watch,
-    onSave: (patch) => { store.update(L.updateWatch, item.id, watch.id, patch); toast('Diary updated'); },
+    onSave: (patch) => { store.update(L.updateWatch, item.id, watch.id, patch); toast(watch.setup ? 'Review saved' : 'Diary updated'); },
     onDelete: () => { store.update(L.deleteWatch, item.id, watch.id); toast('Diary entry deleted'); },
   });
 }
@@ -786,7 +786,8 @@ function startOnboarding() {
       if (picks.length) {
         toast('Learning your taste…');
         const full = await hydrate(picks, { tmdb });
-        store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5 }), s));
+        // Loved, until you review them (Library → Diary → "From your first run").
+        store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5, setup: true }), s));
       }
       refill({ force: true });
     },
