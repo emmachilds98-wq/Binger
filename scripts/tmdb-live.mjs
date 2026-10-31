@@ -200,12 +200,14 @@ await step('review scores', async () => {
   const ratings = createRatings({ key: MDBLIST_KEY, fetchImpl: capture });
   const dune = await ratings.forTitle({ source: 'tmdb', sourceId: 693134, mediaType: 'movie' });
   const severance = await ratings.forTitle({ source: 'tmdb', sourceId: 95396, mediaType: 'tv' });
+  const frieren = await ratings.forTitle({ source: 'anilist', sourceId: 154587, malId: 52991 });
   const show = (r) => (r ? Object.entries(r).filter(([k, v]) => v && k !== 'imdbId').map(([k, v]) => `${k} ${v.value}`).join(', ') : 'none');
   console.log(`    sources with a score: ${[...sources].sort().join(', ')}`);
-  console.log(`    Dune: Part Two: ${show(dune)} · Severance: ${show(severance)}`);
+  console.log(`    Dune: Part Two: ${show(dune)} · Severance: ${show(severance)} · Frieren: ${show(frieren)}`);
   check(!!(dune && dune.imdb && dune.critics && dune.imdbId === 'tt15239678'), 'Dune: Part Two has IMDb and Rotten Tomatoes scores, and its IMDb id');
   check(!!(dune && dune.audience), 'and Rotten Tomatoes’ audience score');
   check(!!(severance && severance.imdb), 'Severance (a series) has an IMDb score');
+  check(!!(frieren && frieren.mal), 'Frieren (anime, by its MyAnimeList id) has a MyAnimeList score');
 });
 
 // How far the deck reaches: a few refills with and without the page memory.
@@ -236,6 +238,15 @@ await step('first-run grid', async () => {
   console.log(`    ${grid.length} titles, then ${more.length} more: ${grid.slice(0, 10).map((t) => t.title).join('; ')}`);
   check(grid.length >= 60 && more.filter((t) => !grid.some((g) => g.id === t.id)).length >= 30, 'the first-run grid has 60+ titles and "Show more" brings 30+ new ones');
   check(grid.some((t) => /Breaking Bad|Game of Thrones|Stranger Things|Friends/.test(t.title)), 'it includes the series most people have seen');
+  // Every service's shows are woven in, so the first screenfuls show most of them.
+  const byService = {};
+  for (const [service, networkIds] of Object.entries(TMDB_NETWORKS)) {
+    byService[service] = new Set((await tmdb.discover('tv', { networkIds, sortBy: 'vote_count.desc', minVotes: 50 })).map((t) => t.id));
+  }
+  const early = grid.slice(0, 36);
+  const shown = Object.entries(byService).filter(([, ids]) => early.some((t) => ids.has(t.id))).map(([s]) => s);
+  console.log(`    services in the first 36 tiles: ${shown.join(', ')}`);
+  check(shown.length >= 9, `the first 36 tiles show ${shown.length} of ${Object.keys(TMDB_NETWORKS).length} services’ own shows`);
 });
 
 if (capDir) {

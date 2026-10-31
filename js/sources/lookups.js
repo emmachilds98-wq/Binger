@@ -147,27 +147,63 @@ export async function searchTitles(query, { tmdb, anilist, limit = 40, now = Dat
 
 // ---- First run ---------------------------------------------------------------
 
+// Lists woven by a repeating pattern of their names, skipping repeats and
+// lists that have run out: weave({ a: [1, 2], b: [3] }, ['a', 'b', 'a']) is
+// [1, 3, 2].
+export function weave(queues, pattern) {
+  const out = [];
+  const seen = new Set();
+  const at = Object.fromEntries(Object.keys(queues).map((k) => [k, 0]));
+  const next = (k) => {
+    const q = queues[k] || [];
+    while (at[k] < q.length) {
+      const t = q[at[k]++];
+      if (t && t.id && !seen.has(t.id)) { seen.add(t.id); return t; }
+    }
+    return null;
+  };
+  for (;;) {
+    let any = false;
+    for (const k of pattern) {
+      const t = next(k);
+      if (t) { out.push(t); any = true; }
+    }
+    if (!any) return out;
+  }
+}
+
+// One of every three tiles is a streaming service's own series, the
+// services taking turns, so the first screenful already shows Apple TV+,
+// Netflix, Prime Video, Disney+, the BBC and the rest (the owner's ask:
+// "so you don't miss other streaming services if you don't scroll").
+const GRID_PATTERN = ['film', 'services', 'tv', 'services', 'anime', 'services'];
+
 // "What have you loved?": titles most people will have seen. This week's
 // trending, the films and series with the most ratings on TMDB (the ones
-// nearly everyone has watched), the biggest of the last three years, and
-// the most-watched anime. Films, TV and anime take turns. page 2, 3… for
-// "Show more".
+// nearly everyone has watched), the biggest of the last three years, every
+// streaming service's best-known series, and the most-watched anime, woven
+// together (GRID_PATTERN). page 2, 3… for "Show more".
 export async function starterTitles({ tmdb, anilist, page = 1, now = Date.now() } = {}) {
-  const kinds = [];
+  const jobs = { film: Promise.resolve([]), tv: Promise.resolve([]), services: Promise.resolve([]), anime: Promise.resolve([]) };
   if (tmdb && tmdb.hasKey) {
     const since = isoDay(now - 3 * 365 * DAY);
-    for (const m of ['movie', 'tv']) {
-      kinds.push(Promise.allSettled([
-        tmdb.trending(m, page),
-        tmdb.discover(m, { sortBy: 'vote_count.desc', minVotes: 500, page }),
-        tmdb.discover(m, { sortBy: 'vote_count.desc', minVotes: 100, from: since, page }),
-      ]).then((s) => interleave(settledValues(s))));
-    }
+    const kind = (m) => Promise.allSettled([
+      tmdb.trending(m, page),
+      tmdb.discover(m, { sortBy: 'vote_count.desc', minVotes: 500, page }),
+      tmdb.discover(m, { sortBy: 'vote_count.desc', minVotes: 100, from: since, page }),
+    ]).then((s) => interleave(settledValues(s)));
+    jobs.film = kind('movie');
+    jobs.tv = kind('tv');
+    jobs.services = Promise.allSettled(Object.values(TMDB_NETWORKS).map((networkIds) =>
+      tmdb.discover('tv', { networkIds, sortBy: 'vote_count.desc', minVotes: 50, page }))).then((s) => interleave(settledValues(s)));
   }
-  if (anilist) kinds.push(anilist.popular(page));
-  const lists = settledValues(await Promise.allSettled(kinds)).map((l) => l.filter((t) => !t.animeLike));
-  if (!lists.some((l) => l.length)) throw new Error('Nothing loaded');
-  return interleave(lists);
+  if (anilist) jobs.anime = anilist.popular(page);
+  const names = Object.keys(jobs);
+  const settled = await Promise.allSettled(names.map((k) => jobs[k]));
+  const queues = Object.fromEntries(names.map((k, i) => [k, settled[i].status === 'fulfilled' ? settled[i].value.filter((t) => !t.animeLike) : []]));
+  const grid = weave(queues, GRID_PATTERN);
+  if (!grid.length) throw new Error('Nothing loaded');
+  return grid;
 }
 
 // 'tmdb:p:1190668' or 'anilist:s:112215' -> { person, credits } (or null).

@@ -119,14 +119,17 @@ export function reviewScores(t) {
     r.audience ? { key: 'audience', text: `RT audience ${r.audience.value}%`, url: r.audience.url } : null,
     r.metacritic ? { key: 'metacritic', text: `Metacritic ${r.metacritic.value}`, url: r.metacritic.url } : null,
     r.letterboxd ? { key: 'letterboxd', text: `Letterboxd ${r.letterboxd.value.toFixed(1)}`, url: r.letterboxd.url } : null,
+    r.mal ? { key: 'mal', text: `MyAnimeList ${r.mal.value.toFixed(1)}`, url: r.mal.url } : null,
   ].filter(Boolean);
 }
 
 // The card's one-line score: IMDb and Rotten Tomatoes' audience score (or
-// its critics' score) when known, otherwise TMDB's or AniList's own.
+// its critics' score) when known; for anime, MyAnimeList's; otherwise TMDB's
+// or AniList's own.
 export function cardScore(t) {
   const s = reviewScores(t);
   const pick = [s.find((x) => x.key === 'imdb'), s.find((x) => x.key === 'audience') || s.find((x) => x.key === 'critics')].filter(Boolean);
+  if (!pick.length && s.some((x) => x.key === 'mal')) pick.push({ text: s.find((x) => x.key === 'mal').text.replace('MyAnimeList', 'MAL') });
   return pick.length ? pick.map((x) => x.text).join(' · ') : publicScore(t);
 }
 

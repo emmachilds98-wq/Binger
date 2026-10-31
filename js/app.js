@@ -10,7 +10,7 @@ import { createCache, createMemoryCache } from './state/cache.js';
 import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
 import { createRatings } from './sources/ratings.js';
-import { gatherCandidates, hydrate } from './sources/candidates.js';
+import { gatherCandidates, hydrate, needsHydrating } from './sources/candidates.js';
 import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
 import { openDetail, detailPanel } from './ui/detail.js';
@@ -104,7 +104,7 @@ function makeSources() {
 }
 
 async function enrich(t) {
-  if (t.detailed) return t;
+  if (!needsHydrating(t, { tmdb, ratings })) return t;
   const [full] = await hydrate([t], { tmdb, ratings });
   return full;
 }
@@ -189,12 +189,12 @@ async function refill({ force = false } = {}) {
 // round again (a few times at most) until the next few cards are all known.
 async function ensureDetails() {
   for (let round = 0; round < 3; round++) {
-    const need = deck.cards.slice(0, DETAIL_AHEAD).map((c) => c.title).filter((t) => t.source === 'tmdb' && !t.detailed);
+    const need = deck.cards.slice(0, DETAIL_AHEAD).map((c) => c.title).filter((t) => needsHydrating(t, { tmdb, ratings }));
     if (!need.length) return;
     const full = await hydrate(need, { tmdb, ratings });
     let changed = false;
-    for (const t of full) {
-      if (!t.detailed) continue;
+    for (const [i, t] of full.entries()) {
+      if (t === need[i]) continue; // nothing came back for it
       if (t.animeLike) deck.pool.delete(t.id); else deck.pool.set(t.id, t);
       changed = true;
     }
@@ -656,7 +656,7 @@ function detailCtx(title, card) {
     settings: store.get().settings,
     loadDetails: (t) => (t.source === 'tmdb'
       ? (tmdb.hasKey ? withScores(tmdb.details(t.mediaType, t.sourceId), t) : Promise.resolve(null))
-      : (t.detailed ? Promise.resolve(null) : anilist.details(t.sourceId))),
+      : withScores(t.detailed ? Promise.resolve(null) : anilist.details(t.sourceId), t)),
     onWant: (t) => (card ? deckAction('right', { ...card, title: { ...t, via: card.title.via } }) : addToWatchlist(t)),
     onPass: card ? (t) => deckAction('left', { ...card, title: { ...t, via: card.title.via } }) : null,
     onSeen: (t) => (card ? deckAction('up', { ...card, title: { ...t, via: card.title.via } }) : logSeen(t)),
@@ -668,11 +668,13 @@ function detailCtx(title, card) {
   };
 }
 
-// Details from TMDB plus review scores, fetched side by side; a failure to
-// get scores never holds up the details.
+// Details plus review scores, fetched side by side; a failure to get scores
+// never holds up the details. Scores alone when there are no new details
+// (anime that arrived complete).
 async function withScores(details, t) {
   const [d, scores] = await Promise.all([details, ratings && ratings.hasKey ? ratings.forTitle(t).catch(() => null) : null]);
-  return d && scores ? { ...d, ratings: scores } : d;
+  if (!scores) return d;
+  return { ...(d || {}), ratings: scores };
 }
 
 function showDetail(title, { card = null } = {}) {
@@ -697,7 +699,7 @@ function logSeen(t) {
 function editWatch(item, watch) {
   openRate(item.title, {
     watch,
-    onSave: (patch) => { store.update(L.updateWatch, item.id, watch.id, patch); toast('Diary updated'); },
+    onSave: (patch) => { store.update(L.updateWatch, item.id, watch.id, patch); toast(watch.setup ? 'Review saved' : 'Diary updated'); },
     onDelete: () => { store.update(L.deleteWatch, item.id, watch.id); toast('Diary entry deleted'); },
   });
 }
@@ -784,7 +786,8 @@ function startOnboarding() {
       if (picks.length) {
         toast('Learning your taste…');
         const full = await hydrate(picks, { tmdb });
-        store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5 }), s));
+        // Loved, until you review them (Library → Diary → "From your first run").
+        store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5, setup: true }), s));
       }
       refill({ force: true });
     },
