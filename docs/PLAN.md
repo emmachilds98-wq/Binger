@@ -13,6 +13,7 @@ and the decisions that shouldn't be quietly undone. Update the
 - Look and feel: [DESIGN.md](DESIGN.md)
 - Rules for anyone (human or agent) changing the code: [../CLAUDE.md](../CLAUDE.md)
 - Screenshots from the last end-to-end run: [screenshots/](screenshots/)
+- Upgrade plan for PC and mobile (milestones M0 to M7, after Phase 2): [UPGRADE-PLAN.md](UPGRADE-PLAN.md)
 
 ---
 
@@ -318,6 +319,11 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - e2e: write a library with past-dated ratings into localStorage, reload,
   check rows and trend words. Screenshot `12-taste-time`.
 
+### After Phase 2: PC and mobile upgrade
+The 2026-10-31 review's plan: mobile polish, a real desktop layout, one
+library across devices, films and TV without a key, importing history.
+Milestones and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
+
 ### Phase 3: Grows with you everywhere
 - [ ] Optional sync across devices (Firebase Auth + Firestore, as in the owner's other apps)
 - [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
@@ -333,6 +339,23 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31: review + upgrade plan for PC and mobile
+- The owner asked for a review, the link to view the app, and a plan to make it
+  better on PC and mobile. No app code changed.
+- Checked: `npm run check` passes, `npm test` 94/94, `npm run e2e` 49/49 on
+  this branch (same code as PR #2's head, `e653bbb`).
+- Still not live: `https://emmachilds98-wq.github.io/Binger/` returns 404, the
+  default branch is still `claude/happy-cerf-qei1lg`, and PR #2 is unmerged.
+- Looked at the app at 1440×900, 1024×768 and 360×640: on a PC or tablet it
+  stays a 480 px phone column; on a small phone onboarding fits, and card cast
+  names cut off early.
+- Wrote [UPGRADE-PLAN.md](UPGRADE-PLAN.md): M0 go live, M1 finish Phase 2,
+  M2 mobile polish, M3 desktop layout (canvas first), M4 sync across devices,
+  M5 films/TV without a key, M6 import + "Tonight", M7 e2e at three sizes.
+- **Blocking (unchanged):** going live needs the owner (M0); live TMDB
+  verification needs `TMDB_API_KEY`.
+- **Next:** M0, then Phase 2 step 3, "Not this franchise".
 
 ### 2026-10-18 (fourth session): Phase 2 steps 1 and 2, services and people
 - Picked up from PR #2 (this session's own handover PR, still open).
