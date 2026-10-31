@@ -7,6 +7,7 @@ import { startSync, createHousehold, joinHousehold, findHousehold } from '../js/
 import { createStore } from '../js/state/store.js';
 import * as L from '../js/state/library.js';
 import { defaultProfiles, renameProfile, addProfile, claimProfile, parseCode, formatCode, parseFirebaseConfig } from '../js/state/profiles.js';
+import { authMessage } from '../js/sync/firebase.js';
 
 function fakeCloud() {
   const docs = new Map();
@@ -117,4 +118,11 @@ test('invite codes and Firebase config are read from what people actually paste'
   const two = addProfile(defaultProfiles(), { name: 'Dave' });
   assert.equal(two.list.length, 2);
   assert.notEqual(two.list[0].key, two.list[1].key, 'each person has their own library');
+});
+
+test('Firebase errors people actually hit are said in plain words', () => {
+  assert.match(authMessage({ code: 'auth/configuration-not-found' }), /Authentication → Get started/);
+  assert.match(authMessage({ code: 'auth/unauthorized-domain' }), /Authorised domains/);
+  assert.match(authMessage({ code: 'permission-denied' }), /security rules/);
+  assert.equal(authMessage({ code: 'auth/something-new' }), 'Something went wrong (auth/something-new).');
 });

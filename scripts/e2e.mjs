@@ -100,6 +100,9 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   }
   return json({ results: [] });
 });
+// js/config.js names the owner's real Firebase project. This run must never
+// talk to it (sync is tested against the emulators: npm run e2e:sync).
+await context.route(/^https:\/\/(identitytoolkit|securetoken|firestore|firebase[a-z]*)\.googleapis\.com\//, (route) => route.abort());
 await context.route(/youtube-nocookie\.com/, (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<body style="margin:0;background:#000;color:#888;font:14px sans-serif;display:grid;place-items:center;height:100vh">[YouTube trailer clip]</body>' }));
 
 async function shot(name) {

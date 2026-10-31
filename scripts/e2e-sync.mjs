@@ -47,6 +47,7 @@ const frieren = fx('anilist-frieren.json');
 const allAnime = Object.values(deckFx.data).flatMap((p) => p.media.flatMap((m) => (m.recommendations ? m.recommendations.nodes.map((n) => n.mediaRecommendation) : [m])));
 
 const failures = [];
+const realFirebase = [];
 function check(cond, msg) {
   if (cond) console.log(`  ✓ ${msg}`);
   else { console.log(`  ✗ ${msg}`); failures.push(msg); }
@@ -78,6 +79,8 @@ async function person(label) {
     return route.fulfill({ status: 200, contentType: 'application/json', body: url.pathname === '/3/configuration' ? '{"images":{}}' : '{"results":[]}' });
   });
   await context.route(/youtube-nocookie\.com/, (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '' }));
+  // Only the emulators: never the real project named in js/config.js.
+  await context.route(/^https:\/\/(identitytoolkit|securetoken|firestore|firebase[a-z]*)\.googleapis\.com\//, (route) => { realFirebase.push(route.request().url()); return route.abort(); });
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(`${label}: ${e.message}`));
@@ -287,6 +290,7 @@ check(await st(as(mallory, 'PATCH', `households/${code}?updateMask.fieldPaths=me
 check(await st(as(mallory, 'PATCH', `households/${code}?updateMask.fieldPaths=members`, withMembers([mallory, 'friend-uid']))) === 403, 'or add anyone but yourself');
 check(await st(as(mallory, 'PATCH', `households/${code}?updateMask.fieldPaths=members`, { fields: { members: { arrayValue: { values: [{ stringValue: mallory }] } } } })) === 403, 'or remove the people already in it');
 
+check(realFirebase.length === 0, `nothing reached the real Firebase project${realFirebase.length ? ': ' + realFirebase[0] : ''}`);
 const errors = [...emma.errors, ...dave.errors, ...laptop.errors, ...stranger.errors];
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

@@ -49,9 +49,9 @@ sessions had access to it, so this is the one piece that needs a person.
 - [ ] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
       (web app, Google + Email sign-in, authorised domain
       `emmachilds98-wq.github.io`, Firestore, publish `firestore.rules`).
-- [ ] Put the web config in `js/config.js` → `firebase: { … }` (it isn't a
-      secret; see FIREBASE.md §2). Update the shell test if you want to
-      assert its shape.
+- [x] Put the web config in `js/config.js` → `firebase: { … }` (project
+      `binger-5cee3`, 2026-10-31). A shell test checks its shape, and that
+      it never points at the emulators.
 - [ ] Do the [live check on the real project](FIREBASE.md#on-the-real-project)
       with two browsers. The emulator run covers the code and rules, so what
       this tests is the console setup (sign-in methods, authorised domain,

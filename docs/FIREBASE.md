@@ -14,7 +14,13 @@ the owner's project itself: the console steps below and its web config.
 
 ## 1. In the Firebase console (the owner, once, about 10 minutes)
 
-The project already exists: **binger**.
+The project already exists: **binger** (project id `binger-5cee3`), and
+its web config is in `js/config.js`.
+
+**Where it stood on 2026-10-31** (checked from outside with the web API key,
+read-only): step 1 done; step 2 not yet (Firebase answered
+`CONFIGURATION_NOT_FOUND`, meaning Authentication hasn't been started); step 4
+not yet (no Firestore database). Steps 3 and 5 follow from those.
 
 1. **Add a web app.** ⚙ Project settings → General → Your apps → `</>` (Web).
    Nickname "Binger". No Firebase Hosting needed (the app is on GitHub Pages).
@@ -31,7 +37,7 @@ The project already exists: **binger**.
    These let only household members read a household, and let someone with
    an invite code add only themselves.
    (Or from a terminal in this repo: `npx firebase-tools@15.34.2 login`, then
-   `npx firebase-tools@15.34.2 deploy --only firestore:rules --project <your project id>`;
+   `npx firebase-tools@15.34.2 deploy --only firestore:rules --project binger-5cee3`;
    `firebase.json` already points at `firestore.rules`.)
 
 ## 2. Put the config in the app

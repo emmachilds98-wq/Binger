@@ -70,6 +70,7 @@ export function authMessage(err) {
   if (/invalid-email/.test(code)) return 'That doesn’t look like an email address.';
   if (/unauthorized-domain/.test(code)) return 'Firebase doesn’t allow sign-in from this address yet. Add it under Authentication → Settings → Authorised domains.';
   if (/operation-not-allowed/.test(code)) return 'That sign-in method is switched off in Firebase (Authentication → Sign-in method).';
+  if (/configuration-not-found/.test(code)) return 'Sign-in isn’t set up in Firebase yet (Authentication → Get started, then switch on Google and Email).';
   if (/permission-denied/.test(code)) return 'Firebase refused: check the security rules are published (docs/FIREBASE.md).';
   if (/network|unavailable/.test(code)) return 'Couldn’t reach Firebase. Check your connection.';
   if (/popup-closed-by-user|cancelled-popup/.test(code)) return 'Sign-in was cancelled.';

@@ -8,5 +8,13 @@ export const CONFIG = {
   // devices (docs/FIREBASE.md). Unlike the TMDB key this isn't a secret:
   // anyone can see it in the page, and the security rules (firestore.rules)
   // decide who can read what. With it here, nobody has to paste it.
-  firebase: null,
+  // The owner's project, "binger" (binger-5cee3).
+  firebase: {
+    apiKey: 'AIzaSyBRfDd9tazgdV1nmlYUld7Es3w1RTo19Tc',
+    authDomain: 'binger-5cee3.firebaseapp.com',
+    projectId: 'binger-5cee3',
+    storageBucket: 'binger-5cee3.firebasestorage.app',
+    messagingSenderId: '640583447200',
+    appId: '1:640583447200:web:9c7391f589cee672618fc5',
+  },
 };

@@ -31,7 +31,7 @@ Where things stand on 2026-10-31 (third session):
 - **Open PRs:** #2 (steps 1–2) is inside #3 (`claude/inspiring-ride-ieuekd`,
   Phase 2 + people + sync), which is inside #4 (`claude/firebase-upgrades`,
   this session: the emulator run and two sync fixes). Merging #4 merges all of it.
-- **Checks:** `npm test` 102 passing, `npm run e2e` all passing,
+- **Checks:** `npm test` 104 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
@@ -45,11 +45,11 @@ Do these in order:
    started, so that session couldn't see it). Do [Verifying TMDB live](#verifying-tmdb-live)
    first. It has been blocked four times, and Phase 2 adds four TMDB endpoints
    that are still tested only against hand-written responses.
-3. **Firebase: ask the owner for the web config** of their "binger" project
-   (Project settings → Your apps → Web app → `firebaseConfig`; not a secret)
-   and which console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
-   are done. Put it in `js/config.js` → `firebase`, then do the
-   [live check on the real project](FIREBASE.md#on-the-real-project).
+3. **Firebase:** the project's web config is in `js/config.js` (`binger-5cee3`).
+   Ask the owner whether the remaining console steps in
+   [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
+   are done (on 2026-10-31 Authentication wasn't started and there was no
+   Firestore database), then do the [live check on the real project](FIREBASE.md#on-the-real-project).
 4. Then [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order):
    2. a proper PC layout (design first), 3. films and TV for everyone,
    4. mobile polish.
@@ -378,13 +378,21 @@ Newest first. One entry per working session: what changed, what's next, what's b
   that code."; a stranger can't read a household, a library or `users/{uid}`,
   overwrite a library, create a household for someone else, or join while
   changing anything but adding themselves. No script errors.
+- Then the owner sent the project's web config (`binger-5cee3`); it's in
+  `js/config.js`, so every device connects with nothing to paste. A config
+  pasted on a device now wins over the deployment's (like the TMDB key; it's
+  also how the sync test reaches the emulators). Both browser runs block
+  Firebase's real backends, and the sync run checks nothing reached them.
+  The email field had no input styling (now matches the others). Read-only
+  check of the project: web app done; Authentication not started yet; no
+  Firestore database yet (FIREBASE.md §1 has the steps).
 - Not done: the PC layout, the TMDB proxy and mobile polish (the owner asked
   to finish this round and continue in a new chat). `TMDB_API_KEY` was added
   to the secrets mid-session, but a running container doesn't pick up new
   secrets, so the live TMDB check waits for the next session.
-- Tests: 102 unit, e2e all passing, sync 34/34.
-- **Next:** see Start here: TMDB live check, then the owner's Firebase web
-  config, then the PC layout.
+- Tests: 104 unit (was 102), e2e all passing, sync 34/34.
+- **Next:** see Start here: TMDB live check, then the owner's Firebase
+  console steps and the live check on the real project, then the PC layout.
 
 ### 2026-10-31 (second session): Phase 2 finished, people and sync
 - The owner turned on Pages (live from `main`) and asked for: the upgrades,

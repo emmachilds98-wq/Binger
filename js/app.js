@@ -439,8 +439,10 @@ function writeLibrary(key, state) {
   try { localStorage.setItem(key, JSON.stringify(state)); } catch { toast('Couldn’t save: this browser’s storage is full or blocked.'); }
 }
 
+// A config pasted on this device wins over the deployment's, like the TMDB
+// key (and it's how the sync test points the app at the emulators).
 function firebaseConfig() {
-  return CONFIG.firebase || device.firebase || null;
+  return device.firebase || CONFIG.firebase || null;
 }
 
 function refreshPeople() {
@@ -560,7 +562,7 @@ function showPeople() {
     get: () => ({
       profiles: device.profiles,
       hasConfig: !!firebaseConfig(),
-      configFromDeploy: !!CONFIG.firebase,
+      configFromDeploy: !device.firebase && !!CONFIG.firebase,
       user: sync.user,
       household: device.household && sync.user ? device.household : null,
       status: sync.status,
