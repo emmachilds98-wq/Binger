@@ -1,0 +1,68 @@
+name: Deploy site
+
+# Publishes main to GitHub Pages with the TMDB key built in from the
+# repository secret (scripts/build-site.mjs), so films and TV work for
+# everyone without pasting a key. The repository itself never holds the key.
+#
+# Needs, once, in the repository settings (docs/PLAN.md → Phase 1.1):
+#   Settings → Pages → Build and deployment → Source: GitHub Actions
+#   Settings → General → Default branch: main
+# Until Pages is switched to GitHub Actions, this skips with a note and Pages
+# keeps serving main as it is (without a built-in key).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.pages.outputs.mode }}
+    steps:
+      - name: How does Pages deploy?
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mode=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" | jq -r '.build_type // ""' || true)
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          if [ "$mode" != "workflow" ]; then
+            echo "::warning::GitHub Pages deploys straight from a branch (${mode:-unknown}), so the TMDB key can't be built in yet. Owner, once: Settings → Pages → Source: GitHub Actions, then re-run this workflow."
+          fi
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.mode == 'workflow'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      # Whichever name the secret was saved under. GitHub masks it in logs.
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY || secrets.TMDB_KEY || secrets.TMDB_TOKEN || secrets.TMDB }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Checks
+        run: npm run check && npm test
+      - name: Build the site, with the TMDB key
+        run: node scripts/build-site.mjs _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

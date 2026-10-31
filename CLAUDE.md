@@ -59,7 +59,8 @@ a top-level call it's reachable from throws a TDZ `ReferenceError` at load.
 
 ## Safety
 
-- Never commit an API key. `js/config.js` must keep `tmdbKey: ''` (tested).
+- Never commit an API key. `js/config.js` must keep `tmdbKey: ''`, and
+  nothing shaped like a TMDB key or token may be committed anywhere (both tested).
   The Firebase web config is the exception: it isn't a secret (the rules in
   `firestore.rules` protect the data), so it may go in `config.firebase`.
   Keys go in the app's Settings (per device) or in a session's environment

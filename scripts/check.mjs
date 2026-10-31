@@ -10,7 +10,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
 export function jsFiles(dir = ROOT, out = []) {
   for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name.startsWith('.')) continue;
+    if (name === 'node_modules' || name === '_site' || name.startsWith('.')) continue;
     const p = join(dir, name);
     if (statSync(p).isDirectory()) jsFiles(p, out);
     else if (/\.(m?js)$/.test(name)) out.push(p);

@@ -254,9 +254,15 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
     },
     // providerIds: only titles included with these services (subscription or
     // free) in your region. runtimeMax: films under N minutes.
-    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null, providerIds = [], runtimeMax = null, sortBy = 'popularity.desc' } = {}) {
+    // originalLanguage, minScore, maxVotes and withoutGenreIds reach past
+    // what's popular: classics, hidden gems, films from other countries.
+    async discover(mediaType, { genreIds = [], page = 1, minVotes = 150, from = null, to = null, airingFrom = null, airingTo = null, providerIds = [], runtimeMax = null, sortBy = 'popularity.desc', originalLanguage = null, minScore = null, maxVotes = null, withoutGenreIds = [] } = {}) {
       const p = { sort_by: sortBy, include_adult: 'false', page, 'vote_count.gte': minVotes };
       if (genreIds.length) p.with_genres = [...new Set(genreIds)].join('|');
+      if (withoutGenreIds.length) p.without_genres = [...new Set(withoutGenreIds)].join(',');
+      if (originalLanguage) p.with_original_language = originalLanguage;
+      if (minScore) p['vote_average.gte'] = minScore;
+      if (maxVotes) p['vote_count.lte'] = maxVotes;
       if (providerIds.length) {
         p.with_watch_providers = [...new Set(providerIds)].sort((a, b) => a - b).join('|');
         p.watch_region = region;

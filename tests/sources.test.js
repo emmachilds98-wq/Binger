@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fromTmdbList, fromTmdbDetail, pickTrailer, authFor, createTmdb, isAnimeLike } from '../js/sources/tmdb.js';
 import { fromAniList, cleanDescription, parseDeckBatch, seasonOf, createAniList } from '../js/sources/anilist.js';
 import { canonicalGenres, tmdbGenreNames, canonToAniList } from '../js/sources/genres.js';
-import { gatherCandidates, hydrate, pickSeeds, sequelIdsToFetch } from '../js/sources/candidates.js';
+import { gatherCandidates, hydrate, pickSeeds, sequelIdsToFetch, widerPull } from '../js/sources/candidates.js';
 import { cached } from '../js/sources/http.js';
 import { buildProfile } from '../js/engine/index.js';
 
@@ -185,6 +185,44 @@ test('gatherCandidates merges sources, drops TMDB anime, applies the sequel rule
   // The seed request asked AniList for recommendations off Frieren.
   const body = JSON.parse(fetchImpl.calls.find((c) => c.url.includes('anilist')).init.body);
   assert.deepEqual(body.variables.seeds, [154587]);
+});
+
+test('a "wider" pull reaches past what\'s popular: classics, hidden gems, other countries', () => {
+  const seq = (...xs) => () => xs.shift() ?? 0;
+  const classic = widerPull('movie', seq(0, 0));
+  assert.equal(classic.mode, 'acclaimed');
+  assert.equal(classic.params.sortBy, 'vote_average.desc');
+  assert.ok(classic.params.minVotes >= 1000, 'only titles enough people have rated');
+  const gem = widerPull('tv', seq(0.4, 0));
+  assert.equal(gem.mode, 'gems');
+  assert.ok(gem.params.maxVotes && gem.params.minScore, 'well rated, by fewer people');
+  assert.ok(gem.params.withoutGenreIds.includes(10767), 'no talk shows');
+  const korean = widerPull('tv', seq(0.9, 0, 0));
+  assert.equal(korean.params.originalLanguage, 'ko');
+  assert.equal(korean.label, 'A Korean series, from further afield');
+  const japanese = widerPull('movie', seq(0.9, 8 / 12, 0));
+  assert.equal(japanese.params.originalLanguage, 'ja');
+  assert.ok(japanese.params.withoutGenreIds.includes(16), 'Japanese animation is AniList\'s job');
+});
+
+test('gatherCandidates asks TMDB for one wider pull per kind, and marks what it found', async () => {
+  const trending = fx('tmdb-trending-movie.json');
+  const fetchImpl = fakeFetch([
+    ['graphql.anilist.co', fx('anilist-deck.json')],
+    ['vote_average.desc', trending],
+    ['/discover/', { results: [] }],
+    ['/trending/', { results: [] }],
+    ['/popular', { results: [] }],
+  ]);
+  const { pool, errors } = await gatherCandidates({
+    tmdb: createTmdb({ key: 'k', fetchImpl }), anilist: createAniList({ fetchImpl }), items: {},
+    profile: buildProfile([], { now: NOW }), settings: {}, now: NOW, rng: () => 0,
+  });
+  assert.deepEqual(errors, []);
+  const asked = fetchImpl.calls.map((c) => c.url).filter((u) => u.includes('vote_average.desc'));
+  assert.equal(asked.length, 2, 'one for films, one for TV');
+  const dune = pool.find((t) => t.id === 'tmdb:movie:693134');
+  assert.deepEqual(dune.via.find((v) => v.type === 'wider'), { type: 'wider', label: 'Acclaimed: among TMDB’s best rated' });
 });
 
 test('gatherCandidates without a TMDB key still returns anime, and reports nothing as an error', async () => {

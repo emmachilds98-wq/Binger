@@ -17,6 +17,8 @@ export function loadDevice(storage = globalThis.localStorage) {
     tmdbKey: typeof d.tmdbKey === 'string' ? d.tmdbKey : '',
     firebase: isObj(d.firebase) ? d.firebase : null,
     household: typeof d.household === 'string' ? d.household : null,
+    // The welcome ("What should we call you?") has been shown on this device.
+    welcomed: d.welcomed === true,
   };
 }
 

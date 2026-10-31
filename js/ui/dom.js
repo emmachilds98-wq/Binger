@@ -59,6 +59,7 @@ const PATHS = {
   upload: '<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>',
   sparkle: '<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.8 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
   stop: '<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>',
+  people: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17" cy="9" r="2.8"/><path d="M16 14.2c2.9.1 5 2.2 5.5 5.3"/>',
 };
 
 export function icon(name, size = 22) {

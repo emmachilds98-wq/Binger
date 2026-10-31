@@ -74,6 +74,8 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3, ser
     push('stream', on.length ? `On ${on.slice(0, 2).join(' and ')}` : 'On one of your services');
   }
   if (out.length < max && viaOf(title, 'trending')) push('trending', 'Trending this week');
+  // Reached by a "wider" pull (js/sources/candidates.js): say how.
+  if (out.length < max && viaOf(title, 'wider')) push('explore', viaOf(title, 'wider').label);
   if (!out.length) push('quality', scored.quality > 0.3 ? 'Highly rated' : 'Popular right now');
   return out.slice(0, max);
 }

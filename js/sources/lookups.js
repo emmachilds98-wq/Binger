@@ -2,7 +2,7 @@
 // a person's work, a whole franchise, the streaming services you can pick,
 // and new seasons of shows you've watched.
 
-import { COMMON_SERVICES } from './services.js';
+import { COMMON_SERVICES, isStoreOnly } from './services.js';
 import { mapLimit } from './http.js';
 import { seasonAlerts, showsToCheck } from '../engine/index.js';
 
@@ -57,6 +57,7 @@ export async function serviceChoices({ tmdb, picked = [] }) {
     const best = new Map();
     for (const list of lists) {
       list.forEach((p, i) => {
+        if (isStoreOnly(p.service)) return;
         const had = best.get(p.service);
         if (!had) best.set(p.service, { service: p.service, logo: p.logo || null, rank: i });
         else { had.rank = Math.min(had.rank, i); had.logo = had.logo || p.logo || null; }

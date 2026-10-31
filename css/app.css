@@ -467,6 +467,12 @@ button.cast-item:hover .cast-name { text-decoration: underline; }
 .who-tile.is-current .who-avatar { box-shadow: 0 0 0 3px var(--accent); }
 .who-tile-name { font-weight: 700; font-size: 16px; }
 .who-body .switch-row { max-width: 360px; }
+/* The welcome on a first visit: "Who's this?" (same screen family as "Who's watching?"). */
+.welcome-body { gap: 14px; }
+.welcome-body .page-title { margin-bottom: 6px; }
+.welcome-body input { width: 100%; max-width: 360px; text-align: center; font-size: 18px; }
+.welcome-body .small { max-width: 360px; }
+.welcome-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; margin-top: 6px; }
 .people-body { display: flex; flex-direction: column; gap: 22px; padding-top: 8px; }
 .person-row { gap: 10px; }
 .sync-status { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; }

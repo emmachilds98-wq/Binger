@@ -39,11 +39,9 @@ Do these in order:
 
 1. Run `npm run check && npm test && npm run e2e` to confirm a green start
    (and `npm run e2e:sync` if Java is installed; see [FIREBASE.md](FIREBASE.md#on-the-emulators-no-firebase-project-needed)).
-2. **The TMDB key is now in the environment's secrets** (`TMDB_API_KEY`; the
-   owner added it on 2026-10-31, after the third session's container had
-   started, so that session couldn't see it). Do [Verifying TMDB live](#verifying-tmdb-live)
-   first. It has been blocked four times, and Phase 2 adds four TMDB endpoints
-   that are still tested only against hand-written responses.
+2. **TMDB is verified live**, in GitHub Actions with the repository secret
+   (`.github/workflows/tmdb-live.yml`, weekly and on adapter changes). If that
+   workflow goes red, TMDB changed: read its log, fix `js/sources/tmdb.js`.
 3. **Firebase is connected and live-checked** (`binger-5cee3`, config in
    `js/config.js`, console steps done, [live check passed](FIREBASE.md#on-the-real-project)).
    Only Google sign-in is untested by script: ask the owner to try it once.
@@ -128,10 +126,16 @@ Everything technical you need is in this file,
 3. **Anime comes only from AniList.** TMDB also lists Japanese animation; those
    are dropped so nothing appears twice. AniList has better anime data (studios,
    voice cast, seasons, sequel links).
-4. **TMDB needs a free key; it is never committed.** Each device pastes it once
-   in Settings (stored only in that browser). `js/config.js` can hold a
-   deployment-wide key, but only if the repo is private; a test fails if one
-   is committed. Without a key the app still works, anime-only.
+4. **The TMDB key is never committed, but it is built into the deployed
+   site** (the owner's choice, 2026-10-31: nobody should have to paste a key).
+   The deploy workflow (`.github/workflows/pages.yml` → `scripts/build-site.mjs`)
+   writes the repository secret into the published copy of `js/config.js`
+   only; the repo keeps `tmdbKey: ''`, and a test fails if anything shaped
+   like a TMDB key is committed anywhere. The key is readable by anyone who
+   opens the site, as any key a browser uses is. Accepted for a free,
+   read-only key; if it's ever abused, make a new key at TMDB and update the
+   secret, or move it behind a proxy (UPGRADE-PLAN step 3). A key pasted in
+   Settings still wins. Without any key the app still works, anime-only.
 5. **Local-first library.** Everything you do lives in the browser
    (localStorage), with Export/Import for backup. No account needed. Cross-device
    sync is Phase 3.
@@ -203,17 +207,20 @@ Everything technical you need is in this file,
 
 ### Phase 1.1: Go live (needs the owner) ⏳
 - [x] Merge the first PR into `main`
-- [ ] Set the default branch to `main`: repo **Settings → General → Default branch**
-      (it's still `claude/happy-cerf-qei1lg`, the first build's working branch)
+- [x] Set the default branch to `main` (done by the owner, 2026-10-31)
+- [ ] **Build the TMDB key into the site:** repo **Settings → Pages → Build and
+      deployment → Source: GitHub Actions**, then Actions → "Deploy site" → Run
+      workflow (or push to `main`). Until then "Deploy site" skips with a note
+      and Pages serves `main` without a built-in key.
 - [x] Switch on GitHub Pages (on by 2026-10-31, from `main`): repo **Settings → Pages → Build and deployment →
       Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
       The app appears at `https://emmachilds98-wq.github.io/Binger/`
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
 - [ ] Add to Home Screen (Safari: Share → Add to Home Screen). On iPhone this
       also stops Safari clearing the library after 7 days unused.
-- [ ] **Verify films and TV against the live TMDB API.** Still not done: the
-      `TMDB_API_KEY` secret wasn't present in any of the three sessions so far. Steps in
-      [Verifying TMDB live](#verifying-tmdb-live).
+- [x] **Verify films and TV against the live TMDB API** (2026-10-31, in GitHub
+      Actions with the repository secret; now weekly and on every adapter
+      change: [Verifying TMDB live](#verifying-tmdb-live)).
 
 ### Phase 2: Smarter suggestions ✅
 
@@ -345,6 +352,37 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session, final): built-in TMDB key, wider deck, welcome
+- The owner asked for films and TV with no key to paste, for wider coverage,
+  and for Binger to ask who you are on entering so friends can sync; then
+  merge and send the link. Also: no secrets in `config.js`.
+- **Built-in key, never committed:** `scripts/build-site.mjs` + the "Deploy
+  site" workflow build the site with the repository secret written into the
+  published `config.js` only (after checking TMDB accepts it). Decision 4
+  updated. Needs one owner click: Pages → Source: GitHub Actions (Phase 1.1).
+- **Wider deck:** each refill adds one "wider" TMDB pull for films and one for
+  TV (`widerPull` in `candidates.js`): all-time acclaimed, hidden gems (well
+  rated, fewer votes), or a film or series in one of 12 other languages. Cards
+  say so ("A Korean series, from further afield"). Your profile still ranks them.
+- **Welcome:** a first visit asks "Who's this?" (name) with "Sync with friends"
+  (opens sign-in over the first run) or "Just me for now". Skipped for invite
+  links and devices already in a household; asked once per device.
+- Fixed: the tablet e2e check measured before the re-render that follows a
+  resize (it now waits for it).
+- Tests: 108 unit; e2e and e2e:sync passing; screenshot `20-welcome`.
+
+### 2026-10-31 (third session, last): TMDB verified live
+- PC layout merged (#5). The owner added the TMDB key as a GitHub repository
+  secret, so the live TMDB check now runs in GitHub Actions
+  (`scripts/tmdb-live.mjs`, `.github/workflows/tmdb-live.yml`), no session
+  secret needed. First real contact between the adapter and TMDB: shapes all
+  match the fixtures.
+- Fixed from what it found: Apple's rename (TMDB "Apple TV" is Binger's
+  "Apple TV+" again, so stream-only stops hiding Apple shows); shops filtered
+  out of the services picker (`isStoreOnly` in `services.js`). Tests: 105.
+- **Next:** UPGRADE-PLAN step 3's proxy (films and TV for visitors without a
+  key) needs the owner's Cloudflare account; then step 4, mobile polish.
 
 ### 2026-10-31 (third session, later): PC layout
 - After #4 merged, the owner asked to carry on and merge to `main`. Built the
@@ -552,7 +590,24 @@ Newest first. One entry per working session: what changed, what's next, what's b
 
 ## Verifying TMDB live
 
-In a session where `TMDB_API_KEY` is set:
+**Automatic:** `.github/workflows/tmdb-live.yml` runs `scripts/tmdb-live.mjs`
+with the repository's `TMDB_API_KEY` secret whenever the TMDB adapter changes,
+every Monday, and on demand (Actions → TMDB live → Run workflow). It asks TMDB
+for the titles the fixtures describe, runs both through the adapter and
+compares the normalised shapes, and uploads trimmed raw captures as an
+artifact (`tmdb-live-captures`) for replacing fixtures. Locally, with the key
+in your environment: `npm run tmdb:live`.
+
+First run, 2026-10-31: everything matched (trending, film and TV details,
+GB providers, a person, a collection, discover by service + length + decade),
+and it turned up two things, both fixed: TMDB now calls Apple TV+ "Apple TV"
+(Apple's 2025 rename), which stopped "only what I can stream" matching Apple
+shows for anyone who'd picked Apple TV+; and GB's provider list now includes
+shops ("Apple TV Store", "JustWatch TV Store"), now kept out of the services
+picker. Severance's season 3 is listed with no date yet; new-season alerts
+wait for a date, which is the intended behaviour.
+
+By hand, in a session where `TMDB_API_KEY` is set:
 
 ```bash
 # 1. The key works

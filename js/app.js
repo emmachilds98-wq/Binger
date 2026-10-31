@@ -32,7 +32,7 @@ import {
 } from './state/profiles.js';
 import { connectFirebase, authMessage } from './sync/firebase.js';
 import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
-import { openWhoIsWatching, openPeople, askName, shareOrCopy } from './ui/people.js';
+import { openWhoIsWatching, openPeople, openWelcome, askName, shareOrCopy } from './ui/people.js';
 import { openShortcuts } from './ui/shortcuts.js';
 
 // ---- state -----------------------------------------------------------------
@@ -931,11 +931,31 @@ window.addEventListener('hashchange', route);
 // Crossing the wide breakpoint adds or removes the details beside the deck.
 wideQuery.addEventListener('change', () => renderDiscoverView({ force: true }));
 
-// After "Who's watching?" (or straight away): first run for a new person, or
-// the join screen for someone who opened an invite link.
+// After "Who's watching?" (or straight away): the join screen for someone who
+// opened an invite link; the welcome on a device's first visit; then the
+// first run for a new person.
 function afterWho() {
-  if (!store.get().onboarded && !sync.pendingCode) startOnboarding();
-  if (sync.pendingCode) showPeople();
+  if (sync.pendingCode) { showPeople(); return; }
+  if (needsWelcome()) { showWelcome(); return; }
+  if (!store.get().onboarded) startOnboarding();
+}
+
+// "Who's this?" once per device, before anything else: a name (so friends
+// can tell whose library is whose) and the way into syncing with them.
+function needsWelcome() {
+  return !device.welcomed && !device.household && !currentProfile(device.profiles).name;
+}
+
+async function showWelcome() {
+  const me = currentProfile(device.profiles);
+  const { name, choice } = await openWelcome({ name: me.name });
+  device.welcomed = true;
+  saveDevice(device);
+  if (name) setProfiles(renameProfile(device.profiles, me.id, name));
+  if (!store.get().onboarded) startOnboarding();
+  // People and sync opens on top of the first run: if they join a household
+  // that already has their library, the first run closes by itself.
+  if (choice === 'sync') showPeople();
 }
 
 async function init() {

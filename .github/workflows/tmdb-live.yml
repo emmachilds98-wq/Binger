@@ -1,0 +1,40 @@
+name: TMDB live
+
+# The live TMDB check (docs/PLAN.md → Verifying TMDB live), with the
+# repository's TMDB key secret. Runs when the TMDB adapter changes, weekly
+# (to notice TMDB changing under us), and on demand from the Actions tab.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1'
+  push:
+    branches: [main]
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+  pull_request:
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    env:
+      # Whichever name the secret was saved under. GitHub masks it in logs.
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY || secrets.TMDB_KEY || secrets.TMDB_TOKEN || secrets.TMDB }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: No key here
+        if: env.TMDB_API_KEY == ''
+        run: |
+          echo "::error::No TMDB key secret is available to this run (Settings → Secrets and variables → Actions → TMDB_API_KEY). Pull requests from forks never get secrets."
+          exit 1
+      - name: Live TMDB check
+        if: env.TMDB_API_KEY != ''
+        run: node scripts/tmdb-live.mjs --captures tmdb-live-captures
+      - uses: actions/upload-artifact@v4
+        if: always() && env.TMDB_API_KEY != ''
+        with:
+          name: tmdb-live-captures
+          path: tmdb-live-captures/
+          if-no-files-found: ignore

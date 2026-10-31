@@ -82,6 +82,14 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   lilac, orange), the current one ringed. The **who chip** (initial + name;
   initial only under 420 px) sits at the right of every screen's header.
   **People and sync** is a full sheet in the Settings style.
+- **Welcome** (built, `openWelcome` in `js/ui/people.js`): on a device's first
+  visit, before "What have you loved?", the "Who's watching?" style screen asks
+  "Who's this?": a name field, **Sync with friends** (amber; needs a name, then
+  opens sign-in over the first run) and **Just me for now** (quiet). Skipped
+  for invite links and devices already in a household. Screenshot `20-welcome`.
+- **"Wider" picks** (built): a card reached by the deck's wider pull says how,
+  in the sky "explore" style: "Acclaimed: among TMDB's best rated", "A hidden
+  gem: loved by the people who found it", "A Korean series, from further afield".
 - **PC layout** (built; see below). Designed here rather than on the canvas,
   which the 2026-10-31 session couldn't open from its account. Add a desktop
   row to the canvas when someone with access can, and copy it to `design/canvas/`.
