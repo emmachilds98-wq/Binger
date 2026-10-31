@@ -208,8 +208,8 @@ Everything technical you need is in this file,
 ### Phase 1.1: Go live (needs the owner) ⏳
 - [x] Merge the first PR into `main`
 - [x] Set the default branch to `main` (done by the owner, 2026-10-31)
-- [ ] **Build the TMDB key into the site:** repo **Settings → Pages → Build and
-      deployment → Source: GitHub Actions**, then Actions → "Deploy site" → Run
+- [x] **Build the TMDB key into the site:** repo **Settings → Pages → Build and
+      deployment → Source: GitHub Actions** (switched by the owner, 2026-10-31), then Actions → "Deploy site" → Run
       workflow (or push to `main`). Until then "Deploy site" skips with a note
       and Pages serves `main` without a built-in key.
 - [x] Switch on GitHub Pages (on by 2026-10-31, from `main`): repo **Settings → Pages → Build and deployment →
@@ -352,6 +352,12 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session, after merge): deploy fix
+- The owner switched Pages to GitHub Actions and ran "Deploy site": it failed
+  copying the repository into its own `_site` folder (my build script had
+  only been tried with an outside folder). Fixed by copying entry by entry;
+  `tests/build-site.test.js` now runs the build exactly as the workflow does.
 
 ### 2026-10-31 (third session, final): built-in TMDB key, wider deck, welcome
 - The owner asked for films and TV with no key to paste, for wider coverage,

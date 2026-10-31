@@ -8,7 +8,7 @@
 // deployed page, as with any key a browser uses; see PLAN.md for why that's
 // accepted and how to move it behind a proxy later.
 
-import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,14 +17,15 @@ const out = resolve(process.argv[2] || join(ROOT, '_site'));
 if (out === ROOT) throw new Error('Build into a separate folder, not the repository itself.');
 
 // Everything the branch deploy served before, minus dot-folders and builds.
+// Copied entry by entry: the workflow builds into _site inside the
+// repository, and copying a folder into itself is refused.
 rmSync(out, { recursive: true, force: true });
-cpSync(ROOT, out, {
-  recursive: true,
-  filter: (src) => {
-    const rel = src.slice(ROOT.length + 1);
-    return !rel || !(/^\./.test(rel) || /^(node_modules|_site)(\/|$)/.test(rel) || rel === out.slice(ROOT.length + 1));
-  },
-});
+mkdirSync(out, { recursive: true });
+const skip = new Set(['node_modules', '_site', out.slice(ROOT.length + 1).split('/')[0]]);
+for (const name of readdirSync(ROOT)) {
+  if (name.startsWith('.') || skip.has(name)) continue;
+  cpSync(join(ROOT, name), join(out, name), { recursive: true });
+}
 writeFileSync(join(out, '.nojekyll'), ''); // serve files as they are
 
 const key = String(process.env.TMDB_API_KEY || '').trim();
