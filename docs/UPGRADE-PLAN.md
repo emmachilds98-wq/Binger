@@ -43,14 +43,19 @@ the upgrade work.
 The owner has a Firebase project called **binger**. Nobody in the build
 sessions had access to it, so this is the one piece that needs a person.
 
+- [x] The live check, run for real on the Firebase emulators with the real
+      SDK and `firestore.rules` (`npm run e2e:sync`, in CI as the `sync` job):
+      34 checks, two bugs found and fixed (FIREBASE.md → Live check).
 - [ ] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
       (web app, Google + Email sign-in, authorised domain
       `emmachilds98-wq.github.io`, Firestore, publish `firestore.rules`).
 - [ ] Put the web config in `js/config.js` → `firebase: { … }` (it isn't a
       secret; see FIREBASE.md §2). Update the shell test if you want to
       assert its shape.
-- [ ] Do the [live check](FIREBASE.md#live-check) with two browsers, and
-      fix anything it turns up in `js/sync/`.
+- [ ] Do the [live check on the real project](FIREBASE.md#on-the-real-project)
+      with two browsers. The emulator run covers the code and rules, so what
+      this tests is the console setup (sign-in methods, authorised domain,
+      rules published).
 
 ### 2. A proper PC layout — ASAP
 

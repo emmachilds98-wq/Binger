@@ -19,33 +19,41 @@ and the decisions that shouldn't be quietly undone. Update the
 
 ## Start here (next session)
 
-Where things stand on 2026-10-31:
+Where things stand on 2026-10-31 (third session):
 
 - **The site is live** at https://emmachilds98-wq.github.io/Binger/
   (GitHub Pages, deployed from `main`).
 - **Phase 2 is finished** (all five steps), and **people + Firebase sync**
   are built: separate libraries for each person (Emma, Dave…), a chip
-  showing whose library it is, "Who's watching?", and sync code for a
-  household. All on PR #3 (`claude/inspiring-ride-ieuekd`), which also
-  carries PR #2.
-- **Next, in order: [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order).**
-  1. Connect the real Firebase project (the owner has one, "binger"; steps in
-     [FIREBASE.md](FIREBASE.md)). 2. A proper PC layout. 3. Films and TV for
-     everyone (the TMDB key). 4. Mobile polish.
-- **Checks:** `npm test` 102 passing, `npm run e2e` all passing.
+  showing whose library it is, "Who's watching?", and household sync.
+  **Sync now passes the full live check on the Firebase emulators** with the
+  real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
+- **Open PRs:** #2 (steps 1–2) is inside #3 (`claude/inspiring-ride-ieuekd`,
+  Phase 2 + people + sync), which is inside #4 (`claude/firebase-upgrades`,
+  this session: the emulator run and two sync fixes). Merging #4 merges all of it.
+- **Checks:** `npm test` 102 passing, `npm run e2e` all passing,
+  `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
 
 Do these in order:
 
-1. Run `npm run check && npm test && npm run e2e` to confirm a green start.
-2. If `TMDB_API_KEY` is set in the session, do [Verifying TMDB live](#verifying-tmdb-live) first.
-   It has been blocked three times for want of a key, and Phase 2 adds four TMDB
-   endpoints that are still tested only against hand-written responses.
-3. Build the remaining Phase 2 steps (3 to 5) below, one PR each (or one PR with one commit
-   each). Every step lists the design artboard, the functions that already
-   exist, the files to touch and the checks to add.
-4. Tick the boxes here and add a [status log](#status-log) entry.
+1. Run `npm run check && npm test && npm run e2e` to confirm a green start
+   (and `npm run e2e:sync` if Java is installed; see [FIREBASE.md](FIREBASE.md#on-the-emulators-no-firebase-project-needed)).
+2. **The TMDB key is now in the environment's secrets** (`TMDB_API_KEY`; the
+   owner added it on 2026-10-31, after the third session's container had
+   started, so that session couldn't see it). Do [Verifying TMDB live](#verifying-tmdb-live)
+   first. It has been blocked four times, and Phase 2 adds four TMDB endpoints
+   that are still tested only against hand-written responses.
+3. **Firebase: ask the owner for the web config** of their "binger" project
+   (Project settings → Your apps → Web app → `firebaseConfig`; not a secret)
+   and which console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
+   are done. Put it in `js/config.js` → `firebase`, then do the
+   [live check on the real project](FIREBASE.md#on-the-real-project).
+4. Then [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order):
+   2. a proper PC layout (design first), 3. films and TV for everyone,
+   4. mobile polish.
+5. Tick the boxes here and add a [status log](#status-log) entry.
 
 ### New to the project? (human engineers)
 
@@ -317,7 +325,8 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 ### After Phase 2: PC and mobile upgrade ◐
 - [x] People: separate libraries for each person, "Who's watching?", the who chip
 - [x] Firebase sync code (household, invite, merge, shared TMDB key), unit-tested
-- [ ] Connect the real Firebase project and do the live check ([FIREBASE.md](FIREBASE.md))
+- [x] The live check on the Firebase emulators (`npm run e2e:sync`, in CI)
+- [ ] Connect the real Firebase project and do the live check there ([FIREBASE.md](FIREBASE.md))
 - [ ] PC layout (design first)
 - [ ] Films and TV for everyone (the TMDB key)
 - [ ] Mobile polish
@@ -338,6 +347,44 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session): Firebase sync tested for real
+- The owner asked to carry on from the last session, connect Firebase and
+  finish the upgrades. Started from PR #3's head (`29488b5`, CI green); all
+  three branches checked: `claude/happy-cerf-qei1lg` (PR #2) is contained in
+  `claude/inspiring-ride-ieuekd` (PR #3), and `main` is unchanged at `e86c79f`.
+- No access to the owner's Firebase project from the session (gcloud has no
+  credentials, and the web config isn't anywhere in the repo or PRs), so
+  instead ran the FIREBASE.md live check for real: the real Firebase JS SDK
+  (10.14.1, from gstatic) against the Auth + Firestore emulators with
+  `firestore.rules` loaded, two to four browsers. New: `scripts/e2e-sync.mjs`
+  (`npm run e2e:sync`), `firebase.json`, `npm run emulators`, a `sync` CI job,
+  and an `emulators` key in a config that points `js/sync/firebase.js` at
+  them (tests only).
+- It found two bugs, both fixed:
+  - People and sync re-rendered when Firebase finished loading and wiped the
+    email and password you'd typed ("That doesn't look like an email
+    address"). It now keeps typed values and focus across refreshes.
+  - Signing in on a second device of your own (rather than via an invite
+    link) added a nameless person to the household and didn't load your
+    library. It now asks "Which one is you?" first, the same as joining
+    (`whichOneIsYou` in `app.js`; `readHousehold` in `sync.js`).
+- Verified: Emma signs up, starts a household; her library and TMDB key go to
+  Firestore (the key never in the library doc); Dave opens the invite link,
+  joins, picks "Someone new", gets films and TV via the shared key; both
+  people listed; switching to Emma on Dave's phone shows her watchlist; a save
+  on one device reaches the other in about 1.5 s and a delete propagates;
+  Emma's laptop signs in and claims Emma; a wrong code says "No household with
+  that code."; a stranger can't read a household, a library or `users/{uid}`,
+  overwrite a library, create a household for someone else, or join while
+  changing anything but adding themselves. No script errors.
+- Not done: the PC layout, the TMDB proxy and mobile polish (the owner asked
+  to finish this round and continue in a new chat). `TMDB_API_KEY` was added
+  to the secrets mid-session, but a running container doesn't pick up new
+  secrets, so the live TMDB check waits for the next session.
+- Tests: 102 unit, e2e all passing, sync 34/34.
+- **Next:** see Start here: TMDB live check, then the owner's Firebase web
+  config, then the PC layout.
 
 ### 2026-10-31 (second session): Phase 2 finished, people and sync
 - The owner turned on Pages (live from `main`) and asked for: the upgrades,

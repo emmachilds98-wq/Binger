@@ -6,10 +6,11 @@ Each person signs in with their own account; one person starts a
 **household** and invites the others with a code or link. Inside the app this
 is **Settings → People and sync**.
 
-The code is done and unit-tested against a stand-in for Firebase
-(`tests/sync.test.js`). **It has not yet been run against a real Firebase
-project.** The first person to do the steps below should also do
-[the live check](#live-check).
+The code is done, unit-tested against a stand-in for Firebase
+(`tests/sync.test.js`), and **the whole [live check](#live-check) passes
+against the real Firebase JS SDK and this repo's `firestore.rules`, on the
+local Firebase emulators** (`npm run e2e:sync`, also in CI). What's left is
+the owner's project itself: the console steps below and its web config.
 
 ## 1. In the Firebase console (the owner, once, about 10 minutes)
 
@@ -29,6 +30,9 @@ The project already exists: **binger**.
    the contents of [`firestore.rules`](../firestore.rules) → Publish.
    These let only household members read a household, and let someone with
    an invite code add only themselves.
+   (Or from a terminal in this repo: `npx firebase-tools@15.34.2 login`, then
+   `npx firebase-tools@15.34.2 deploy --only firestore:rules --project <your project id>`;
+   `firebase.json` already points at `firestore.rules`.)
 
 ## 2. Put the config in the app
 
@@ -51,6 +55,9 @@ Either:
    "Someone new" if Emma hasn't added him on her device).
 4. Both libraries sync from then on. The TMDB key is shared through the
    household, so Dave gets films and TV without his own key.
+
+On another device of your own, just sign in with the same account: Binger
+finds your household and asks "Which one is you?" once.
 
 On a shared computer, add both people (People and sync → Add a person) and
 "Who's watching?" asks each time Binger opens. On a phone only one of you
@@ -76,6 +83,28 @@ households/{code}/profiles/{id}   { state: <library JSON>, updatedAt, by }
   `js/state/device.js` (people on this device), `js/ui/people.js` (screens).
 
 ## Live check
+
+### On the emulators (no Firebase project needed)
+
+`scripts/e2e-sync.mjs` does everything below, plus a second device for Emma
+and eight probes of the security rules as a stranger, with the real Firebase
+JS SDK against the local Auth and Firestore emulators. It needs Java 11+.
+
+```bash
+npx -y firebase-tools@15.34.2 emulators:exec --project demo-binger --only auth,firestore "npm run e2e:sync"
+```
+
+(Or `npm run emulators` in one terminal and `npm run e2e:sync` in another.)
+CI runs it on every push. Run it whenever `js/sync/`, `js/state/profiles.js`,
+`js/ui/people.js` or `firestore.rules` change. The emulator hook is the
+`emulators` key in a config (`js/sync/firebase.js`); a pasted config never
+has one.
+
+First run (2026-10-31) found and fixed two bugs: typing in the sign-in form
+while Firebase was loading lost what you'd typed, and signing in on a second
+device added a nameless person to the household instead of asking who you are.
+
+### On the real project
 
 With the steps above done, on two browsers (or a normal and a private window):
 

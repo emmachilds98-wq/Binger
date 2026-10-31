@@ -18,6 +18,10 @@ copy its files there again in the same PR.
    - `npm test` (unit + shell checks)
    - `npm run e2e` when anything under `js/ui/`, `js/app.js`, `css/` or
      `index.html` changed. It refreshes `docs/screenshots/`; commit those too.
+   - `npm run e2e:sync` when `js/sync/`, `js/state/profiles.js`,
+     `js/ui/people.js`, the sync parts of `js/app.js` or `firestore.rules`
+     changed. It runs against the Firebase emulators (needs Java; how in
+     docs/FIREBASE.md → Live check). CI runs it too.
 3. `npm run bump` sets `js/version.js` from the real UTC clock. Never hand-type
    a version or build time.
 4. Read back every file you changed before committing. A file must never be
