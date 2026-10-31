@@ -23,11 +23,20 @@ export const SIGNAL = {
 // Feeling tags fine-tune a rating. Two 4-star films aren't equal if you
 // called one "Rewatchable" and the other "Overhyped". The nudges are small
 // (capped at a quarter of a star's worth either way) so stars stay in charge.
+// Tags that describe a title rather than judge it ("Violent", "Dark",
+// "Slow burn") have no nudge: liking violent films shows up in your stars.
 export const TAG_NUDGE = {
-  Gripping: 0.06, Funny: 0.04, Moving: 0.06, Beautiful: 0.04, Clever: 0.06,
-  'Comfort watch': 0.06, Rewatchable: 0.08,
-  Slow: -0.08, Confusing: -0.08, Overhyped: -0.1,
+  Gripping: 0.06, Tense: 0.04, Funny: 0.04, Moving: 0.06, 'Feel-good': 0.05, Romantic: 0.03, 'Mind-bending': 0.05, 'Comfort watch': 0.06,
+  Dark: 0, Scary: 0, Violent: 0, Gory: 0, 'Slow burn': 0, Weird: 0,
+  'Action-packed': 0.02, 'Thought-provoking': 0.05, 'Light-hearted': 0.02, Epic: 0.04,
+  Clever: 0.06, Beautiful: 0.04, Rewatchable: 0.08, 'Binge-worthy': 0.06, 'Great twist': 0.05, Quotable: 0.03,
+  Slow: -0.08, 'Too long': -0.06, Confusing: -0.08, Predictable: -0.06, 'Too violent': -0.08, Dull: -0.1, Overhyped: -0.1,
 };
+// Each part you rated (story, ending...) moves it a little too, inside the
+// same cap: loving the story and hating the ending roughly cancel out.
+export const ASPECT_NUDGE = 0.03;
+// Tags that are evidence about length (see SLOW_LENGTH_SIGNAL).
+const LENGTH_TAGS = ['Slow', 'Too long'];
 const TAG_CAP = 0.25;
 // "Slow" is also evidence about length: it counts against that title's length
 // bucket on its own, so several "Slow" tags on long films lower long films.
@@ -51,9 +60,39 @@ export function latestTags(item) {
   return (w && Array.isArray(w.tags)) ? w.tags : [];
 }
 
-export function tagNudge(tags) {
-  const sum = (tags || []).reduce((acc, t) => acc + (TAG_NUDGE[t] || 0), 0);
+export function tagNudge(tags, aspects = null) {
+  let sum = (tags || []).reduce((acc, t) => acc + (TAG_NUDGE[t] || 0), 0);
+  for (const v of Object.values(aspects || {})) if (v === 1 || v === -1) sum += v * ASPECT_NUDGE;
   return clamp(sum, -TAG_CAP, TAG_CAP);
+}
+
+// What your feeling tags say across your diary, for the Taste screen: the
+// feelings on titles you rated well (or watched without rating), the
+// complaints on any of them, and the parts that make or break a title.
+// Latest viewing of each title only, like the profile.
+export function feelingSummary(items, { limit = 8 } = {}) {
+  const good = new Map();
+  const bad = new Map();
+  const parts = new Map();
+  const bump = (m, k, by = 1) => m.set(k, (m.get(k) || 0) + by);
+  for (const item of items) {
+    const w = latestWatch(item);
+    if (!w) continue;
+    const liked = w.rating == null || w.rating >= 3.5;
+    for (const t of w.tags || []) {
+      if ((TAG_NUDGE[t] || 0) < 0) bump(bad, t);
+      else if (liked) bump(good, t);
+    }
+    for (const [k, v] of Object.entries(w.aspects || {})) if (v) bump(parts, k, v);
+  }
+  const top = (m) => [...m].filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit).map(([tag, n]) => ({ tag, n }));
+  const partList = [...parts].sort((a, b) => b[1] - a[1]);
+  return {
+    loved: top(good),
+    off: top(bad),
+    strong: partList.filter(([, n]) => n > 0).map(([key, n]) => ({ key, n })),
+    weak: partList.filter(([, n]) => n < 0).reverse().map(([key, n]) => ({ key, n: -n })),
+  };
 }
 
 export function latestRating(item) {
@@ -85,7 +124,7 @@ export function itemSignal(item, baseline) {
     // current your opinion is, so it counts from when you logged it instead:
     // a long-time favourite rated today is today's opinion.
     const at = Date.parse((w && !w.when && w.date) || item.updatedAt || item.addedAt || 0) || 0;
-    const nudge = tagNudge(latestTags(item));
+    const nudge = tagNudge(latestTags(item), w && w.aspects);
     if (r == null) return { s: SIGNAL.watchedUnrated + nudge, at, halfLife: HALF_LIFE_DAYS.watched };
     // Half absolute (3 stars = neutral), half relative to your own baseline.
     const s = 0.5 * ((r - 3) / 2) + 0.5 * ((r - baseline) / 2) + nudge;
@@ -147,7 +186,7 @@ export function buildProfile(items, { now = Date.now() } = {}) {
     };
     for (const f of featuresOf(item.title)) {
       record(f, sig.s * d * f.w);
-      if (f.group === 'length' && tags.includes('Slow')) record(f, SLOW_LENGTH_SIGNAL * d * f.w, true);
+      if (f.group === 'length' && tags.some((t) => LENGTH_TAGS.includes(t))) record(f, SLOW_LENGTH_SIGNAL * d * f.w, true);
     }
 
     // People you'd recognise: anyone in something you've watched or want to.

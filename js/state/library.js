@@ -15,7 +15,7 @@
 //   id, title: Snapshot,                  // a trimmed copy of the Title
 //   status: 'want' | 'watched' | 'passed',
 //   addedAt, updatedAt,                   // ISO strings
-//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '', setup?: true, when?: 'year' | 'ages' }],
+//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '', aspects?: { story: 1|0|-1, ... }, setup?: true, when?: 'year' | 'ages' }],
 //     (when: you don't know the exact day. 'year': sometime that year, date
 //     is 1 January of it; 'ages': long ago, date is AGES_AGO. The date then
 //     only sorts the diary; see fuzzyWatch.)
@@ -42,7 +42,28 @@ export const DEFAULT_SETTINGS = {
   hiddenFranchises: [],  // [{ key, name, ids: [titleId...] }]: "Not this franchise"
 };
 
-export const TAGS = ['Gripping', 'Funny', 'Moving', 'Beautiful', 'Clever', 'Comfort watch', 'Rewatchable', 'Slow', 'Confusing', 'Overhyped'];
+// Feeling tags, grouped so a review can go as deep as you like. Every tag
+// from before the groups is still here, so old diary entries keep theirs.
+// What each one does to your taste is TAG_NUDGE in js/engine/profile.js.
+export const TAG_GROUPS = [
+  ['How it felt', ['Gripping', 'Tense', 'Funny', 'Moving', 'Feel-good', 'Romantic', 'Dark', 'Scary', 'Mind-bending', 'Comfort watch']],
+  ['What it’s like', ['Action-packed', 'Violent', 'Gory', 'Thought-provoking', 'Slow burn', 'Light-hearted', 'Epic', 'Weird']],
+  ['What stood out', ['Clever', 'Beautiful', 'Rewatchable', 'Binge-worthy', 'Great twist', 'Quotable']],
+  ['What didn’t work', ['Slow', 'Too long', 'Confusing', 'Predictable', 'Too violent', 'Dull', 'Overhyped']],
+];
+export const TAGS = TAG_GROUPS.flatMap(([, tags]) => tags);
+
+// The parts of a title you can rate on their own: loved (1), fine (0) or
+// weak (-1). Optional; a watch keeps only the parts you marked.
+export const ASPECTS = [['story', 'Story'], ['acting', 'Acting or voices'], ['characters', 'Characters'], ['look', 'Look'], ['sound', 'Music and sound'], ['ending', 'Ending']];
+export function cleanAspects(aspects) {
+  const out = {};
+  for (const [key] of ASPECTS) {
+    const v = aspects && aspects[key];
+    if (v === 1 || v === 0 || v === -1) out[key] = v;
+  }
+  return out;
+}
 
 const SNAPSHOT_KEYS = [
   'id', 'source', 'sourceId', 'mediaType', 'kind', 'title', 'originalTitle', 'year', 'releaseDate', 'lastAirDate',
@@ -133,14 +154,15 @@ export function fuzzyWatch(when, date, now = Date.now()) {
 
 // setup: a pick from the first-run screen ("What have you loved?"), logged
 // as loved until you review it properly (setupPicks, updateWatch).
-export function logWatch(state, title, { rating = null, tags = [], review = '', date = null, when = null, setup = false } = {}, now = Date.now()) {
+export function logWatch(state, title, { rating = null, tags = [], aspects = null, review = '', date = null, when = null, setup = false } = {}, now = Date.now()) {
   const prev = state.items[title.id];
   const watch = {
     id: newId(now),
     ...fuzzyWatch(when, date, now),
     rating: typeof rating === 'number' ? Math.max(0.5, Math.min(5, Math.round(rating * 2) / 2)) : null,
-    tags: [...new Set(tags)].filter((t) => typeof t === 'string').slice(0, 10),
+    tags: [...new Set(tags)].filter((t) => typeof t === 'string').slice(0, 24),
     review: String(review || '').slice(0, 4000),
+    ...(Object.keys(cleanAspects(aspects)).length ? { aspects: cleanAspects(aspects) } : {}),
     ...(setup ? { setup: true } : {}),
   };
   const item = {
@@ -165,6 +187,10 @@ export function updateWatch(state, id, watchId, patch, now = Date.now()) {
       Object.assign(next, fuzzyWatch(patch.when, patch.date || w.date, now));
     }
     if (typeof next.rating === 'number') next.rating = Math.max(0.5, Math.min(5, Math.round(next.rating * 2) / 2));
+    if ('aspects' in patch) {
+      const a = cleanAspects(patch.aspects);
+      if (Object.keys(a).length) next.aspects = a; else delete next.aspects;
+    }
     // Saved from the rating sheet: a first-run pick is now a proper review.
     delete next.setup;
     return next;

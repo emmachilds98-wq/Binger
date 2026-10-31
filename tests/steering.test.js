@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {
   featuresOf, lengthBucket, buildProfile, itemSignal, scoreTitle, onServices, buildDeck, explain,
   isShort, inDecade, franchiseBlock, isBlocked, rankForYou, seasonAlert, seasonAlerts, showsToCheck,
-  tasteTimeline, itemAsOf, monthEnds, TAG_NUDGE, topFeatures,
+  tasteTimeline, itemAsOf, monthEnds, TAG_NUDGE, topFeatures, tagNudge, feelingSummary,
 } from '../js/engine/index.js';
 import { TAGS } from '../js/state/library.js';
 
@@ -243,4 +243,37 @@ test('explain names a length you rate highly', () => {
   const t = title({ kind: 'anime', source: 'anilist', episodes: 13, genres: ['Western'], language: 'xx', year: 1950 });
   const reasons = explain(t, scoreTitle(t, p, { now: NOW }), p, { now: NOW });
   assert.ok(reasons.some((r) => r.kind === 'length' && r.text.startsWith('Short series')), JSON.stringify(reasons));
+});
+
+test('describing a title (Violent, Dark) doesn’t move its rating; judging it does', () => {
+  const plain = itemSignal(watched(title(), 4), 3).s;
+  assert.equal(itemSignal(watched(title(), 4, 10, ['Violent', 'Dark', 'Gory']), 3).s, plain);
+  assert.ok(itemSignal(watched(title(), 4, 10, ['Too violent']), 3).s < plain);
+});
+
+test('rated parts nudge a rating a little, inside the same cap as tags', () => {
+  const plain = itemSignal(watched(title(), 4), 3).s;
+  const withParts = (aspects) => {
+    const it = watched(title(), 4);
+    it.watches[0].aspects = aspects;
+    return itemSignal(it, 3).s;
+  };
+  assert.ok(withParts({ story: 1, acting: 1 }) > plain);
+  assert.ok(withParts({ ending: -1 }) < plain);
+  assert.ok(Math.abs(withParts({ story: 1, ending: -1 }) - plain) < 1e-9, 'a loved story and a weak ending cancel out');
+  assert.equal(tagNudge(['Rewatchable', 'Gripping', 'Moving', 'Clever', 'Binge-worthy'], { story: 1, look: 1, sound: 1 }), 0.25);
+});
+
+test('the Taste summary: feelings on titles you liked, complaints on any, parts that make or break', () => {
+  const a = watched(title(), 4.5, 10, ['Violent', 'Gripping']);
+  a.watches[0].aspects = { story: 1, ending: -1 };
+  const b = watched(title(), 4, 10, ['Violent', 'Too long']);
+  b.watches[0].aspects = { story: 1, acting: 1 };
+  const c = watched(title(), 2, 10, ['Funny', 'Dull']);
+  c.watches[0].aspects = { ending: -1 };
+  const s = feelingSummary([a, b, c]);
+  assert.deepEqual(s.loved, [{ tag: 'Violent', n: 2 }, { tag: 'Gripping', n: 1 }]);
+  assert.deepEqual(s.off.map((x) => x.tag).sort(), ['Dull', 'Too long']);
+  assert.equal(s.strong[0].key, 'story');
+  assert.deepEqual(s.weak, [{ key: 'ending', n: 2 }]);
 });

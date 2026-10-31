@@ -38,6 +38,16 @@ function jaccard(a, b) {
 // true / false, or null while the length isn't known yet.
 export const SHORT_FILM_MINUTES = 120;
 export const SHORT_SERIES_EPISODES = 13;
+// The Discover pills: any mix of Films, TV and Anime. An empty set means
+// All; ticking every kind, or unticking the last one, goes back to All.
+export const KINDS = ['film', 'tv', 'anime'];
+export function toggleKind(kinds, key) {
+  if (key === 'all') return new Set();
+  const next = new Set(kinds);
+  if (next.has(key)) next.delete(key); else next.add(key);
+  return next.size === KINDS.length ? new Set() : next;
+}
+
 export function isShort(title) {
   if (isFilmLike(title)) return title.runtime > 0 ? title.runtime <= SHORT_FILM_MINUTES : null;
   return title.episodes > 0 ? title.episodes <= SHORT_SERIES_EPISODES : null;

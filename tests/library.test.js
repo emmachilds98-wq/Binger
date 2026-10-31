@@ -212,3 +212,23 @@ test('mergeStates: newer settings win but the TMDB key stays on the device; sync
   assert.ok(!L.syncText(m).includes('secret'));
   assert.equal(L.mergeStates(L.emptyState(0), theirs, 3000).settings.region, 'US', 'untouched defaults never beat real settings');
 });
+
+test('rated parts: only loved / fine / weak on known parts are kept; editing can clear them', () => {
+  let s = logWatch(emptyState(), t('p'), { rating: 4, tags: ['Violent'], aspects: { story: 1, ending: -1, look: 0, plot: 1, sound: 2 } }, NOW);
+  const w = s.items[t('p').id].watches[0];
+  assert.deepEqual(w.aspects, { story: 1, look: 0, ending: -1 });
+  assert.deepEqual(w.tags, ['Violent']);
+  s = updateWatch(s, t('p').id, w.id, { aspects: { story: 1 } }, NOW + 1);
+  assert.deepEqual(s.items[t('p').id].watches[0].aspects, { story: 1 });
+  s = updateWatch(s, t('p').id, w.id, { aspects: {} }, NOW + 2);
+  assert.equal('aspects' in s.items[t('p').id].watches[0], false);
+  const none = logWatch(emptyState(), t('q'), { rating: 3 }, NOW);
+  assert.equal('aspects' in none.items[t('q').id].watches[0], false, 'no parts, no field');
+});
+
+test('every feeling tag sits in exactly one group', () => {
+  assert.equal(new Set(L.TAGS).size, L.TAGS.length);
+  for (const old of ['Gripping', 'Funny', 'Moving', 'Beautiful', 'Clever', 'Comfort watch', 'Rewatchable', 'Slow', 'Confusing', 'Overhyped']) {
+    assert.ok(L.TAGS.includes(old), `${old} is still offered, so old diary entries keep it`);
+  }
+});

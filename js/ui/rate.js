@@ -1,9 +1,10 @@
-// "Seen it": rate (half stars), tag how it felt, write a few words, pick the
-// date. Also used to edit or delete an existing diary entry.
+// "Seen it": rate (half stars), tag how it felt (in groups, as deep as you
+// like), rate the parts if you want to, write a few words, pick the date.
+// Also used to edit or delete an existing diary entry.
 
 import { h, icon, KIND_NAME, RATING_WORDS, poster } from './dom.js';
 import { openSheet, closeButton } from './sheet.js';
-import { TAGS, AGES_AGO } from '../state/library.js';
+import { TAG_GROUPS, ASPECTS, AGES_AGO } from '../state/library.js';
 
 export function steerText(rating, title) {
   if (rating == null) return 'Your rating is the strongest signal Binger has.';
@@ -62,14 +63,37 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
     save.disabled = false;
   }
 
-  const tagEls = TAGS.map((tag) => {
-    const b = h('button', { type: 'button', class: 'pill', 'aria-pressed': String(tags.has(tag)) }, tag);
-    b.addEventListener('click', () => {
-      if (tags.has(tag)) tags.delete(tag); else tags.add(tag);
-      b.setAttribute('aria-pressed', String(tags.has(tag)));
-    });
-    return b;
+  const tagGroups = TAG_GROUPS.map(([name, list], i) => {
+    const id = `tags-${i}`;
+    return h('div', { class: 'tag-group' },
+      h('div', { class: 'tag-group-name small muted', id }, name),
+      h('div', { class: 'pill-wrap', role: 'group', 'aria-labelledby': id }, list.map((tag) => {
+        const b = h('button', { type: 'button', class: 'pill', 'aria-pressed': String(tags.has(tag)) }, tag);
+        b.addEventListener('click', () => {
+          if (tags.has(tag)) tags.delete(tag); else tags.add(tag);
+          b.setAttribute('aria-pressed', String(tags.has(tag)));
+        });
+        return b;
+      })));
   });
+
+  // The parts, each loved / fine / weak; tap the same one again to clear it.
+  const aspects = { ...((watch && watch.aspects) || {}) };
+  const PART = [[1, 'Loved'], [0, 'Fine'], [-1, 'Weak']];
+  const partRows = ASPECTS.map(([key, label]) => {
+    const btns = PART.map(([v, word]) => h('button', {
+      type: 'button', class: 'pill pill-sm', 'aria-pressed': String(aspects[key] === v), 'aria-label': `${label}: ${word}`,
+      onClick: () => {
+        if (aspects[key] === v) delete aspects[key]; else aspects[key] = v;
+        btns.forEach((b, i) => b.setAttribute('aria-pressed', String(aspects[key] === PART[i][0])));
+      },
+    }, word));
+    return h('div', { class: 'part-row' }, h('span', { class: 'part-label' }, label), h('div', { class: 'part-btns', role: 'group', 'aria-label': label }, btns));
+  });
+  const parts = h('details', { class: 'parts' },
+    h('summary', null, 'Go deeper: rate the parts'),
+    h('div', { class: 'part-rows' }, partRows));
+  parts.open = Object.keys(aspects).length > 0;
   const review = h('textarea', { id: 'review', rows: '3', maxlength: '4000', placeholder: 'What stuck with you?' });
   review.value = watch ? watch.review || '' : '';
   // When: today, an exact day, or roughly (this year, a year, ages ago), for
@@ -103,7 +127,7 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
   const save = h('button', { type: 'button', class: 'btn btn-primary grow' }, watch && watch.setup ? 'Save review' : watch ? 'Save changes' : 'Save to diary');
   save.addEventListener('click', () => {
     saved = true;
-    onSave({ rating, tags: [...tags], review: review.value.trim(), ...picked() });
+    onSave({ rating, tags: [...tags], aspects: { ...aspects }, review: review.value.trim(), ...picked() });
     sheet.close();
   });
 
@@ -117,7 +141,7 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
         h('div', { class: 'small muted' }, [KIND_NAME[title.kind], title.year].filter(Boolean).join(' · '))),
       closeButton(sheet)),
     h('div', { class: 'rate-stars' }, stars, word, steer),
-    h('div', { class: 'field' }, h('div', { class: 'eyebrow' }, 'How did it feel?'), h('div', { class: 'pill-wrap' }, tagEls)),
+    h('div', { class: 'field' }, h('div', { class: 'eyebrow' }, 'How did it feel?'), tagGroups, parts),
     h('div', { class: 'field' }, h('label', { class: 'eyebrow', for: 'review' }, 'Your thoughts (optional)'), review),
     h('div', { class: 'field' },
       h('div', { class: 'eyebrow', id: 'when-label' }, 'When did you watch it?'),

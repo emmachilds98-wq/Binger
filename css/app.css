@@ -591,3 +591,18 @@ kbd { font: 600 12px/1 var(--font-body); padding: 4px 7px; border-radius: 6px; b
 [hidden] { display: none !important; }
 /* When did you watch it? The day or year picker sits under the choices. */
 .rate #watch-date, .rate #watch-year { align-self: flex-start; }
+
+/* How did it feel? Tags in small labelled groups, then "Go deeper": each
+   part of the title loved / fine / weak. */
+.rate .tag-group { display: flex; flex-direction: column; gap: 6px; }
+.rate .tag-group + .tag-group { margin-top: 10px; }
+.rate .tag-group-name { font-weight: 600; }
+.rate .parts { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.rate .parts summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; min-height: 36px; display: flex; align-items: center; }
+.rate .part-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.rate .part-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.rate .part-label { font-size: 14px; color: var(--text-2); }
+.rate .part-btns { display: flex; gap: 6px; }
+.pill.pill-sm { min-height: 32px; padding: 0 12px; font-size: 13px; }
+.part-btns .pill[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.part-btns .pill[aria-pressed="true"][aria-label$="Weak"] { background: rgba(255, 138, 122, 0.12); color: var(--danger); border-color: var(--danger); }

@@ -1,10 +1,10 @@
 // The Library tab: your Watchlist (best match first, so it doubles as "what
 // should I watch tonight?") and your Diary of everything you've watched.
 
-import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel, watchWhen, watchGroup } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel, watchWhen, watchGroup, reviewLine } from './dom.js';
 import { latestWatch } from '../engine/index.js';
 import { whoChip } from './people.js';
-import { watchlist, diary, setupPicks } from '../state/library.js';
+import { watchlist, diary, setupPicks, ASPECTS } from '../state/library.js';
 import { rankWatchlist } from '../engine/index.js';
 
 export function renderLibrary(root, ctx) {
@@ -80,7 +80,7 @@ export function renderLibrary(root, ctx) {
           h('span', { class: 'row-title-line' }, h('span', { class: 'row-title' }, t.title), h('span', { class: 'small muted' }, watch.setup ? 'Picked' : watchWhen(watch))),
           h('span', { class: 'stars small', 'aria-label': watch.rating ? `${watch.rating} out of 5` : 'Not rated' }, watch.rating ? starsText(watch.rating) : 'Not rated'),
           watch.review ? h('span', { class: 'row-review' }, watch.review) : null,
-          watch.tags && watch.tags.length ? h('span', { class: 'small muted' }, watch.tags.join(' · ')) : null)),
+          reviewLine(watch, ASPECTS) ? h('span', { class: 'small muted' }, reviewLine(watch, ASPECTS)) : null)),
       h('button', { type: 'button', class: 'icon-btn', 'aria-label': `More about ${t.title}`, onClick: () => ctx.onOpen(item) }, icon('info', 18))));
   }
 }

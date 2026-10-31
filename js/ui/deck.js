@@ -9,6 +9,7 @@ import { filterSummary } from './filters.js';
 import { whoChip } from './people.js';
 import { flickDirection } from './gesture.js';
 
+// All, or any mix of the three (Films and TV but not Anime, say).
 const FILTERS = [['all', 'All'], ['film', 'Films'], ['tv', 'TV'], ['anime', 'Anime']];
 const THRESHOLD_X = 110;
 const THRESHOLD_UP = 120;
@@ -29,7 +30,7 @@ export function renderDiscover(root, ctx) {
         whoChip(ctx.who))),
     h('div', { class: 'pills', role: 'group', 'aria-label': 'What to show' },
       FILTERS.map(([key, label]) => h('button', {
-        type: 'button', class: 'pill', 'aria-pressed': String(ctx.filter === key), onClick: () => ctx.setFilter(key),
+        type: 'button', class: 'pill', 'aria-pressed': String(key === 'all' ? !ctx.kinds.size : ctx.kinds.has(key)), onClick: () => ctx.setFilter(key),
       }, label))),
     active.length ? h('div', { class: 'filter-line' },
       h('span', null, active.join(' · ')),
@@ -96,7 +97,7 @@ function emptyState(ctx) {
   const blocks = [];
   if (ctx.errors && ctx.errors.length) {
     blocks.push(h('h2', null, "Couldn't load cards"), h('p', { class: 'muted' }, ctx.errorText || 'Check your connection and try again.'));
-  } else if (ctx.filter !== 'all' && ctx.filter !== 'anime' && !ctx.hasKey) {
+  } else if (ctx.kinds.size && !ctx.kinds.has('anime') && !ctx.hasKey) {
     blocks.push(h('h2', null, 'Films and TV need a TMDB key'), h('p', { class: 'muted' }, "It's free and takes two minutes. Anime works without one."));
     blocks.push(h('button', { type: 'button', class: 'btn btn-primary', onClick: ctx.onSettings }, 'Add a TMDB key'));
     return h('div', { class: 'deck-empty' }, blocks);
