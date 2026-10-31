@@ -20,13 +20,23 @@ export function itemAsOf(item, at) {
 
 export const TREND_STEP = 0.12;
 
+// The last moment of each of the `points - 1` months before this one, then
+// now: one snapshot per calendar month, so each gets its own month label.
+export function monthEnds(now, points) {
+  const d = new Date(now);
+  return Array.from({ length: points }, (_, i) => {
+    const back = points - 1 - i;
+    return back === 0 ? now : Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - back + 1, 1) - 1;
+  });
+}
+
 // points: how many snapshots (oldest first, the last one is now);
-// stepDays: the gap between them. Returns
+// stepDays: a fixed gap between them (default: calendar months). Returns
 // { at: [ms...], series: [{ key, label, values: [affinity | null], trend }], enough }.
 // `enough` is false until at least three snapshots have something to say.
-export function tasteTimeline(items, { now = Date.now(), points = 6, stepDays = 30, group = 'genre', limit = 5 } = {}) {
+export function tasteTimeline(items, { now = Date.now(), points = 6, stepDays = null, group = 'genre', limit = 5 } = {}) {
   const list = Object.values(items || {});
-  const at = Array.from({ length: points }, (_, i) => now - (points - 1 - i) * stepDays * DAY);
+  const at = stepDays ? Array.from({ length: points }, (_, i) => now - (points - 1 - i) * stepDays * DAY) : monthEnds(now, points);
   const profiles = at.map((t) => buildProfile(list.map((it) => itemAsOf(it, t)).filter(Boolean), { now: t }));
 
   const ranked = (p, n) => [...p.evidence.values()]

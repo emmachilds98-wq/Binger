@@ -10,7 +10,7 @@ import { createCache, createMemoryCache } from './state/cache.js';
 import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
 import { gatherCandidates, hydrate } from './sources/candidates.js';
-import { buildProfile, buildDeck, explain, scoreTitle, warmth } from './engine/index.js';
+import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
 import { openDetail } from './ui/detail.js';
 import { openRate } from './ui/rate.js';
@@ -60,6 +60,9 @@ let onboarding = null;
 // New seasons of TV you've watched (Phase 2 step 4), and what they were
 // worked out from, so they're only re-checked when your TV diary changes.
 const seasons = { alerts: [], basis: '', checking: null };
+// Taste over time rebuilds your profile at six points, so it's worked out
+// once per library change, not on every render.
+const timelineMemo = { items: null, value: null };
 
 // ---- sources ---------------------------------------------------------------
 
@@ -547,6 +550,7 @@ function render() {
       onSettings: showSettings,
       onServices: () => showServices(),
       onPerson: showPerson,
+      timeline: timelineFor(state.items),
       onUnhideSeries: (f) => { store.update(L.unhideFranchise, f.key); toast(`${f.name} can come back now`); },
       onForgetPasses: () => { store.update(L.forgetPasses); toast('Passed titles can come back now'); refill({ force: true }); },
     });
@@ -554,6 +558,12 @@ function render() {
   view.dataset.rendered = ui.tab;
   const fresh = view.querySelector('.page-scroll');
   if (fresh && keep) fresh.scrollTop = keep;
+}
+
+function timelineFor(items) {
+  if (timelineMemo.items !== items) timelineMemo.value = tasteTimeline(items);
+  timelineMemo.items = items;
+  return timelineMemo.value;
 }
 
 function route() {

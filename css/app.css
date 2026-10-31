@@ -435,3 +435,17 @@ button.cast-item:hover .cast-name { text-decoration: underline; }
 .icon-btn-narrow { width: 36px; color: var(--muted); }
 .tab-icon { position: relative; display: flex; }
 .tab.has-alert .tab-icon::after { content: ''; position: absolute; top: -2px; right: -4px; width: 8px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
+
+/* taste over time (Phase 2 step 5; design: TasteTime.dc.html, spec in DESIGN.md) */
+.trends { display: flex; flex-direction: column; gap: 2px; }
+.trend-row { width: 100%; display: flex; flex-direction: column; gap: 2px; border: 0; background: transparent; color: var(--text); padding: 4px 0; text-align: left; min-height: 40px; }
+.trend-line { display: flex; align-items: center; gap: 10px; width: 100%; }
+.trend-name { width: 112px; flex: none; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spark { flex: none; overflow: visible; }
+.spark-zero { stroke: var(--line); stroke-width: 1; }
+.spark-line { fill: none; stroke: var(--muted); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.spark-dot { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.trend-word { flex: 1; text-align: right; font-size: 13px; color: var(--text-2); white-space: nowrap; }
+.trend-readout { padding-left: 122px; }
+.trend-axis { display: flex; justify-content: space-between; width: 140px; margin-left: 127px; font-size: 11px; color: var(--muted); }
+.how-lines { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--text-2); }

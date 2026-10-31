@@ -359,6 +359,42 @@ check(await page.locator('.alerts').count() === 0 && await page.locator('#tabbar
 const dismissed = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).items['tmdb:tv:95396'].dismissed);
 check(JSON.stringify(dismissed) === '["s3"]', 'the dismissal is saved for that season only');
 
+console.log('Taste over time');
+// Six months of history: Horror loved early then soured on, Comedy loved
+// lately, a couple of long films called Slow, one thing called Overhyped.
+await page.evaluate(async () => {
+  const L = await import('/js/state/library.js');
+  const DAY = 86400000;
+  const now = Date.now();
+  let s = L.migrate(JSON.parse(localStorage.getItem('binger:v1')));
+  const film = (i, genres, runtime = 95) => ({ id: `tmdb:movie:${9000 + i}`, source: 'tmdb', sourceId: 9000 + i, mediaType: 'movie', kind: 'film', title: `Test film ${i}`, genres, year: 2020, runtime, detailed: true });
+  const log = (t, daysAgo, rating, tags = []) => {
+    const at = now - daysAgo * DAY;
+    s = L.logWatch(s, t, { rating, tags, date: new Date(at).toISOString().slice(0, 10) }, at);
+  };
+  [170, 160, 150, 140].forEach((d, i) => log(film(i, ['Horror']), d, 5));
+  [40, 30, 20].forEach((d, i) => log(film(10 + i, ['Horror']), d, 1));
+  [100, 60, 35, 25, 15, 5].forEach((d, i) => log(film(20 + i, ['Comedy']), d, 5, i === 5 ? ['Funny', 'Moving'] : ['Funny']));
+  log(film(30, ['Drama'], 170), 50, 2, ['Slow']);
+  log(film(31, ['Drama'], 165), 12, 2, ['Slow']);
+  log(film(32, ['Action'], 120), 8, 3, ['Overhyped']);
+  localStorage.setItem('binger:v1', JSON.stringify(s));
+});
+await page.goto(base + '#taste');
+await page.reload();
+await page.waitForSelector('.trends .trend-row', { timeout: 8000 }).catch(() => {});
+const trendRows = await page.locator('.trends .trend-row').allInnerTexts();
+const trendOf = (g) => (trendRows.find((r) => r.startsWith(g)) || '').replace(/\s+/g, ' ');
+check(trendRows.length >= 2, `"How your taste has moved" shows a row per genre (${trendRows.length})`);
+check(/Rising/.test(trendOf('Comedy')) && /Fading/.test(trendOf('Horror')), `trends in words: Comedy ${trendOf('Comedy').split(' ').slice(-1)}, Horror ${trendOf('Horror').split(' ').slice(-1)}`);
+await page.locator('.trends .trend-row', { hasText: 'Comedy' }).click();
+check(/\w{3} \d+ · \w{3} \d+/.test(await page.locator('.trends .trend-row', { hasText: 'Comedy' }).innerText()), 'tapping a row shows its month-by-month numbers');
+check(await page.locator('.taste table.sr-only td').count() > 0, 'the same numbers are in a table for screen readers');
+const how = await page.locator('.taste-section', { hasText: 'How you like to watch' }).innerText().catch(() => '');
+check(/Sweet spot/.test(how) && /Funny ×6/.test(how), 'how you like to watch: sweet spot and feeling-tag counts');
+check(/Slow, so long films count against them/.test(how) && /Overhyped, so "Trending this week" counts for less/.test(how), 'one plain line each on what Slow and Overhyped do');
+await shot('12-taste-time');
+
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 
 console.log('Offline support');

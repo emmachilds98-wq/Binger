@@ -5,6 +5,7 @@
 import { h, icon, clear, KIND_NAME, titleCase } from './dom.js';
 import { topFeatures } from '../engine/index.js';
 import { servicesSummary } from './services.js';
+import { tasteMoved, howYouWatch } from './timeline.js';
 
 const ALL_GENRES = [
   'Action', 'Adventure', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror',
@@ -28,6 +29,9 @@ export function renderTaste(root, ctx) {
   page.append(h('p', { class: 'lede' }, st.items
     ? `Learned from ${plural(st.rated, 'rating')}, ${plural(st.wants, 'save')} and ${plural(st.passes, 'pass', 'passes')}. Recent ones count most, so this shifts as your taste does.`
     : 'Nothing learned yet. Rate a few things you’ve watched (swipe up on a card, or Library → Log a watch) and this fills in.'));
+
+  const moved = tasteMoved(ctx.timeline);
+  if (moved) page.append(moved);
 
   const likes = topFeatures(profile, 'genre', { limit: 6 });
   if (likes.length) {
@@ -54,6 +58,9 @@ export function renderTaste(root, ctx) {
         : h('li', null, h('button', { type: 'button', class: 'chip chip-solid chip-btn', onClick: () => ctx.onPerson({ id: p.key.slice(2), name: p.label }) }, inner));
     }))));
   }
+
+  const how = howYouWatch(profile);
+  if (how) page.append(how);
 
   const dislikes = [...topFeatures(profile, 'genre', { limit: 4, sign: -1 }), ...topFeatures(profile, 'keyword', { limit: 4, sign: -1 })];
   if (dislikes.length) page.append(section('Not really your thing', chips(dislikes.map((d) => d.label))));

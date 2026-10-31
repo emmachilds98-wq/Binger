@@ -53,6 +53,7 @@ const SHELL = [
   'js/ui/rate.js',
   'js/ui/library.js',
   'js/ui/taste.js',
+  'js/ui/timeline.js',
   'js/ui/search.js',
   'js/ui/settings.js',
   'js/ui/onboarding.js',
