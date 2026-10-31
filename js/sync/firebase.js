@@ -12,9 +12,17 @@ export async function connectFirebase(config) {
     import(`${CDN}/firebase-auth.js`),
     import(`${CDN}/firebase-firestore.js`),
   ]);
-  const app = appMod.getApps().find((a) => a.name === 'binger') || appMod.initializeApp(config, 'binger');
+  const { emulators, ...web } = config;
+  const app = appMod.getApps().find((a) => a.name === 'binger') || appMod.initializeApp(web, 'binger');
   const auth = authMod.getAuth(app);
   const db = fs.getFirestore(app);
+  // For tests only (`npm run e2e:sync`): the local Firebase emulators stand
+  // in for the real project. A pasted config never has this key.
+  if (emulators) {
+    authMod.connectAuthEmulator(auth, emulators.auth, { disableWarnings: true });
+    const [host, port] = emulators.firestore.split(':');
+    fs.connectFirestoreEmulator(db, host, Number(port));
+  }
   const ref = (path) => fs.doc(db, ...path);
   // Finish a sign-in that had to go via a redirect (popups blocked).
   authMod.getRedirectResult(auth).catch(() => {});

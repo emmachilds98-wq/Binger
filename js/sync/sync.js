@@ -22,6 +22,10 @@ export async function findHousehold(fb, uid) {
   return me && typeof me.household === 'string' ? me.household : null;
 }
 
+export function readHousehold(fb, code) {
+  return fb.get(householdPath(code));
+}
+
 export async function createHousehold(fb, uid, profiles) {
   const code = randomId(12);
   await fb.set(householdPath(code), { members: [uid], owner: uid, profiles: publicList(profiles), createdAt: fb.now() });

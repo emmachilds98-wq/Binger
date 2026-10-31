@@ -31,7 +31,7 @@ import {
   parseCode, parseFirebaseConfig, formatCode,
 } from './state/profiles.js';
 import { connectFirebase, authMessage } from './sync/firebase.js';
-import { startSync, findHousehold, createHousehold, joinHousehold } from './sync/sync.js';
+import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
 import { openWhoIsWatching, openPeople, askName, shareOrCopy } from './ui/people.js';
 
 // ---- state -----------------------------------------------------------------
@@ -471,7 +471,14 @@ async function onUser(user) {
   if (!user) { stopSync(); refreshPeople(); return; }
   if (!device.household) {
     const code = await findHousehold(sync.fb, user.uid).catch(() => null);
-    if (code) { device.household = code; saveDevice(device); }
+    if (code) {
+      // Signed in on another device of yours: say who you are first, or this
+      // device's person would join the household as someone new.
+      const hh = await readHousehold(sync.fb, code).catch(() => null);
+      await whichOneIsYou((hh && hh.profiles) || []);
+      device.household = code;
+      saveDevice(device);
+    }
   }
   if (device.household) await beginSync();
   refreshPeople();
@@ -524,6 +531,22 @@ async function syncAction(fn) {
   try { await fn(); } catch (err) { syncError(err.code === 'not-found' || err.code === 'bad-code' ? err.message : authMessage(err)); }
   sync.busy = false;
   refreshPeople();
+}
+
+// Joining a household, or signing in on another device: which of the
+// household's people is this device's library? (Nothing to ask if this
+// device's person is already one of them.)
+async function whichOneIsYou(remote) {
+  const me = currentProfile(device.profiles);
+  if (!remote.length || remote.some((r) => r.id === me.id)) return;
+  const pick = await choiceSheet({
+    title: 'Which one is you?',
+    message: 'What you’ve saved and rated on this device joins your library.',
+    options: [...remote.map((r) => ({ value: r.id, label: r.name || 'Unnamed' })), { value: 'new', label: 'Someone new' }],
+  });
+  const r = remote.find((x) => x.id === pick);
+  if (r) setProfiles(claimProfile(device.profiles, me.id, r), { fromSync: true });
+  else await nameMe();
 }
 
 function inviteUrl() {
@@ -594,19 +617,7 @@ function showPeople() {
       if (!code) throw Object.assign(new Error('That isn’t an invite code. They look like abcd-efgh-jkmn.'), { code: 'bad-code' });
       const hh = await joinHousehold(sync.fb, sync.user.uid, code);
       sync.pendingCode = null;
-      const remote = (hh && hh.profiles) || [];
-      const me = currentProfile(device.profiles);
-      if (remote.length && !remote.some((r) => r.id === me.id)) {
-        // Which of the household's people is this device's library?
-        const pick = await choiceSheet({
-          title: 'Which one is you?',
-          message: 'What you’ve saved and rated on this device joins your library.',
-          options: [...remote.map((r) => ({ value: r.id, label: r.name || 'Unnamed' })), { value: 'new', label: 'Someone new' }],
-        });
-        const r = remote.find((x) => x.id === pick);
-        if (r) setProfiles(claimProfile(device.profiles, me.id, r), { fromSync: true });
-        else await nameMe();
-      }
+      await whichOneIsYou((hh && hh.profiles) || []);
       device.household = code;
       saveDevice(device);
       await beginSync();

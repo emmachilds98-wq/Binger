@@ -33,3 +33,23 @@ jobs:
         with:
           name: screenshots
           path: docs/screenshots/
+
+  # The Firebase live check (docs/FIREBASE.md) against the local emulators,
+  # with this repo's firestore.rules and the real Firebase JS SDK.
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install Playwright + Chromium
+        run: |
+          npm install -g playwright@1.56.1
+          npx -y playwright@1.56.1 install --with-deps chromium
+      - name: Sync run (Firebase emulators)
+        run: PLAYWRIGHT_MODULE="$(npm root -g)/playwright" npx -y firebase-tools@15.34.2 emulators:exec --project demo-binger --only auth,firestore "npm run e2e:sync"
