@@ -20,10 +20,65 @@
   <link rel="stylesheet" href="css/app.css">
   <script src="js/version.js"></script>
   <script type="module" src="js/app.js"></script>
+  <!-- Every module the app imports, fetched at once instead of one import
+       level at a time (a five-step chain took 3.7 s on a slow phone).
+       tests/shell.test.js keeps this list complete. -->
+  <link rel="modulepreload" href="js/config.js">
+  <link rel="modulepreload" href="js/engine/explain.js">
+  <link rel="modulepreload" href="js/engine/features.js">
+  <link rel="modulepreload" href="js/engine/index.js">
+  <link rel="modulepreload" href="js/engine/profile.js">
+  <link rel="modulepreload" href="js/engine/rank.js">
+  <link rel="modulepreload" href="js/engine/score.js">
+  <link rel="modulepreload" href="js/engine/seasons.js">
+  <link rel="modulepreload" href="js/engine/timeline.js">
+  <link rel="modulepreload" href="js/sources/anilist.js">
+  <link rel="modulepreload" href="js/sources/candidates.js">
+  <link rel="modulepreload" href="js/sources/genres.js">
+  <link rel="modulepreload" href="js/sources/http.js">
+  <link rel="modulepreload" href="js/sources/imports.js">
+  <link rel="modulepreload" href="js/sources/lookups.js">
+  <link rel="modulepreload" href="js/sources/ratings.js">
+  <link rel="modulepreload" href="js/sources/services.js">
+  <link rel="modulepreload" href="js/sources/tmdb.js">
+  <link rel="modulepreload" href="js/state/cache.js">
+  <link rel="modulepreload" href="js/state/device.js">
+  <link rel="modulepreload" href="js/state/library.js">
+  <link rel="modulepreload" href="js/state/profiles.js">
+  <link rel="modulepreload" href="js/state/store.js">
+  <link rel="modulepreload" href="js/sync/firebase.js">
+  <link rel="modulepreload" href="js/sync/sync.js">
+  <link rel="modulepreload" href="js/ui/card.js">
+  <link rel="modulepreload" href="js/ui/deck.js">
+  <link rel="modulepreload" href="js/ui/detail.js">
+  <link rel="modulepreload" href="js/ui/dom.js">
+  <link rel="modulepreload" href="js/ui/filters.js">
+  <link rel="modulepreload" href="js/ui/gesture.js">
+  <link rel="modulepreload" href="js/ui/import.js">
+  <link rel="modulepreload" href="js/ui/library.js">
+  <link rel="modulepreload" href="js/ui/onboarding.js">
+  <link rel="modulepreload" href="js/ui/people.js">
+  <link rel="modulepreload" href="js/ui/person.js">
+  <link rel="modulepreload" href="js/ui/rate.js">
+  <link rel="modulepreload" href="js/ui/search.js">
+  <link rel="modulepreload" href="js/ui/services.js">
+  <link rel="modulepreload" href="js/ui/settings.js">
+  <link rel="modulepreload" href="js/ui/sheet.js">
+  <link rel="modulepreload" href="js/ui/shortcuts.js">
+  <link rel="modulepreload" href="js/ui/taste.js">
+  <link rel="modulepreload" href="js/ui/timeline.js">
+  <link rel="modulepreload" href="js/ui/trailer.js">
 </head>
 <body>
   <div class="app">
-    <main id="view" class="view" data-tab="discover"></main>
+    <main id="view" class="view" data-tab="discover">
+      <!-- Shown until the app draws its first screen, so a slow start is never a blank one. -->
+      <div class="splash" role="status">
+        <span class="brand"><span class="brand-mark" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="brand-word">binger</span></span>
+        <span class="splash-bar" aria-hidden="true"></span>
+        <span class="sr-only">Loading Binger</span>
+      </div>
+    </main>
     <nav id="tabbar" class="tabbar" aria-label="Main">
       <a href="#discover" data-tab="discover" class="tab" aria-current="page">
         <span class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg></span>

@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const TYPES = {
@@ -20,8 +21,11 @@ export function startServer(port = Number(process.env.PORT) || 8080) {
       if (!file.startsWith(ROOT)) { res.writeHead(403).end(); return; }
       if ((await stat(file).catch(() => null))?.isDirectory()) file = join(file, 'index.html');
       const body = await readFile(file);
-      res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
-      res.end(body);
+      const type = TYPES[extname(file)] || 'application/octet-stream';
+      // Compress text like GitHub Pages does, so timings here match the live site.
+      const gzip = /^(text|application\/(json|manifest))/.test(type) && /\bgzip\b/.test(req.headers['accept-encoding'] || '');
+      res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache', ...(gzip ? { 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' } : {}) });
+      res.end(gzip ? gzipSync(body) : body);
     } catch {
       res.writeHead(404, { 'Content-Type': 'text/plain' }).end('Not found');
     }
