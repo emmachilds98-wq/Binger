@@ -235,14 +235,16 @@ test('typing someone’s name brings them up (to open their page) and what they�
   const person = (id, name, popularity, knownFor) => ({ id, name, popularity, known_for_department: 'Acting', profile_path: `/p${id}.jpg`, known_for: knownFor });
   const fetchImpl = fakeFetch([
     ['/search/person', (url) => ({ results: param(url, 'query') === 'adam scott'
-      ? [person(55536, 'Adam Scott', 30, [{ ...show(95396, 'Severance'), media_type: 'tv' }, { ...show(8592, 'Parks and Recreation'), media_type: 'tv' }, { ...film(129, 'Spirited Away', { genre_ids: [16], original_language: 'ja' }), media_type: 'movie' }])]
+      ? [person(55536, 'Adam Scott', 30, [{ ...show(95396, 'Severance'), media_type: 'tv' }, { ...show(8592, 'Parks and Recreation'), media_type: 'tv' }, { ...film(129, 'Spirited Away', { genre_ids: [16], original_language: 'ja' }), media_type: 'movie' }]),
+        person(9999, 'Adam Scott', 2, [{ ...film(5555, 'Man of the West'), media_type: 'movie' }])]
       : [person(1, 'Tom', 0.6, []), person(2, 'Tom Hanks', 60, [])] })],
+    ['/search/movie', { results: [film(7, 'Great Scott!', { popularity: 90 })] }],
     ['/search/', { results: [] }],
   ]);
   const tmdb = createTmdb({ key: 'k', fetchImpl });
   const adam = await searchTitles('adam scott', { tmdb });
-  assert.deepEqual(adam.people.map((p) => [p.id, p.name, p.known]), [['tmdb:p:55536', 'Adam Scott', 'Actor']]);
-  assert.deepEqual(adam.titles.map((t) => t.title), ['Severance', 'Parks and Recreation'], 'his best-known shows (anime left to AniList)');
+  assert.deepEqual(adam.people.map((p) => [p.id, p.name, p.known]), [['tmdb:p:55536', 'Adam Scott', 'Actor']], 'a far less known namesake is left out');
+  assert.deepEqual(adam.titles.map((t) => t.title), ['Severance', 'Parks and Recreation', 'Great Scott!'], 'his best-known shows first (anime left to AniList), then loose matches');
   assert.deepEqual((await searchTitles('tom', { tmdb })).people, [], 'one word is more likely a title: an obscure "Tom" isn’t shown');
   assert.deepEqual(matchingPeople('zendaya', [{ name: 'Zendaya', popularity: 40 }]).map((p) => p.name), ['Zendaya']);
   assert.deepEqual(matchingPeople('pedro pas', [{ name: 'Pedro Pascal', popularity: 50 }]).map((p) => p.name), ['Pedro Pascal']);

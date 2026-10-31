@@ -86,7 +86,10 @@ it's built in.
        pas") shows them as a row that opens their page (`openPerson`), and
        their best-known titles join the results. One word ("tom") is more
        likely a title, so only a well-known one-name person ("zendaya") gets
-       a row (`matchingPeople`, TMDB `/search/person`).
+       a row; a far less known namesake (a second "Adam Scott", found by the
+       live check) is left out, and what they're known for ranks above
+       titles that only loosely match the words (`matchingPeople`, TMDB
+       `/search/person`).
 2. [x] **A year in search.** "dune 2021", "The Office (2005)": TMDB is also
        asked for that year, and that year's title goes first. "Blade Runner
        2049" and "Space 1999" still work as titles (`splitYear`).
@@ -96,8 +99,10 @@ it's built in.
 4. [x] **Page memory.** Each refill turns every list to its next page
        (`turnPage`; the app keeps `deck.pages` for the session, reset with
        the pool or a filter change), so a long session keeps reaching titles
-       it hasn't seen. The live check measures it: five refills with and
-       without the memory ("deck reach").
+       it hasn't seen. The live check measures it ("deck reach", PR #10):
+       five refills reach 686 titles with the memory, 444 without (312 and
+       183 of them from the last two years); the fifth refill still adds
+       123 new titles, against 57.
 5. [x] **Review scores** (the owner's ask): IMDb, Rotten Tomatoes critics
        and audience, Metacritic and Letterboxd, on cards ("IMDb 8.1 · RT
        audience 90%") and in details (each opens its site). From MDBList: see

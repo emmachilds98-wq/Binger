@@ -173,7 +173,8 @@ await step('search', async () => {
 await step('people and years in search', async () => {
   const adam = await searchTitles('adam scott', { tmdb });
   console.log(`    "adam scott": ${adam.people.map((p) => `${p.name} (${p.known})`).join('; ')} · ${adam.titles.slice(0, 5).map((t) => t.title).join('; ')}`);
-  check(adam.people[0] && adam.people[0].name === 'Adam Scott' && adam.titles.some((t) => t.title === 'Severance'), 'search "adam scott" brings him up, and Severance among his work');
+  check(adam.people.length === 1 && adam.people[0].name === 'Adam Scott' && adam.people[0].known === 'Actor', 'search "adam scott" brings up the actor, not his obscure namesakes');
+  check(adam.titles.slice(0, 3).some((t) => t.title === 'Severance'), 'and Severance is among the first results');
   const dune = await searchTitles('dune 2021', { tmdb });
   check(!!(dune.titles[0] && dune.titles[0].title === 'Dune' && dune.titles[0].year === 2021), `search "dune 2021" → first result ${dune.titles[0] ? `"${dune.titles[0].title}" (${dune.titles[0].year})` : 'none'}`);
   const blade = await searchTitles('blade runner 2049', { tmdb });

@@ -67,15 +67,17 @@ export function matchTier(title, query) {
 // from the year asked for comes first, then each source's own order (TMDB's
 // most popular, AniList's best match), sources taking turns; titles with no
 // poster go last. query can be several ways of reading what was typed
-// ("dune 2021" and "dune"): the closest match counts.
-export function rankSearch(query, lists, { year = null } = {}) {
+// ("dune 2021" and "dune"): the closest match counts. known: ids of what a
+// person you named is known for, which count as a good match ("adam scott"
+// finds Severance before films that only loosely match the words).
+export function rankSearch(query, lists, { year = null, known = null } = {}) {
   const queries = Array.isArray(query) ? query : [query];
   const all = [];
   const seen = new Set();
   lists.forEach((list, li) => (list || []).forEach((t, pos) => {
     if (!t || !t.id || seen.has(t.id)) return;
     seen.add(t.id);
-    const tier = Math.min(...queries.map((q) => matchTier(t, q)));
+    const tier = Math.min(...queries.map((q) => matchTier(t, q)), known && known.has(t.id) ? 2 : 3);
     all.push({ t, tier, off: year && t.year !== year ? 1 : 0, art: t.poster ? 0 : 1, pos, li });
   }));
   all.sort((a, b) => a.tier - b.tier || a.off - b.off || a.art - b.art || a.pos - b.pos || a.li - b.li);
@@ -85,14 +87,17 @@ export function rankSearch(query, lists, { year = null } = {}) {
 // People worth a row of their own: you typed their whole name ("adam
 // scott"), or the start of it in two words or more ("pedro pas"). A single
 // word ("tom") is more likely a title, unless it's a well-known one-name
-// person ("zendaya").
+// person ("zendaya"). A namesake far less known than the best match (a
+// second "Adam Scott", a producer) is left out.
 export function matchingPeople(query, people, max = 2) {
   const words = normaliseName(query).split(' ').filter(Boolean).length;
-  return (people || []).filter((p) => {
+  const matches = (people || []).filter((p) => {
     const tier = matchTier({ title: p.name }, query);
     if (words >= 2) return tier <= 1;
     return tier === 0 && (p.popularity || 0) >= 5;
-  }).slice(0, max);
+  });
+  const top = Math.max(0, ...matches.map((p) => p.popularity || 0));
+  return matches.filter((p) => (p.popularity || 0) >= top * 0.3).slice(0, max);
 }
 
 // A streaming service's shows and films: its own series (TMDB networks, any
@@ -132,7 +137,8 @@ export async function searchTitles(query, { tmdb, anilist, limit = 40, now = Dat
   const [svc, who, ...settled] = await Promise.allSettled([serviceTitles(service, { tmdb }), peopleJob, ...jobs]);
   const errors = settled.filter((r) => r.status === 'rejected').map((r) => r.reason);
   const people = matchingPeople(text, who.status === 'fulfilled' ? who.value : []);
-  const found = rankSearch(year ? [q, text] : q, [...settledValues(settled), ...people.map((p) => p.knownFor)], { year });
+  const known = new Set(people.flatMap((p) => p.knownFor.map((t) => t.id)));
+  const found = rankSearch(year ? [q, text] : q, [...people.map((p) => p.knownFor), ...settledValues(settled)], { year, known });
   const fromService = svc.status === 'fulfilled' ? svc.value.slice(0, 24) : [];
   const ids = new Set(fromService.map((t) => t.id));
   const titles = [...fromService, ...found.filter((t) => !ids.has(t.id))].slice(0, limit + fromService.length);
