@@ -20,41 +20,48 @@ and the decisions that shouldn't be quietly undone. Update the
 
 ## Start here (next session)
 
-Where things stand on 2026-10-31 (fourth session):
+Where things stand at the end of 2026-10-31 (fourth session, handover):
 
-- **The site is live** at https://emmachilds98-wq.github.io/Binger/
-  (GitHub Pages, deployed from `main`).
-- **Phase 2 is finished** (all five steps), and **people + Firebase sync**
-  are built: separate libraries for each person (Emma, Dave…), a chip
-  showing whose library it is, "Who's watching?", and household sync.
-  **Sync now passes the full live check on the Firebase emulators** with the
-  real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
-- **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
-  people and sync with the owner's Firebase project are live.
+- **The site is live** at https://emmachilds98-wq.github.io/Binger/,
+  published from `main` by the "Deploy site" workflow with the TMDB key
+  built in (decision 4). Films, TV and anime all work with nothing to paste.
+- **Merged today:** #9 to #12, i.e. coverage steps 1 to 3 ([COVERAGE-PLAN.md](COVERAGE-PLAN.md)),
+  review scores (code ready, key pending), bring your history (IMDb,
+  Letterboxd, MyAnimeList, AniList), **sign in or nothing** (decision 20)
+  and Settings on every page.
 - **Checks:** `npm test` 146 passing, `npm run e2e` all passing,
-  `npm run e2e:sync` 38/38.
-- **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
-  from **`main`**.
+  `npm run e2e:sync` 38/38 on the Firebase emulators, TMDB live green.
+- **Waiting on the owner:**
+  - the `MDBLIST_API_KEY` repository secret (COVERAGE-PLAN step 4): until
+    then review scores (IMDb, Rotten Tomatoes, MyAnimeList) stay hidden;
+  - optionally `TMDB_API_KEY` and `MDBLIST_API_KEY` in the Claude Code cloud
+    environment, so sessions can check against the live APIs directly;
+  - one real try of Google sign-in (only email sign-in is scripted).
+- **Branch from `main`.** Work on a branch, open a PR, merge to `main`.
 
 Do these in order:
 
 1. Run `npm run check && npm test && npm run e2e` to confirm a green start
    (and `npm run e2e:sync` if Java is installed; see [FIREBASE.md](FIREBASE.md#on-the-emulators-no-firebase-project-needed)).
-2. **TMDB is verified live**, in GitHub Actions with the repository secret
-   (`.github/workflows/tmdb-live.yml`, weekly and on adapter changes). If that
-   workflow goes red, TMDB changed: read its log, fix `js/sources/tmdb.js`.
-3. **Firebase is connected and live-checked** (`binger-5cee3`, config in
-   `js/config.js`, console steps done, [live check passed](FIREBASE.md#on-the-real-project)).
-   Only Google sign-in is untested by script: ask the owner to try it once.
-4. Then [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order):
-   the PC layout is done (step 2), so 3. films and TV for everyone, then
-   4. mobile polish. If someone with canvas access is around, add a desktop
-   row to the canvas from DESIGN.md → "PC and tablet layout".
-5. **Coverage** ([COVERAGE-PLAN.md](COVERAGE-PLAN.md)): steps 1 and 2 are
-   built (search, first run, wider deck, people and years in search, review
-   scores). Review scores wait for the owner's `MDBLIST_API_KEY` secret
-   (step 4); check the TMDB live run's "review scores" step once it's in.
-   Then step 3.
+2. **TMDB is verified live** in GitHub Actions (`.github/workflows/tmdb-live.yml`,
+   weekly and on source changes). If it goes red, read its log and fix
+   `js/sources/`. Once `MDBLIST_API_KEY` exists, its "review scores" step
+   runs too: if MDBList names Rotten Tomatoes' audience score differently
+   from `popcorn` / `tomatoesaudience` / `audience`, fix `fromMdblist` in
+   `js/sources/ratings.js` (the step prints the raw source names).
+3. **Firebase is connected and live-checked** (`binger-5cee3`). Sign-in is
+   now required where sync is set up (decision 20): the main e2e run plays a
+   copy without sync; signing in is covered by `npm run e2e:sync`.
+4. **Next work, in order:**
+   [UPGRADE-PLAN.md → 4. Mobile polish](UPGRADE-PLAN.md#4-mobile-polish-after-1-to-3)
+   (install prompt, backup nudge, `srcset` posters, self-hosted fonts, swipe
+   on speed, share a title). Then the leftovers in COVERAGE-PLAN: anime
+   rated on IMDb or Letterboxd should map to AniList (known gap), Coming
+   soon (the owner said "not now"), Trakt (the owner's call). Phase 3's
+   shared deck ("match with Dave") after that.
+5. If someone with canvas access is around, add the PC layout, the import
+   sheet and the new welcome to the design canvas (they're written up in
+   DESIGN.md) and copy the canvas to `docs/design/canvas/`.
 6. Tick the boxes here and add a [status log](#status-log) entry.
 
 ### New to the project? (human engineers)
@@ -374,7 +381,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - [x] The live check on the Firebase emulators (`npm run e2e:sync`, in CI)
 - [x] Connect the real Firebase project and do the live check there ([FIREBASE.md](FIREBASE.md)): passed 2026-10-31
 - [x] PC layout (designed in DESIGN.md, built, e2e at 1280 / 768 / 360 px)
-- [ ] Films and TV for everyone (the TMDB key)
+- [x] Films and TV for everyone (the TMDB key, built into the deployed site: decision 4)
 - [ ] Mobile polish
 Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
@@ -407,6 +414,10 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session, end): handover
+- The owner merged #12 and asked to stop here for the next agent. Start
+  here is refreshed for them; everything below is merged into `main`.
 
 ### 2026-10-31 (fourth session, evening): bring your history; sign-in only
 - The owner merged #11 ("merge and continue"). Built Import history
