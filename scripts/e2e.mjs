@@ -30,6 +30,9 @@ const providersList = fx('tmdb-providers-movie.json');
 const personChalamet = fx('tmdb-person.json');
 const staffTanezaki = fx('anilist-staff-tanezaki.json');
 const duneCollection = fx('tmdb-collection.json');
+// Severance with season 3 announced: episode 1 airs in 77 days.
+const s3Date = new Date(Date.now() + 77 * 86400000).toISOString().slice(0, 10);
+const severanceNow = { ...tvDetail, next_episode_to_air: { id: 6001, name: 'Season 3, Episode 1', air_date: s3Date, episode_number: 1, season_number: 3 } };
 const tvList = { results: [{ ...tvDetail, genre_ids: tvDetail.genres.map((g) => g.id), media_type: 'tv' }] };
 const allAnime = Object.values(deckFx.data).flatMap((p) => p.media.flatMap((m) => (m.recommendations ? m.recommendations.nodes.map((n) => n.mediaRecommendation) : [m])));
 
@@ -87,7 +90,7 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p === '/trending/movie/week' || p === '/movie/popular' || p === '/discover/movie') return json(trending);
   if (p === '/trending/tv/week' || p === '/tv/popular' || p === '/discover/tv') return json(tvList);
   if (p === '/movie/693134') return json(movieDetail);
-  if (p === '/tv/95396') return json(tvDetail);
+  if (p === '/tv/95396') return json(severanceNow);
   if (p === '/search/multi') return json({ results: [...trending.results, ...tvList.results] });
   // Details for any other listed title: its list entry, with no streaming in GB.
   const other = p.match(/^\/(movie|tv)\/(\d+)$/);
@@ -331,6 +334,30 @@ check(await seriesPill.count() === 1, 'Taste lists Dune under "Never show me"');
 await seriesPill.click();
 await page.waitForTimeout(200);
 check((await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).settings.hiddenFranchises.length)) === 0, 'tapping it shows Dune again');
+
+console.log('New seasons');
+await page.goto(base + '#discover');
+await page.getByRole('button', { name: 'Search', exact: true }).click();
+await page.fill('#search-q', 'Severance');
+await page.getByRole('button', { name: 'Seen Severance: rate it' }).first().click();
+await page.waitForSelector('.rate .stars-input');
+await page.locator('.rate .star').nth(4).click();
+await page.fill('#watch-date', '2025-04-10');
+await page.getByRole('button', { name: 'Save to diary' }).click();
+await page.keyboard.press('Escape');
+await page.click('a[href="#library"]');
+await page.getByRole('tab', { name: /Watchlist/ }).click();
+await page.waitForSelector('.alerts .row', { timeout: 8000 }).catch(() => {});
+const alertText = await page.locator('.alerts').innerText().catch(() => '');
+check(/Severance/.test(alertText) && /Season 3 · starts \d+ \w{3}/.test(alertText), `Library shows "Back with new episodes": ${alertText.split('\n').slice(1, 3).join(' / ')}`);
+check(/You watched it in April 2025/.test(alertText), 'it says when you last watched');
+check(await page.locator('#tabbar .tab.has-alert[data-tab="library"]').count() === 1, 'the Library tab wears a dot');
+await shot('11-new-seasons');
+await page.getByRole('button', { name: "Not interested in Severance's new season" }).click();
+await page.waitForTimeout(300);
+check(await page.locator('.alerts').count() === 0 && await page.locator('#tabbar .tab.has-alert').count() === 0, '✕ dismisses it, and the dot goes');
+const dismissed = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).items['tmdb:tv:95396'].dismissed);
+check(JSON.stringify(dismissed) === '["s3"]', 'the dismissal is saved for that season only');
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 

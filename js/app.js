@@ -22,7 +22,7 @@ import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices, loadPerson, hasFranchise, loadFranchise } from './sources/lookups.js';
+import { serviceChoices, loadPerson, hasFranchise, loadFranchise, checkNewSeasons } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen } from './ui/sheet.js';
 
@@ -57,6 +57,9 @@ const deck = {
 const ui = { tab: 'discover', libraryTab: 'watchlist', librarySort: 'match' };
 let discoverHandle = null;
 let onboarding = null;
+// New seasons of TV you've watched (Phase 2 step 4), and what they were
+// worked out from, so they're only re-checked when your TV diary changes.
+const seasons = { alerts: [], basis: '', checking: null };
 
 // ---- sources ---------------------------------------------------------------
 
@@ -312,6 +315,45 @@ function showPerson(stub) {
   });
 }
 
+// ---- new seasons -------------------------------------------------------------
+
+// What the alerts depend on: the key, and each watched show's latest diary
+// date and dismissed seasons.
+function seasonsBasis() {
+  const { items } = store.get();
+  const tv = Object.values(items).filter((it) => it.status === 'watched' && it.title && it.title.kind === 'tv')
+    .map((it) => `${it.id}:${(it.watches || []).map((w) => w.date).sort().pop() || ''}:${(it.dismissed || []).join(',')}`).sort();
+  return `${tmdbKey() ? 1 : 0}|${tv.join('|')}`;
+}
+
+async function refreshSeasons() {
+  const basis = seasonsBasis();
+  if (basis === seasons.basis) return;
+  seasons.basis = basis;
+  const job = checkNewSeasons({ tmdb, items: store.get().items }).catch(() => []);
+  seasons.checking = job;
+  const alerts = await job;
+  if (seasons.checking !== job) return; // a newer check has started
+  seasons.alerts = alerts;
+  showLibraryDot();
+  if (ui.tab === 'library') render();
+}
+
+function showLibraryDot() {
+  const tab = tabbar.querySelector('[data-tab="library"]');
+  if (!tab) return;
+  const n = seasons.alerts.length;
+  tab.classList.toggle('has-alert', n > 0);
+  if (n) tab.setAttribute('aria-label', `Library, ${n} show${n === 1 ? '' : 's'} back with new episodes`);
+  else tab.removeAttribute('aria-label');
+}
+
+function dismissSeason(alert) {
+  seasons.alerts = seasons.alerts.filter((a) => a !== alert);
+  showLibraryDot();
+  store.update(L.dismissAlert, alert.id, alert.key);
+}
+
 // ---- actions shared by every screen ----------------------------------------
 
 function showDetail(title, { card = null } = {}) {
@@ -491,6 +533,10 @@ function render() {
       onOpen: (item) => showDetail(item.title),
       onWatched: (item) => logSeen(item.title),
       onEditWatch: editWatch,
+      alerts: seasons.alerts,
+      onAlertWatched: (a) => { const item = store.get().items[a.id]; if (item) logSeen({ ...item.title, ...a.title, via: item.title.via }); },
+      onAlertDismiss: dismissSeason,
+      onAlertOpen: (a) => showDetail({ ...store.get().items[a.id].title, ...a.title }),
     });
   } else {
     renderTaste(view, {
@@ -534,6 +580,7 @@ store.subscribe((next, prev) => {
   }
   rerank();
   if (ui.tab === 'discover') renderDiscoverView({ force: true }); else render();
+  refreshSeasons();
 });
 
 function isTyping(el) {
@@ -564,6 +611,7 @@ async function init() {
   route();
   if (!store.get().onboarded) startOnboarding();
   refill({ force: true });
+  refreshSeasons();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('service-worker.js').catch(() => {});
   }
