@@ -397,8 +397,10 @@ Newest first. One entry per working session: what changed, what's next, what's b
   news and soaps (decisions 16 and 17).
 - The live check (`scripts/tmdb-live.mjs`, GitHub Actions) now also checks
   each network id, Apple originals, "on now" without talk shows, search
-  results and the first-run grid. This session had no `TMDB_API_KEY`, so
-  it runs on the PR with the repository secret.
+  results and the first-run grid. This session had no `TMDB_API_KEY`, so it
+  ran on PR #9 with the repository secret: all passed (14 network ids right,
+  Apple originals back, right first result for each search, 112 first-run
+  titles plus 111 behind "Show more").
 - Tests: 120 unit (was 109), e2e all passing (101 checks), new screenshots
   `21-onboarding-search`, `22-search-service`. `e2e:sync` not needed (no
   sync files changed).

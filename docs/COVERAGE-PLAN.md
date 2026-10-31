@@ -45,7 +45,7 @@ The gaps came from **how Binger asked TMDB**, not from what TMDB has:
       `serviceTitles` in lookups). Works on the first-run screen too.
 - [x] **First run: what most people have seen.** This week's trending, the
       most-rated films and series of all time, the biggest of the last three
-      years, and the most-watched anime, taking turns (up to about 150 tiles on a
+      years, and the most-watched anime, taking turns (112 tiles on a
       full first page, was 30). "Show more" brings the next page of each.
       Picks found by search stay at the front; "Nothing found for …" is said.
 - [x] **Deck: newer and wider.**
@@ -56,11 +56,18 @@ The gaps came from **how Binger asked TMDB**, not from what TMDB has:
     any): cards say "An Apple TV+ original".
   - News, talk shows and daily soaps are left out of every deck TV list.
   - TV genre picks need 50 ratings (films keep 150).
-- [ ] **Checked live** (runs on this PR in GitHub Actions with the repository's key,
-      `scripts/tmdb-live.mjs`): every network id is the service it claims,
-      Apple TV+ originals come back, "on now" has no talk shows, search puts
-      Slow Horses / Severance / The Studio first, "apple tv" lists Apple's
-      shows, and the first-run grid has 60+ titles with 30+ more behind it.
+- [x] **Checked live** (on PR #9, in GitHub Actions with the repository's key,
+      `scripts/tmdb-live.mjs`, 2026-10-31): all 14 network ids are the
+      services they claim (2552 is TMDB's "Apple TV", 1063 "Sky Atlantic"…);
+      Apple TV+ originals come back (Slow Horses, Ted Lasso, Silo, Dark
+      Matter, Severance, For All Mankind, Foundation…); "on now" has no talk
+      shows or soaps; "slow horses", "severance", "the studio" and "pokemon
+      detective" each find the right title first; "apple tv" lists 25 of
+      Apple's shows and films; the first-run grid has 112 titles, and "Show
+      more" brings 111 new ones. Kept in the weekly run.
+      Seen, not acted on: "on now" still includes weekly wrestling (WWE Raw,
+      NXT), and JustWatch lists a few older films (Inception) as included
+      with Apple TV+ in GB; both are TMDB / JustWatch data, not Binger's.
 - [x] Unit tests (`tests/coverage.test.js`) and browser checks (first-run
       search, "Show more", "apple tv" search; screenshots 21 and 22).
 
