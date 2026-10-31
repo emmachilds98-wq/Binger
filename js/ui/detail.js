@@ -118,11 +118,28 @@ function body(t, ctx, sheet) {
       t.url ? h('a', { href: t.url, target: '_blank', rel: 'noopener' }, t.source === 'anilist' ? 'AniList page' : 'TMDB page', icon('external', 14)) : null));
 }
 
+// One tap to watch it, legally. Anime: the official stream itself, one of
+// your services first. Films and TV: TMDB's page of where it's on in your
+// country (JustWatch's links to each service), since TMDB gives no direct
+// link per service.
+function watchButton(t, ctx) {
+  const mine = ctx.settings.services || [];
+  if (t.source === 'anilist') {
+    const links = t.watchLinks || [];
+    const best = links.find((l) => mine.includes(l.name)) || links[0];
+    return best ? h('a', { class: 'btn btn-primary watch-btn', href: best.url, target: '_blank', rel: 'noopener' }, icon('play', 16), `Watch on ${best.name}`) : null;
+  }
+  const p = t.providers;
+  const any = p && [p.stream, p.free, p.rent, p.buy].some((list) => list && list.length);
+  return any && p.link ? h('a', { class: 'btn btn-primary watch-btn', href: p.link, target: '_blank', rel: 'noopener' }, icon('play', 16), 'Where to watch it') : null;
+}
+
 function whereToWatch(t, ctx) {
   const mine = ctx.settings.services || [];
   if (t.source === 'anilist') {
     const links = t.watchLinks || [];
     return h('section', { class: 'where' }, h('h2', { class: 'eyebrow' }, 'Where to watch'),
+      watchButton(t, ctx),
       links.length
         ? h('ul', { class: 'providers' }, links.map((l) => h('li', null,
           h('a', { class: `provider provider-link${mine.includes(l.name) ? ' provider-yours' : ''}`, href: l.url, target: '_blank', rel: 'noopener' },
@@ -136,6 +153,7 @@ function whereToWatch(t, ctx) {
   const rows = p ? [['Stream', p.stream], ['Free', p.free], ['Rent', p.rent], ['Buy', p.buy]].filter(([, list]) => list && list.length) : [];
   return h('section', { class: 'where' },
     h('h2', { class: 'eyebrow' }, `Where to watch · ${region}`),
+    watchButton(t, ctx),
     rows.length
       ? h('div', { class: 'provider-rows' }, rows.map(([label, list]) => h('div', { class: 'provider-row' },
         h('span', { class: 'provider-label' }, label),

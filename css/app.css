@@ -473,6 +473,13 @@ button.cast-item:hover .cast-name { text-decoration: underline; }
 .welcome-body input { width: 100%; max-width: 360px; text-align: center; font-size: 18px; }
 .welcome-body .small { max-width: 360px; }
 .welcome-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; margin-top: 6px; }
+.welcome-actions input { max-width: none; }
+.welcome-or { margin: 2px 0 -2px; }
+.welcome-email-actions { width: 100%; }
+.welcome-skip { margin-top: 2px; font-weight: 600; }
+/* "Watch on Crunchyroll" / "Where to watch it": one tap to a legal stream. */
+.watch-btn { align-self: flex-start; text-decoration: none; }
+.watch-btn:hover { color: var(--on-accent); }
 .people-body { display: flex; flex-direction: column; gap: 22px; padding-top: 8px; }
 .person-row { gap: 10px; }
 .sync-status { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; }

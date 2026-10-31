@@ -76,9 +76,11 @@ anything shaped like a TMDB key or token is committed anywhere.
 
 ## 3. Use it
 
-1. Emma: Settings → People and sync → Sign in → **Start a household**.
-   Binger asks your name if it doesn't know it yet.
-2. **Share invite link** and send it to Dave.
+1. Emma opens Binger for the first time: the welcome asks her name and signs
+   her in (Google, or email → **Create account**). A household is made for her
+   straight away. (Someone who chose "Just my name" can sign in later:
+   Settings → People and sync → Sign in → **Start a household**.)
+2. Settings → People and sync → **Share invite link**, and send it to Dave.
 3. Dave opens the link on his phone → signs in (his own Google account or
    email) → **Join household** → "Which one is you?" → picks **Dave** (or
    "Someone new" if Emma hasn't added him on her device).

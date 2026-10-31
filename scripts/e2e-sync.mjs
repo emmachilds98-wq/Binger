@@ -131,18 +131,18 @@ const as = (uid, method, path, body) => fetch(docUrl(path), {
   method, headers: { Authorization: `Bearer ${tokenFor(uid)}`, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined,
 });
 
-console.log('Emma: sign in and start a household');
+console.log('Emma: signs up on the welcome');
 const emma = await person('Emma');
 await emma.page.goto(base);
-// The welcome on a first visit: her name, then "Sync with friends" opens
-// People and sync on top of the first run.
+// The first visit opens on sign-in: she creates her account right there,
+// and a household is made for her, ready to invite people into.
 await emma.page.waitForSelector('.sheet.welcome');
 await emma.page.fill('#welcome-name', 'Emma');
-await emma.page.getByRole('button', { name: 'Sync with friends' }).click();
-await emma.page.waitForSelector('.sheet.people');
-check(await emma.page.locator('.sheet.people').isVisible() && await emma.page.locator('.onboarding').count() === 1, 'the welcome takes her name, then "Sync with friends" opens sign-in over the first run');
-await emma.page.keyboard.press('Escape');
-await emma.page.waitForTimeout(400);
+await emma.page.fill('#welcome-email', 'emma@example.com');
+await emma.page.fill('#welcome-password', 'binger-test-pw');
+await emma.page.getByRole('button', { name: 'Create account' }).click();
+const welcomed = await emma.page.waitForSelector('.sheet.welcome', { state: 'detached', timeout: 15000 }).then(() => true).catch(() => false);
+check(welcomed, 'Emma creates her account on the welcome (real Firebase Auth SDK, emulated), and it closes');
 await emma.page.waitForSelector('.onboarding');
 await emma.page.getByRole('button', { name: 'Skip' }).click();
 await emma.page.waitForSelector('.deck .card');
@@ -150,7 +150,7 @@ await emma.page.waitForTimeout(500);
 await emma.page.keyboard.press('ArrowRight');
 await emma.page.waitForTimeout(600);
 const emmaFirst = (await lib(emma.page)).want;
-check(emmaFirst.length === 1, `Emma saves a title before syncing (${emmaFirst.join(', ')})`);
+check(emmaFirst.length === 1, `Emma saves a title (${emmaFirst.join(', ')})`);
 await emma.page.goto(base + '#taste');
 await emma.page.getByRole('button', { name: 'Settings' }).first().click();
 await emma.page.fill('#tmdb-key', 'e2e-test-key');
@@ -158,10 +158,7 @@ await emma.page.getByRole('button', { name: 'Test & save' }).click();
 await emma.page.waitForFunction(() => /Key works/.test(document.querySelector('.settings [role=status]')?.textContent || ''));
 await emma.page.keyboard.press('Escape');
 await openPeople(emma.page);
-await createAccount(emma.page, 'emma@example.com');
-check(true, 'Emma creates an account (real Firebase Auth SDK, emulated)');
-await emma.page.getByRole('button', { name: 'Start a household' }).click();
-// No "What's your name?" here: the welcome already asked.
+// Her household already exists: People and sync goes straight to the invite.
 await emma.page.waitForSelector('.invite-code', { timeout: 15000 });
 const code = (await emma.page.locator('.invite-code').innerText()).replace(/-/g, '');
 check(/^[a-z0-9]{12}$/.test(code), `she gets an invite code (${code})`);
@@ -172,8 +169,14 @@ const members1 = (hh1.fields?.members?.arrayValue?.values || []).map((v) => v.st
 check(members1.length === 1, 'Firestore: households/{code} has Emma as its only member');
 check(hh1.fields?.tmdbKey?.stringValue === 'e2e-test-key', 'Firestore: her TMDB key is stored for the household');
 const emmaId = await emma.page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')).profiles.current);
-const emmaDoc = await adminGet(`households/${code}/profiles/${emmaId}`);
-const emmaCloud = emmaDoc.fields ? JSON.parse(emmaDoc.fields.state.stringValue) : null;
+// Her save went up after sign-in, a moment after she made it: wait for it.
+let emmaCloud = null;
+for (let i = 0; i < 30; i++) {
+  const d = await adminGet(`households/${code}/profiles/${emmaId}`);
+  emmaCloud = d.fields ? JSON.parse(d.fields.state.stringValue) : null;
+  if (emmaCloud && Object.values(emmaCloud.items).some((it) => it.status === 'want')) break;
+  await new Promise((r) => setTimeout(r, 300));
+}
 check(emmaCloud && Object.values(emmaCloud.items).some((i) => i.status === 'want'), 'Firestore: her library is pushed, watchlist and all');
 check(emmaCloud && !emmaCloud.settings.tmdbKey, 'the TMDB key is not in her library document');
 
@@ -251,19 +254,15 @@ check(removed, `removing "${both[0]}" on Emma's browser removes it on Dave's too
 console.log("Emma's laptop: sign in with the same account");
 const laptop = await person('Laptop');
 await laptop.page.goto(base);
+// She signs in on the welcome, with no name typed: her account brings it.
 await laptop.page.waitForSelector('.sheet.welcome');
-await laptop.page.getByRole('button', { name: 'Just me for now' }).click();
-await laptop.page.waitForSelector('.onboarding');
-await laptop.page.getByRole('button', { name: 'Skip' }).click();
-await openPeople(laptop.page);
-await laptop.page.waitForSelector('#sync-email');
-await laptop.page.fill('#sync-email', 'emma@example.com');
-await laptop.page.fill('#sync-password', 'binger-test-pw');
+await laptop.page.fill('#welcome-email', 'emma@example.com');
+await laptop.page.fill('#welcome-password', 'binger-test-pw');
 await laptop.page.getByRole('button', { name: 'Sign in', exact: true }).click();
 await laptop.page.waitForSelector('.confirm .sheet-title', { timeout: 15000 }).catch(() => {});
 check(await laptop.page.locator('.confirm .sheet-title').count() === 1 && await laptop.page.locator('.confirm .sheet-title').innerText() === 'Which one is you?', 'signing in on a second device asks "Which one is you?"');
 await laptop.page.locator('.confirm').getByRole('button', { name: 'Emma' }).click().catch(() => {});
-await laptop.page.waitForSelector('.invite-code', { timeout: 15000 }).catch(() => {});
+check(await laptop.page.waitForSelector('.sheet.welcome', { state: 'detached', timeout: 15000 }).then(() => true).catch(() => false), 'then the welcome closes: nothing left to link');
 await laptop.page.waitForTimeout(2500);
 const onLaptop = await lib(laptop.page);
 const laptopPeople = await laptop.page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')).profiles.list.map((p) => p.name || '(no name)'));
@@ -277,7 +276,8 @@ console.log('A wrong code');
 const stranger = await person('Stranger');
 await stranger.page.goto(base);
 await stranger.page.waitForSelector('.sheet.welcome');
-await stranger.page.getByRole('button', { name: 'Just me for now' }).click();
+await stranger.page.fill('#welcome-name', 'Sam');
+await stranger.page.getByRole('button', { name: 'Just my name for now' }).click();
 await stranger.page.waitForSelector('.onboarding');
 await stranger.page.getByRole('button', { name: 'Skip' }).click();
 await openPeople(stranger.page);
