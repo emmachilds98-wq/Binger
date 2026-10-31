@@ -30,6 +30,13 @@ export function openDetail(initial, ctx) {
   return sheet;
 }
 
+// On a wide screen the same details sit beside the deck and follow the top
+// card (docs/DESIGN.md → PC and tablet layout). No trailer or buttons here:
+// those stay on the card.
+export function detailPanel(t, ctx) {
+  return h('div', { class: 'deck-detail' }, body(t, ctx, null));
+}
+
 function media(t, ctx, sheet) {
   const box = h('div', { class: 'detail-media', style: { '--art': t.color || null } });
   const showStill = () => {
@@ -104,7 +111,7 @@ function body(t, ctx, sheet) {
     history(t, ctx),
     ctx.canHideSeries && ctx.canHideSeries(t) ? h('p', null, h('button', {
       type: 'button', class: 'link-btn quiet-link',
-      onClick: () => { sheet.close(); ctx.onHideSeries(t); },
+      onClick: () => { if (sheet) sheet.close(); ctx.onHideSeries(t); },
     }, 'Hide the whole series')) : null,
     h('p', { class: 'small muted links' },
       t.trailer ? h('a', { href: fullTrailerUrl(t.trailer), target: '_blank', rel: 'noopener' }, 'Full trailer on YouTube', icon('external', 14)) : null,

@@ -430,6 +430,87 @@ await page.waitForSelector('.who-chip');
 await page.waitForTimeout(300);
 check((await page.locator('.who-chip').first().getAttribute('aria-label')).includes('Emma') && (await libraryCount()).watched === wantsBefore, 'back to Emma, with her library untouched');
 
+console.log('Wider screens (docs/DESIGN.md → PC and tablet layout)');
+// Nothing on the page may stick out past the right edge, at any size.
+// Returns '' when everything fits, else what sticks out (for the message).
+const overflowing = () => page.evaluate(() => {
+  const over = [...document.querySelectorAll('#view *, .sheet *')].filter((e) => e.getBoundingClientRect().right > innerWidth + 1);
+  const page = document.documentElement.scrollWidth > innerWidth + 1 ? ['the page itself'] : [];
+  return [...page, ...over.slice(0, 3).map((e) => `${e.tagName.toLowerCase()}.${String(e.className).split(' ')[0]} (${e.textContent.trim().slice(0, 30)})`)].join(', ');
+});
+const fits = async (where) => {
+  const over = await overflowing();
+  check(!over, `nothing ${where} is wider than the screen${over ? `: ${over}` : ''}`);
+};
+const rectOf = (sel) => page.locator(sel).first().evaluate((e) => { const r = e.getBoundingClientRect(); return { left: r.left, right: r.right, width: r.width, top: r.top, bottom: r.bottom }; });
+await page.setViewportSize({ width: 1280, height: 800 });
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+await page.waitForSelector('.deck-side .detail-title');
+const rail = await page.evaluate(() => getComputedStyle(document.getElementById('tabbar')).flexDirection);
+check(rail === 'column' && (await rectOf('#tabbar')).right <= (await rectOf('#view')).left + 1, 'on a PC the tabs are a side rail on the left');
+const topName = await page.locator('.deck .card:last-of-type h2').innerText();
+check(await page.locator('.deck-side .detail-title').innerText() === topName, `the top card's details sit beside the deck (${topName})`);
+check(await page.locator('.key-hint').first().isVisible(), 'each deck button shows its key when there’s a mouse');
+await fits('at 1280 px');
+await page.waitForTimeout(400);
+await shot('15-desktop-discover');
+await page.keyboard.press('ArrowRight');
+await page.waitForFunction((was) => {
+  const t = document.querySelector('.deck-side .detail-title');
+  return t && t.textContent !== was;
+}, topName, { timeout: 8000 }).catch(() => {});
+const nextName = await page.locator('.deck .card:last-of-type h2').innerText();
+check(nextName !== topName && await page.locator('.deck-side .detail-title').innerText() === nextName, `the details follow the top card after a swipe (${nextName})`);
+await page.keyboard.press('?');
+await page.waitForSelector('.sheet.shortcuts');
+await page.waitForTimeout(400); // let it finish sliding in
+const dlg = await rectOf('.sheet.shortcuts');
+check(Math.abs((dlg.left + dlg.right) / 2 - 640) < 2 && Math.abs((dlg.top + dlg.bottom) / 2 - 400) < 2, '? opens the shortcuts as a window in the middle of the screen');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.keyboard.press('/');
+await page.waitForSelector('.sheet.search');
+check(true, '/ opens search');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.getByRole('button', { name: 'More about this title' }).click();
+await page.waitForSelector('.sheet.detail .detail-title');
+const detailBox = await rectOf('.sheet.detail');
+check(detailBox.width <= 760 && detailBox.top >= 23, `the detail sheet is a centred panel, not edge to edge (${Math.round(detailBox.width)} px wide)`);
+await page.waitForTimeout(400);
+await shot('16-desktop-detail');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.goto(base + '#library');
+await page.waitForSelector('#view .rows');
+const libCols = await page.locator('#view .rows').first().evaluate((e) => getComputedStyle(e).gridTemplateColumns.split(' ').length);
+check(libCols >= 2, `Library rows sit in columns (${libCols})`);
+await fits('on Library at 1280 px');
+await shot('17-desktop-library');
+await page.goto(base + '#taste');
+await page.waitForSelector('.taste');
+check(await page.locator('.taste').evaluate((e) => getComputedStyle(e).columnCount) === '2', 'Taste flows into two columns');
+await fits('on Taste at 1280 px');
+await shot('18-desktop-taste');
+
+await page.setViewportSize({ width: 768, height: 1024 });
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+const tabletDeck = await rectOf('.discover-main');
+check(await page.locator('.deck-side').count() === 0 && tabletDeck.width <= 480 && Math.abs((tabletDeck.left + tabletDeck.right) / 2 - 384) < 2, 'on a tablet the deck stays phone-sized in the middle, with the tab bar below');
+await fits('at 768 px');
+
+await page.setViewportSize({ width: 360, height: 640 });
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+const phoneTabs = await page.evaluate(() => getComputedStyle(document.getElementById('tabbar')).flexDirection);
+check(phoneTabs === 'row' && await page.locator('.deck-side').count() === 0 && !(await page.locator('.key-hint').first().isVisible()), 'on a small phone it is the phone layout: tabs at the bottom, no side panel, no key hints');
+await fits('at 360 px');
+await page.waitForTimeout(400);
+await shot('19-small-phone');
+await page.setViewportSize({ width: 390, height: 844 });
+
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 
 console.log('Offline support');

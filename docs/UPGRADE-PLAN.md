@@ -60,27 +60,29 @@ sessions had access to it, so this is the one piece that needs a person.
 Today every screen is a 480 px phone column in the middle of the monitor
 (`.app { max-width: 480px }` in `css/app.css`). Mobile stays exactly as it is.
 
-- [ ] **Design first** (CLAUDE.md: build to the canvas). Add a desktop row to
+- [x] **Design first** (CLAUDE.md: build to the canvas). Done in
+      `docs/DESIGN.md` → "PC and tablet layout" (the canvas couldn't be opened
+      from the 2026-10-31 session's account); a canvas row is still to add. Add a desktop row to
       the canvas (Discover, Library, Taste, Detail at 1280×800) and copy it
       to `docs/design/canvas/`. If there's no canvas access, sketch it in
       `docs/DESIGN.md` and get the owner's OK.
-- [ ] **Breakpoints in `css/app.css`.** Under 700 px: unchanged. 700 to
+- [x] **Breakpoints in `css/app.css`** (built as 700 / 900 / 1100 px; see DESIGN.md). Under 700 px: unchanged. 700 to
       1099 px: deck left, details right. 1100 px and up: a side rail
       (Discover / Library / Taste, plus the who chip) instead of the bottom
       tab bar, and the main area up to about 1200 px wide.
-- [ ] **Details beside the deck.** On wide screens render `openDetail`'s
+- [x] **Details beside the deck** (≥ 900 px; `detailPanel` in `js/ui/detail.js`). On wide screens render `openDetail`'s
       content into a panel next to the deck that follows the top card,
       instead of a full sheet (`js/ui/detail.js` builds the parts;
       `js/ui/sheet.js` decides how they're shown). Rate, Filters and
       Settings become centred dialogs (`.sheet-bottom` at ≥ 700 px:
       `max-width: 560px; border-radius: 28px; bottom: auto; top: 50%; transform: translateY(-50%)`).
-- [ ] **Library as a poster grid** (3 to 6 columns) at ≥ 700 px; **Taste in
-      two columns** (learned on the left, steering on the right).
-- [ ] **Keyboard and mouse.** Keys already work (← Pass, → Want, ↑ Seen it,
+- [x] **Library in columns** at ≥ 700 px (rows in columns rather than a
+      poster grid, so match % and actions stay); **Taste in two columns** at ≥ 900 px.
+- [x] **Keyboard and mouse** (key hints, `/` search, `?` shortcuts: `js/ui/shortcuts.js`). Keys already work (← Pass, → Want, ↑ Seen it,
       Enter details, Z undo; `keydown` in `js/app.js`). Show them as small
       hints on the action buttons under `@media (hover: hover)`, add `/` to
       search and `?` for a shortcuts list.
-- [ ] **e2e at three sizes** (`scripts/e2e.mjs` uses one 390×844 context):
+- [x] **e2e at more sizes** (1280×800, 768×1024 and 360×640 passes; screenshots 15–19) (`scripts/e2e.mjs` uses one 390×844 context):
       add 360×640 (touch) and 1280×800 (mouse) runs of the main flow, with
       screenshots, and keep the "nothing wider than the screen" check.
 

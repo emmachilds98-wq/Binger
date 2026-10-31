@@ -53,14 +53,22 @@ export function renderDiscover(root, ctx) {
 
   const top = cards[0] || null;
   const disabled = !top;
+  // Each button shows its key underneath when there's a mouse (CSS decides).
+  const key = (k) => h('kbd', { class: 'key-hint', 'aria-hidden': 'true' }, k);
   const actions = h('div', { class: 'actions' },
-    h('button', { type: 'button', class: 'act act-sm', 'aria-label': 'Undo last swipe', disabled: !ctx.canUndo, onClick: ctx.onUndo }, icon('undo', 18)),
-    h('button', { type: 'button', class: 'act act-pass', 'aria-label': 'Pass', disabled, onClick: () => swipe('left') }, icon('x', 26)),
-    h('button', { type: 'button', class: 'act act-seen', 'aria-label': 'Seen it: rate it', disabled, onClick: () => top && ctx.onAction('up', top) }, icon('eye', 24)),
-    h('button', { type: 'button', class: 'act act-want', 'aria-label': 'Want to watch', disabled, onClick: () => swipe('right') }, icon('bookmark', 26)),
-    h('button', { type: 'button', class: 'act act-sm', 'aria-label': 'More about this title', disabled, onClick: () => top && ctx.onOpen(top) }, icon('info', 18)));
+    h('button', { type: 'button', class: 'act act-sm', 'aria-label': 'Undo last swipe', title: 'Undo (Z)', disabled: !ctx.canUndo, onClick: ctx.onUndo }, icon('undo', 18), key('Z')),
+    h('button', { type: 'button', class: 'act act-pass', 'aria-label': 'Pass', title: 'Pass (←)', disabled, onClick: () => swipe('left') }, icon('x', 26), key('←')),
+    h('button', { type: 'button', class: 'act act-seen', 'aria-label': 'Seen it: rate it', title: 'Seen it (↑)', disabled, onClick: () => top && ctx.onAction('up', top) }, icon('eye', 24), key('↑')),
+    h('button', { type: 'button', class: 'act act-want', 'aria-label': 'Want to watch', title: 'Want to watch (→)', disabled, onClick: () => swipe('right') }, icon('bookmark', 26), key('→')),
+    h('button', { type: 'button', class: 'act act-sm', 'aria-label': 'More about this title', title: 'Details (Enter)', disabled, onClick: () => top && ctx.onOpen(top) }, icon('info', 18), key('Enter')));
 
-  root.append(header, h('div', { class: 'deck-wrap' }, deckEl), actions);
+  // On a phone .discover-main and .deck-col are display: contents, so this is
+  // the same column as ever. On a wide screen the top card's details sit
+  // beside the deck (ctx.detail is only passed then).
+  const side = top && ctx.detail ? ctx.detail(top) : null;
+  root.append(header, h('div', { class: `discover-main${side ? ' has-side' : ''}` },
+    h('div', { class: 'deck-col' }, h('div', { class: 'deck-wrap' }, deckEl), actions),
+    side ? h('aside', { class: 'deck-side', 'aria-label': `About ${top.title.title}` }, side) : null));
 
   const topEl = deckEl.querySelector('.card:last-of-type');
   if (top && topEl) attachGestures(topEl, {
