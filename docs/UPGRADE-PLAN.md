@@ -46,16 +46,14 @@ sessions had access to it, so this is the one piece that needs a person.
 - [x] The live check, run for real on the Firebase emulators with the real
       SDK and `firestore.rules` (`npm run e2e:sync`, in CI as the `sync` job):
       34 checks, two bugs found and fixed (FIREBASE.md → Live check).
-- [ ] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
+- [x] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
       (web app, Google + Email sign-in, authorised domain
       `emmachilds98-wq.github.io`, Firestore, publish `firestore.rules`).
 - [x] Put the web config in `js/config.js` → `firebase: { … }` (project
       `binger-5cee3`, 2026-10-31). A shell test checks its shape, and that
       it never points at the emulators.
-- [ ] Do the [live check on the real project](FIREBASE.md#on-the-real-project)
-      with two browsers. The emulator run covers the code and rules, so what
-      this tests is the console setup (sign-in methods, authorised domain,
-      rules published).
+- [x] The [live check on the real project](FIREBASE.md#on-the-real-project)
+      passed (2026-10-31). Google sign-in still wants one try by a person.
 
 ### 2. A proper PC layout — ASAP
 

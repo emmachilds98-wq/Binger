@@ -28,10 +28,8 @@ Where things stand on 2026-10-31 (third session):
   showing whose library it is, "Who's watching?", and household sync.
   **Sync now passes the full live check on the Firebase emulators** with the
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
-- **PRs:** #2 and #3 (Phase 2, people, sync code) were merged into `main` on
-  2026-10-31, so they're live. #4 (`claude/firebase-upgrades`: the emulator
-  run, two sync fixes and the project's Firebase config) is open; until it's
-  merged, the live site has no Firebase project to sync with.
+- **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
+  people and sync with the owner's Firebase project are live.
 - **Checks:** `npm test` 104 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
@@ -46,11 +44,9 @@ Do these in order:
    started, so that session couldn't see it). Do [Verifying TMDB live](#verifying-tmdb-live)
    first. It has been blocked four times, and Phase 2 adds four TMDB endpoints
    that are still tested only against hand-written responses.
-3. **Firebase:** the project's web config is in `js/config.js` (`binger-5cee3`).
-   Ask the owner whether the remaining console steps in
-   [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
-   are done (on 2026-10-31 Authentication wasn't started and there was no
-   Firestore database), then do the [live check on the real project](FIREBASE.md#on-the-real-project).
+3. **Firebase is connected and live-checked** (`binger-5cee3`, config in
+   `js/config.js`, console steps done, [live check passed](FIREBASE.md#on-the-real-project)).
+   Only Google sign-in is untested by script: ask the owner to try it once.
 4. Then [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order):
    2. a proper PC layout (design first), 3. films and TV for everyone,
    4. mobile polish.
@@ -327,7 +323,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - [x] People: separate libraries for each person, "Who's watching?", the who chip
 - [x] Firebase sync code (household, invite, merge, shared TMDB key), unit-tested
 - [x] The live check on the Firebase emulators (`npm run e2e:sync`, in CI)
-- [ ] Connect the real Firebase project and do the live check there ([FIREBASE.md](FIREBASE.md))
+- [x] Connect the real Firebase project and do the live check there ([FIREBASE.md](FIREBASE.md)): passed 2026-10-31
 - [ ] PC layout (design first)
 - [ ] Films and TV for everyone (the TMDB key)
 - [ ] Mobile polish
@@ -394,8 +390,12 @@ Newest first. One entry per working session: what changed, what's next, what's b
   to the secrets mid-session, but a running container doesn't pick up new
   secrets, so the live TMDB check waits for the next session.
 - Tests: 104 unit (was 102), e2e all passing, sync 34/34.
-- **Next:** see Start here: TMDB live check, then the owner's Firebase
-  console steps and the live check on the real project, then the PC layout.
+- Then the owner did the console steps. Read-only check: Authentication on,
+  `emmachilds98-wq.github.io` authorised, Firestore created. The live check on
+  the real project passed (FIREBASE.md → On the real project); test accounts
+  deleted. The owner asked for #4 to be merged into `main`, and for a new
+  session (which gets the `TMDB_API_KEY` secret) to do the TMDB live check.
+- **Next:** see Start here: TMDB live check, then the PC layout.
 
 ### 2026-10-31 (second session): Phase 2 finished, people and sync
 - The owner turned on Pages (live from `main`) and asked for: the upgrades,

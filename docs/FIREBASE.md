@@ -17,10 +17,10 @@ the owner's project itself: the console steps below and its web config.
 The project already exists: **binger** (project id `binger-5cee3`), and
 its web config is in `js/config.js`.
 
-**Where it stood on 2026-10-31** (checked from outside with the web API key,
-read-only): step 1 done; step 2 not yet (Firebase answered
-`CONFIGURATION_NOT_FOUND`, meaning Authentication hasn't been started); step 4
-not yet (no Firestore database). Steps 3 and 5 follow from those.
+**All five steps are done** (the owner, 2026-10-31), and the
+[live check on the real project](#on-the-real-project) passed the same day.
+Google sign-in is switched on but can't be tested by a script (it needs a real
+Google account): try it once on the live site.
 
 1. **Add a web app.** ⚙ Project settings → General → Your apps → `</>` (Web).
    Nickname "Binger". No Firebase Hosting needed (the app is on GitHub Pages).
@@ -112,7 +112,18 @@ device added a nameless person to the household instead of asking who you are.
 
 ### On the real project
 
-With the steps above done, on two browsers (or a normal and a private window):
+**Passed on 2026-10-31** against `binger-5cee3`, run by a script from
+`localhost` with throwaway email accounts that were deleted afterwards: email
+sign-up; a household created (so the rules allow it) and synced; an invite
+link joined, with "Which one is you?"; the second device lists both people and
+gets the first one's watchlist; a save on it reached the first device live in
+about 4 s; a signed-in stranger can't read the household, a library or
+`users/{uid}`, while a member can (so the published rules are this repo's,
+not deny-all). Clean-up can't delete a household under the rules, so one
+empty `households/qwcban3dsbcv` (no members, unreadable) was left; delete it in
+the console if you like.
+
+To repeat it by hand, on two browsers (or a normal and a private window):
 
 1. Browser A: sign in, start a household, add a title to the watchlist.
 2. Browser B: open the invite link, sign in as someone else, join, pick a person.
