@@ -82,14 +82,22 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   lilac, orange), the current one ringed. The **who chip** (initial + name;
   initial only under 420 px) sits at the right of every screen's header.
   **People and sync** is a full sheet in the Settings style.
-- **Welcome** (built, `openWelcome` in `js/ui/people.js`): a device's first
-  visit opens on sign-in, so syncing is set up from the start rather than
-  linked later. "Welcome to Binger": your name, **Continue with Google**
-  (amber), or email with **Create account** / **Sign in**; the only way past
-  without signing in is **Just my name for now** (amber link; needs a name).
-  Escape doesn't skip it. A new account gets its own household at once; an
-  existing one asks "Which one is you?". Skipped for invite links and devices
-  already in a household. Screenshot `20-welcome`.
+- **Welcome** (built, `openWelcome` in `js/ui/people.js`): **sign in or
+  nothing** where sync is set up (decision 20). "Welcome to Binger": your
+  name, an invite code field ("Invite code (if someone sent you one)"),
+  **Continue with Google** (amber), or email with **Create account** /
+  **Sign in**. No way past without signing in; Escape and the back gesture
+  don't skip it. A new account gets its own household, or joins the one
+  whose code was typed; an existing one asks "Which one is you?". An invite
+  link opens it with the code filled in ("You've been invited to a
+  household…"). Signed in but not in a household (a wrong code): "Nearly
+  there", the code field, **Join household** / **Start my own household**.
+  A device that skipped signing in before is asked once more ("Sign in to
+  keep going. Everything you've saved on this device comes with you…").
+  A copy of Binger without sync asks just a name. Screenshot `20-welcome`.
+- **Settings from any page** (built): a fourth item in the tab bar, a gear
+  and "Settings", opening the Settings sheet (not a tab of its own); at the
+  foot of the side rail on a PC. Taste keeps its "Settings and backup" button.
 - **Watch button** (built): "Where to watch" opens with one amber button:
   "Watch on Crunchyroll" (anime: the official stream, your service first) or
   "Where to watch it" (films and TV: TMDB's page of legal options in your
@@ -122,6 +130,14 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   eyebrow "Review your pick" and the button "Save review". Their diary rows
   say "First run" where the date would be. Screenshots
   `25-first-run-review`, `26-first-run-picks`.
+- **Bring your history** (built): a full sheet (title "Bring your history"),
+  a muted intro, then "From a file" (one line each for IMDb, Letterboxd and
+  MyAnimeList on where their export lives, and a quiet "Choose files"
+  button) and "From AniList" (username field + quiet Import). A status line
+  counts "Matching 120 of 1,203…", then says what happened; a "couldn't be
+  found" disclosure lists misses; "Undo import" (quiet) and Done (amber).
+  Reached from Settings → "Your history elsewhere" and a small link under
+  the first-run search. Screenshot `27-import`.
 - **Settings** (built): no "Films & TV (TMDB key)" group where a key is
   built into the site, which is the live site.
 - **PC layout** (built; see below). Designed here rather than on the canvas,

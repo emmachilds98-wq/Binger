@@ -101,17 +101,6 @@ const openPeople = async (page) => {
   await page.getByRole('button', { name: /Who uses Binger, and sync/ }).click();
   await page.waitForSelector('.sheet.people');
 };
-const createAccount = async (page, email) => {
-  await page.waitForSelector('#sync-email');
-  await page.fill('#sync-email', email);
-  await page.fill('#sync-password', 'binger-test-pw');
-  await page.getByRole('button', { name: 'Create account' }).click();
-  await page.waitForFunction((e) => document.querySelector('.sheet.people')?.textContent.includes(`Signed in as ${e}`), email, { timeout: 15000 })
-    .catch(async (err) => {
-      console.log(`  (People and sync says: ${await page.locator('.sheet.people').innerText().catch(() => '?')})`);
-      throw err;
-    });
-};
 const closeSheets = async (page) => {
   for (let i = 0; i < 4 && await page.locator('.sheet:not(.is-leaving)').count(); i++) {
     await page.keyboard.press('Escape');
@@ -183,20 +172,23 @@ check(emmaCloud && !emmaCloud.settings.tmdbKey, 'the TMDB key is not in her libr
 console.log('Dave: open the invite link, sign in, join');
 const dave = await person('Dave');
 await dave.page.goto(`${base}#join=${code}`);
-await dave.page.waitForSelector('.sheet.people');
-check(true, 'the invite link opens People and sync, not the first run');
-await createAccount(dave.page, 'dave@example.com');
-check(await dave.page.locator('#join-code').inputValue() === code.replace(/(.{4})(?=.)/g, '$1-'), 'the code from the link is already filled in');
-await dave.page.getByRole('button', { name: 'Join household' }).click();
+// Sign in or nothing: the invite link opens the welcome, code filled in.
+await dave.page.waitForSelector('.sheet.welcome');
+check(await dave.page.locator('#welcome-code').inputValue() === code.replace(/(.{4})(?=.)/g, '$1-'), 'the invite link opens the welcome with its code filled in');
+check(!/just my name/i.test(await dave.page.locator('.sheet.welcome').innerText()), 'and there’s no way past without signing in');
+await dave.page.fill('#welcome-name', 'Dave');
+await dave.page.fill('#welcome-email', 'dave@example.com');
+await dave.page.fill('#welcome-password', 'binger-test-pw');
+await dave.page.getByRole('button', { name: 'Create account' }).click();
 await dave.page.waitForSelector('.confirm .sheet-title', { timeout: 15000 });
 check(await dave.page.locator('.confirm .sheet-title').innerText() === 'Which one is you?', '"Which one is you?" asks');
 const choices = await dave.page.locator('.confirm .btn-primary').allInnerTexts();
 check(JSON.stringify(choices) === '["Emma","Someone new"]', `and offers Emma or someone new (${choices.join(', ')})`);
 await dave.page.getByRole('button', { name: 'Someone new' }).click();
-await dave.page.waitForSelector('#person-name');
-await dave.page.fill('#person-name', 'Dave');
-await dave.page.keyboard.press('Enter');
-await dave.page.waitForSelector('.invite-code', { timeout: 15000 });
+// He gave his name on the welcome, so nothing more to ask: in, and synced.
+check(await dave.page.waitForSelector('.sheet.welcome', { state: 'detached', timeout: 15000 }).then(() => true).catch(() => false), 'he’s in the household, and the welcome closes');
+await dave.page.waitForSelector('.onboarding', { timeout: 15000 });
+await dave.page.getByRole('button', { name: 'Skip' }).click();
 await dave.page.waitForTimeout(1500);
 const daveLib = await lib(dave.page);
 check(daveLib.who === 'Dave', 'Dave is watching as himself');
@@ -277,15 +269,13 @@ const stranger = await person('Stranger');
 await stranger.page.goto(base);
 await stranger.page.waitForSelector('.sheet.welcome');
 await stranger.page.fill('#welcome-name', 'Sam');
-await stranger.page.getByRole('button', { name: 'Just my name for now' }).click();
-await stranger.page.waitForSelector('.onboarding');
-await stranger.page.getByRole('button', { name: 'Skip' }).click();
-await openPeople(stranger.page);
-await createAccount(stranger.page, 'someone@example.com');
-await stranger.page.fill('#join-code', 'zzzz-zzzz-zzzz');
-await stranger.page.getByRole('button', { name: 'Join household' }).click();
-await stranger.page.waitForSelector('.sheet.people [role=alert]', { timeout: 15000 });
-check(await stranger.page.locator('.sheet.people [role=alert]').innerText() === 'No household with that code.', 'joining with a wrong code says "No household with that code."');
+await stranger.page.fill('#welcome-code', 'zzzz-zzzz-zzzz');
+await stranger.page.fill('#welcome-email', 'someone@example.com');
+await stranger.page.fill('#welcome-password', 'binger-test-pw');
+await stranger.page.getByRole('button', { name: 'Create account' }).click();
+await stranger.page.waitForSelector('.sheet.welcome [role=alert]', { timeout: 15000 });
+check(await stranger.page.locator('.sheet.welcome [role=alert]').innerText() === 'No household with that code.', 'signing up with a wrong code says "No household with that code."');
+check(/Nearly there/.test(await stranger.page.locator('.sheet.welcome h1').innerText()) && await stranger.page.getByRole('button', { name: 'Start my own household' }).count() === 1, 'and offers to try another code or start their own household; the welcome stays until they do');
 
 console.log('Security rules (firestore.rules), probed as a stranger');
 const uidE = members1[0];

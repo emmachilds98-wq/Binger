@@ -77,13 +77,13 @@ anything shaped like a TMDB key or token is committed anywhere.
 ## 3. Use it
 
 1. Emma opens Binger for the first time: the welcome asks her name and signs
-   her in (Google, or email → **Create account**). A household is made for her
-   straight away. (Someone who chose "Just my name" can sign in later:
-   Settings → People and sync → Sign in → **Start a household**.)
+   her in (Google, or email → **Create account**). There's no way past
+   without signing in. A household is made for her straight away.
 2. Settings → People and sync → **Share invite link**, and send it to Dave.
-3. Dave opens the link on his phone → signs in (his own Google account or
-   email) → **Join household** → "Which one is you?" → picks **Dave** (or
-   "Someone new" if Emma hasn't added him on her device).
+3. Dave opens the link on his phone: the welcome opens with the invite code
+   filled in → he signs in (his own Google account or email) → "Which one is
+   you?" → picks **Dave** (or "Someone new" if Emma hasn't added him on her
+   device). Without the link, he can type the code on the welcome instead.
 4. Both libraries sync from then on. The TMDB key is shared through the
    household, so Dave gets films and TV without his own key.
 

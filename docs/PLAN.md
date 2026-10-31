@@ -31,8 +31,8 @@ Where things stand on 2026-10-31 (fourth session):
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
 - **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
   people and sync with the owner's Firebase project are live.
-- **Checks:** `npm test` 136 passing, `npm run e2e` all passing,
-  `npm run e2e:sync` 34/34.
+- **Checks:** `npm test` 146 passing, `npm run e2e` all passing,
+  `npm run e2e:sync` 38/38.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
 
@@ -212,6 +212,14 @@ Everything technical you need is in this file,
 19. **First-run picks are 4½★ diary entries marked `setup`** until you
     review them (Library → Diary → "From your first run"): loved enough to
     steer the deck at once, and honest about not being a real review yet.
+20. **Sign in or nothing, where sync is set up** (the owner's ask,
+    2026-10-31: "no ability to add just a name… so there's no mismatches
+    between people and we sync at the first possible point"). The welcome
+    offers only Google or email and stays until the device is signed in and
+    in a household; an invite code (or link) joins that household instead
+    of starting one; signing out brings the welcome back. A copy without a
+    Firebase config (forks, local development, the main e2e run) asks just
+    a name. Supersedes the "Just my name" route of the third session.
 
 ---
 
@@ -386,7 +394,7 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
-- [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
+- [x] Import history: IMDb and Letterboxd CSVs, MyAnimeList export, AniList username (Trakt not yet)
 - [ ] Shared watchlist / "match with a friend" deck (two profiles, one deck)
 
 ### Phase 4: AI assist (optional, needs a tiny backend for the API key)
@@ -399,6 +407,26 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session, evening): bring your history; sign-in only
+- The owner merged #11 ("merge and continue"). Built Import history
+  (Phase 3; COVERAGE-PLAN → Import history): IMDb ratings/watchlist CSV
+  (exact, by IMDb id via TMDB `/find`), Letterboxd's export CSVs (by name
+  and year), MyAnimeList's XML (.gz too) and an AniList username, from
+  Settings and from the first-run screen. `importHistory` (library.js)
+  only adds what's new; the sheet lists misses and offers Undo.
+- The owner then asked for sign-in to be part of sync, with no "just a
+  name", and Settings from any page. Decision 20: where sync is set up the
+  welcome is sign in or nothing, with an invite code field (an invite link
+  fills it in) so a second person joins the household rather than starting
+  another; a device that skipped sign-in before is asked once more, keeping
+  its library; signing out returns to the welcome. Settings is a fourth
+  item in the tab bar (foot of the side rail on a PC).
+- Checks: 146 unit; e2e all passing (new: sign-in-only welcome, invite
+  link, returning device, Settings from every page, import from IMDb, a
+  gzipped MyAnimeList export and AniList, Undo); e2e:sync 38 checks on the
+  emulators (Dave joins from the welcome; a wrong code on the welcome).
+  Screenshot `27-import`; `20-welcome` is now the sign-in-only welcome.
 
 ### 2026-10-31 (fourth session, latest): scores in the engine, anime scores
 - The owner merged #10 ("merge it and continue").

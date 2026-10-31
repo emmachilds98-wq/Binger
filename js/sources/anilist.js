@@ -303,6 +303,48 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
       const data = await gql(query, { q }, `anilist:search:${voiceLanguage}:${q.toLowerCase()}`, HOUR);
       return ((data && data.Page && data.Page.media) || []).map(fromAniList).filter(Boolean);
     },
+    // Anime by their MyAnimeList ids (imports from MyAnimeList), 25 a request.
+    async byMalIds(ids) {
+      const want = [...new Set((ids || []).map(Number).filter((n) => n > 0))];
+      const out = [];
+      for (let i = 0; i < want.length; i += 25) {
+        const chunk = want.slice(i, i + 25);
+        const query = `${fragment(voiceLanguage)} query ($ids: [Int]) { Page(perPage: 25) { media(idMal_in: $ids, type: ANIME) { ...M } } }`;
+        const data = await gql(query, { ids: chunk }, `anilist:mal:${voiceLanguage}:${chunk.join(',')}`, 7 * DAY);
+        out.push(...((data && data.Page && data.Page.media) || []).map(fromAniList).filter(Boolean));
+      }
+      return out;
+    },
+    // Anime by AniList id, 25 a request (imports from an AniList list).
+    async byIds(ids) {
+      const want = [...new Set((ids || []).map(Number).filter((n) => n > 0))];
+      const out = [];
+      for (let i = 0; i < want.length; i += 25) {
+        const chunk = want.slice(i, i + 25);
+        const query = `${fragment(voiceLanguage)} query ($ids: [Int]) { Page(perPage: 25) { media(id_in: $ids, type: ANIME) { ...M } } }`;
+        const data = await gql(query, { ids: chunk }, `anilist:ids:${voiceLanguage}:${chunk.join(',')}`, 7 * DAY);
+        out.push(...((data && data.Page && data.Page.media) || []).map(fromAniList).filter(Boolean));
+      }
+      return out;
+    },
+    // Someone's public AniList anime list: each entry's AniList id, status,
+    // score (0-10, 0 when unrated), when they finished it and their notes.
+    // Custom lists repeat entries from the standard ones, so they're left out.
+    async userList(userName) {
+      const name = String(userName || '').trim();
+      if (!name) return [];
+      const query = `query ($name: String) { MediaListCollection(userName: $name, type: ANIME) {
+  lists { isCustomList entries { status score(format: POINT_10_DECIMAL) completedAt { year month day } updatedAt notes media { id } } } } }`;
+      const data = await gql(query, { name }, null, 0);
+      const lists = (data && data.MediaListCollection && data.MediaListCollection.lists) || [];
+      return lists.filter((l) => l && !l.isCustomList).flatMap((l) => l.entries || []).map((e) => ({
+        id: e.media && e.media.id,
+        status: e.status,
+        score: typeof e.score === 'number' ? e.score : 0,
+        date: dateOf(e.completedAt) || (e.updatedAt ? new Date(e.updatedAt * 1000).toISOString().slice(0, 10) : null),
+        notes: (e.notes || '').trim(),
+      })).filter((e) => e.id);
+    },
     async details(id) {
       const query = `${fragment(voiceLanguage)} query ($id: Int) { Media(id: $id, type: ANIME) { ...M } }`;
       const data = await gql(query, { id: Number(id) }, `anilist:media:${voiceLanguage}:${id}`, 3 * DAY);

@@ -9,9 +9,9 @@ on:
     - cron: '17 6 * * 1'
   push:
     branches: [main]
-    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'js/sources/imports.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
   pull_request:
-    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'js/sources/imports.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
 
 jobs:
   live:
