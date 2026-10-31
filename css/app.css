@@ -606,3 +606,26 @@ kbd { font: 600 12px/1 var(--font-body); padding: 4px 7px; border-radius: 6px; b
 .pill.pill-sm { min-height: 32px; padding: 0 12px; font-size: 13px; }
 .part-btns .pill[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .part-btns .pill[aria-pressed="true"][aria-label$="Weak"] { background: rgba(255, 138, 122, 0.12); color: var(--danger); border-color: var(--danger); }
+
+/* start-up splash (index.html): fades in only if loading takes a moment */
+.splash { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; opacity: 0; animation: splash-in 300ms ease 250ms forwards; }
+.splash .brand-word { font-size: 30px; }
+.splash .brand-mark { width: 32px; height: 32px; border-radius: 10px; }
+.splash-bar { width: 120px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--surface-2) 0%, var(--accent) 50%, var(--surface-2) 100%); background-size: 200% 100%; animation: shimmer 1.2s infinite linear; }
+@keyframes splash-in { to { opacity: 1; } }
+
+/* watch together (Phase 3, "match with Dave") */
+.who-xs { width: 22px; height: 22px; font-size: 11px; box-shadow: 0 0 0 2px var(--bg); }
+.who-lg { width: 64px; height: 64px; font-size: 26px; }
+.pill-together { display: inline-flex; align-items: center; gap: 6px; }
+.pills .pill-together[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.together-line { color: var(--text-2); }
+.together-who { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.together-who .who-avatar + .who-avatar { margin-left: -14px; }
+.together-grid { justify-content: flex-start; gap: 12px; }
+.together-tile { width: 112px; border: 1px solid var(--line); background: var(--surface-2); }
+.together-tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.together-tile[aria-pressed="true"] .who-avatar { box-shadow: 0 0 0 3px var(--accent); }
+.row-match { border-color: rgba(245, 184, 61, 0.45); }
+.row-match .accent svg { vertical-align: -2px; margin-right: 2px; }
+@media (max-width: 400px) { .pill-together { padding: 0 12px; } .pill-together .pill-label { display: none; } }

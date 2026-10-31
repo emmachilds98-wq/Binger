@@ -747,6 +747,48 @@ await page.waitForSelector('.who-chip');
 await page.waitForTimeout(300);
 check((await page.locator('.who-chip').first().getAttribute('aria-label')).includes('Emma') && (await libraryCount()).watched === wantsBefore, 'back to Emma, with her library untouched');
 
+console.log('Watch together: one deck for Emma and Dave');
+// Dave (on this device, or synced from his phone) wants to watch a show
+// Emma hasn't seen.
+await page.evaluate(() => {
+  const dev = JSON.parse(localStorage.getItem('binger:device'));
+  const dave = dev.profiles.list.find((p) => p.name === 'Dave');
+  const at = new Date().toISOString();
+  const show = { id: 'anilist:999001', source: 'anilist', sourceId: 999001, kind: 'anime', title: 'Together Test Show', year: 2025, genres: ['Comedy', 'Slice of Life'], episodes: 12, score: 8.1, votes: 5000, cast: [], crew: [], keywords: [], detailed: true };
+  localStorage.setItem(dave.key, JSON.stringify({ schema: 1, onboarded: true, createdAt: at, settings: {}, items: { [show.id]: { id: show.id, title: show, status: 'want', addedAt: at, updatedAt: at, watches: [] } } }));
+});
+await page.reload();
+await page.waitForSelector('.who .who-tile', { timeout: 8000 }).catch(() => {});
+if (await page.locator('.who .who-tile', { hasText: 'Emma' }).count()) await page.locator('.who .who-tile', { hasText: 'Emma' }).click();
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card', { timeout: 10000 }).catch(() => {});
+await page.getByRole('button', { name: 'All', exact: true }).click().catch(() => {});
+await page.getByRole('button', { name: 'Together' }).click();
+await page.waitForSelector('.together .together-tile');
+check(await page.locator('.together .together-tile').count() === 1, 'Together offers the other people here (Dave)');
+await page.locator('.together .together-tile', { hasText: 'Dave' }).click();
+await page.getByRole('button', { name: 'Show our deck' }).click();
+await page.waitForFunction(() => /Watching with Dave/.test(document.querySelector('.together-line')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
+check(/Watching with Dave/.test(await page.locator('.together-line').innerText().catch(() => '')), 'the deck says whose taste it\u2019s blending, with a Stop');
+await page.waitForFunction(() => document.querySelector('.deck .card:last-of-type h2')?.textContent === 'Together Test Show', null, { timeout: 8000 }).catch(() => {});
+check((await page.locator('.deck .card:last-of-type h2').innerText()) === 'Together Test Show', 'what Dave already wants comes to the top');
+check(/On Dave’s watchlist/.test(await page.locator('.deck .card:last-of-type').innerText()), 'and the card says why: "On Dave\u2019s watchlist"');
+await page.waitForTimeout(400);
+await shot('31-together');
+await page.getByRole('button', { name: 'Want to watch' }).click();
+await page.waitForFunction(() => /match/.test(document.querySelector('.toast')?.textContent || ''), null, { timeout: 4000 }).catch(() => {});
+check(/It’s a match: Dave wants to watch it too/.test(await page.locator('.toast').innerText().catch(() => '')), 'saving it is a match with Dave');
+await page.click('a[href="#library"]');
+await page.getByRole('tab', { name: /Watchlist/ }).click();
+await page.waitForSelector('.shared .row', { timeout: 5000 }).catch(() => {});
+const shared = await page.locator('.shared').innerText().catch(() => '');
+check(/You and Dave both want to watch/i.test(shared) && /Together Test Show/.test(shared), 'Library opens with "You and Dave both want to watch"');
+await shot('32-matches');
+await page.click('a[href="#discover"]');
+await page.getByRole('button', { name: 'Stop', exact: true }).click();
+await page.waitForTimeout(300);
+check(await page.locator('.together-line').count() === 0, 'Stop goes back to just Emma\u2019s deck');
+
 console.log('Wider screens (docs/DESIGN.md → PC and tablet layout)');
 // Nothing on the page may stick out past the right edge, at any size.
 // Returns '' when everything fits, else what sticks out (for the message).

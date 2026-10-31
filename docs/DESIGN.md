@@ -172,6 +172,22 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   which the 2026-10-31 session couldn't open from its account. Add a desktop
   row to the canvas when someone with access can, and copy it to `design/canvas/`.
 
+### Watch together (no artboard yet)
+
+- A **Together** pill (two-people icon) after Films / TV / Anime; icon only
+  under 400 px. It opens a bottom sheet of the other people here as tiles
+  (initial in their colour, "12 rated or saved"); pick one or more, then
+  **Show our deck**.
+- While on, the pill is amber and a line under the pills reads "Watching
+  with Dave: what you'd all enjoy" with their initials and **Stop**, like the
+  filter summary (filters that change the deck always say so).
+- Cards lead with a partner's yes ("On Dave's watchlist"), then your best
+  reason, then theirs ("Dave loves Comedy").
+- Saving something someone else wants: the toast says "It's a match: Dave
+  wants to watch it too". Library → Watchlist opens with "You and Dave both
+  want to watch", amber-edged rows marked "A match with Dave".
+- Screenshots `31-together`, `32-matches`.
+
 ### PC and tablet layout
 
 The phone layout is the design; wider screens give it room rather than

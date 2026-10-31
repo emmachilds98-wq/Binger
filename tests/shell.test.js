@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -38,6 +38,15 @@ test('every app script and stylesheet is in the service worker SHELL', () => {
     .map((p) => relative(ROOT, p).split('\\').join('/'))
     .filter((p) => /\.(js|css)$/.test(p));
   for (const f of needed) assert.ok(listed.has(f), `${f} is missing from SHELL in service-worker.js (the app would break offline)`);
+});
+
+test('index.html preloads every module, so they load at once instead of in a chain', () => {
+  const html = readFileSync(join(ROOT, 'index.html'), 'utf8');
+  const listed = new Set([...html.matchAll(/<link rel="modulepreload" href="([^"]+)">/g)].map((m) => m[1]));
+  const modules = walk(join(ROOT, 'js')).map((p) => relative(ROOT, p).split(sep).join('/'))
+    .filter((p) => p.endsWith('.js') && p !== 'js/version.js' && p !== 'js/app.js');
+  for (const m of modules) assert.ok(listed.has(m), `${m} is missing from the modulepreload links in index.html`);
+  for (const m of listed) assert.ok(existsSync(join(ROOT, m)), `index.html preloads ${m}, which doesn't exist`);
 });
 
 test('no source file is a diff, patch or conflict fragment', () => {

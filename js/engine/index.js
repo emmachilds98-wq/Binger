@@ -7,3 +7,4 @@ export { explain } from './explain.js';
 export { buildDeck, rankWatchlist, rankForYou, eligible, isShort, inDecade, franchiseBlock, isBlocked, DEFAULT_MIX, KINDS, toggleKind } from './rank.js';
 export { seasonAlert, seasonAlerts, showsToCheck } from './seasons.js';
 export { tasteTimeline, itemAsOf, monthEnds } from './timeline.js';
+export { blend, togetherScore, togetherReasons, partnerReason, partnerExclusions, partnerWants, LEAST_KEEN_WEIGHT, PARTNER_WANT_BOOST } from './together.js';

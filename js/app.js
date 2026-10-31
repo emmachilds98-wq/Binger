@@ -11,7 +11,7 @@ import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
 import { createRatings } from './sources/ratings.js';
 import { gatherCandidates, hydrate, needsHydrating } from './sources/candidates.js';
-import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline, toggleKind } from './engine/index.js';
+import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline, toggleKind, partnerExclusions, partnerWants } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
 import { openDetail, detailPanel } from './ui/detail.js';
 import { openRate } from './ui/rate.js';
@@ -33,7 +33,7 @@ import {
 } from './state/profiles.js';
 import { connectFirebase, authMessage } from './sync/firebase.js';
 import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
-import { openWhoIsWatching, openPeople, openWelcome, askName, shareOrCopy } from './ui/people.js';
+import { openWhoIsWatching, openPeople, openWelcome, askName, shareOrCopy, openTogether } from './ui/people.js';
 import { openShortcuts } from './ui/shortcuts.js';
 import { openImport } from './ui/import.js';
 import { readExport, mergePlan, resolvePlan, fromAniListEntries } from './sources/imports.js';
@@ -75,7 +75,11 @@ const deck = {
   pages: {},         // which page each pull has reached this session (turnPage)
   pendingRender: false,
   warnedKey: false,
+  together: [],      // watch together: the other people's profile ids, this session only
 };
+// The other people here (their libraries, as synced to this device), worked
+// out once and again only when a library or the list of people changes.
+const othersMemo = { value: null };
 const ui = { tab: 'discover', libraryTab: 'watchlist', librarySort: 'match' };
 let discoverHandle = null;
 let onboarding = null;
@@ -128,10 +132,16 @@ function loadPopular(page = 1) {
 
 function rerank() {
   const { settings, items } = store.get();
-  const cards = buildDeck([...deck.pool.values()], profile, {
-    exclude: new Set(Object.keys(items)),
-    hiddenGenres: settings.hiddenGenres,
-    hiddenFranchises: settings.hiddenFranchises,
+  // Watch together: everyone's seen-and-passed stays out, everyone's hidden
+  // genres and series stay hidden, and their watchlists join the pool.
+  const partners = togetherPartners();
+  const pool = [...deck.pool.values()];
+  for (const p of partners) for (const it of partnerWants(p)) if (!deck.pool.has(it.id)) pool.push(it.title);
+  const cards = buildDeck(pool, profile, {
+    exclude: new Set([...Object.keys(items), ...partnerExclusions(partners)]),
+    hiddenGenres: [...new Set([...settings.hiddenGenres, ...partners.flatMap((p) => p.settings.hiddenGenres || [])])],
+    hiddenFranchises: [...settings.hiddenFranchises, ...partners.flatMap((p) => p.settings.hiddenFranchises || [])],
+    partners,
     kinds: deck.kinds.size ? deck.kinds : null,
     mix: tmdb && tmdb.hasKey ? settings.mix : { ...settings.mix, film: 0, tv: 0 },
     filters: deck.filters,
@@ -233,7 +243,7 @@ function deckAction(dir, card) {
   pushUndo(t, prev);
   deck.topId = null;
   store.update(L.setStatus, t, dir === 'right' ? 'want' : 'passed', Date.now(), t.via);
-  if (dir === 'right') toast('Added to your Watchlist', { action: { label: 'Undo', fn: undo } });
+  if (dir === 'right') toast(matchText(t) || 'Added to your Watchlist', { action: { label: 'Undo', fn: undo } });
   else if (hasFranchise(t)) toast('Passed', { action: { label: hideSeriesLabel(t), fn: () => hideSeries(t) }, ms: 4000 });
   afterDeckChange();
 }
@@ -371,6 +381,66 @@ function dismissSeason(alert) {
   store.update(L.dismissAlert, alert.id, alert.key);
 }
 
+// ---- watch together -----------------------------------------------------------
+
+// Everyone else here whose library this device holds (synced, or a second
+// person on a shared computer).
+function otherPeople() {
+  if (!othersMemo.value) {
+    const p = device.profiles;
+    othersMemo.value = p.list.filter((x) => x.id !== p.current).map((x) => {
+      const raw = readLibrary(x.key);
+      const state = raw ? L.migrate(raw) : L.emptyState(); // added, not used yet: an empty library
+      return { id: x.id, name: displayName(x), colour: x.colour, items: state.items, settings: state.settings, profile: null };
+    });
+  }
+  return othersMemo.value;
+}
+
+function forgetOthers() {
+  othersMemo.value = null;
+}
+
+function togetherPartners() {
+  if (!deck.together.length) return [];
+  return otherPeople().filter((o) => deck.together.includes(o.id)).map((o) => {
+    if (!o.profile) o.profile = buildProfile(Object.values(o.items));
+    return o;
+  });
+}
+
+// "It's a match": you've just saved something someone else here wants too.
+function matchText(t) {
+  const fans = otherPeople().filter((o) => o.items[t.id] && o.items[t.id].status === 'want').map((o) => o.name);
+  if (!fans.length) return null;
+  return `It’s a match: ${fans.join(' and ')} ${fans.length > 1 ? 'want' : 'wants'} to watch it too`;
+}
+
+function showTogether() {
+  const people = otherPeople();
+  if (!people.length) {
+    toast('Add the people you watch with first', { action: { label: 'People', fn: showPeople } });
+    return;
+  }
+  openTogether({
+    people: people.map((o) => ({ id: o.id, name: o.name, colour: o.colour, count: Object.values(o.items).filter((it) => it.status !== 'passed').length })),
+    picked: deck.together,
+    onDone: (ids) => setTogether(ids),
+  });
+}
+
+function setTogether(ids) {
+  deck.together = ids;
+  deck.topId = null;
+  rerank();
+  renderDiscoverView({ force: true });
+  if (ids.length) {
+    const names = togetherPartners().map((p) => p.name);
+    toast(`Showing what you and ${names.join(' and ')} would enjoy`);
+  }
+  if (deck.cards.length < REFILL_BELOW) refill({ force: true });
+}
+
 // ---- people and sync --------------------------------------------------------
 
 // The chip on each screen: whose library this is. Shown once there's more
@@ -384,6 +454,8 @@ function setProfiles(next, { fromSync = false } = {}) {
   if (JSON.stringify(next) === JSON.stringify(device.profiles)) return;
   device.profiles = next;
   saveDevice(device);
+  forgetOthers();
+  deck.together = deck.together.filter((id) => next.list.some((p) => p.id === id));
   if (!fromSync && sync.ctl) sync.ctl.saveProfiles(next).catch(() => {});
   if (ui.tab === 'discover') renderDiscoverView({ force: true }); else render();
   refreshPeople();
@@ -436,6 +508,7 @@ function readLibrary(key) {
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 function writeLibrary(key, state) {
+  forgetOthers();
   try { localStorage.setItem(key, JSON.stringify(state)); } catch { toast('Couldn’t save: this browser’s storage is full or blocked.'); }
 }
 
@@ -691,7 +764,7 @@ function showDetail(title, { card = null } = {}) {
 
 async function addToWatchlist(t) {
   store.update(L.setStatus, t, 'want', Date.now(), t.via);
-  toast('Added to your Watchlist');
+  toast(matchText(t) || 'Added to your Watchlist');
   const full = await enrich(t);
   if (full !== t && store.get().items[t.id]) store.update(L.setStatus, full, 'want', Date.now(), t.via);
 }
@@ -908,6 +981,9 @@ function renderDiscoverView({ force = false } = {}) {
     services: s.services,
     onFilters: showFilters,
     onClearFilters: () => applyDeckFilters({ short: false, decade: null }, false),
+    onTogether: device.profiles.list.length > 1 ? showTogether : null,
+    together: togetherPartners().map((p) => ({ id: p.id, name: p.name, colour: p.colour })),
+    onStopTogether: () => setTogether([]),
     setFilter,
     onAction: deckAction,
     onOpen: (card) => showDetail(card.title, { card }),
@@ -937,6 +1013,7 @@ function render() {
       onLog: showLogPicker,
       onOpen: (item) => showDetail(item.title),
       onWatched: (item) => logSeen(item.title),
+      shared: L.sharedWatchlist(state, otherPeople()),
       onEditWatch: editWatch,
       who: who(),
       alerts: seasons.alerts,

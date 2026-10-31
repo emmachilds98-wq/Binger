@@ -136,9 +136,10 @@ PLAN.md). Options, best first:
 
 - [ ] Import history: Letterboxd CSV, AniList / MyAnimeList, Trakt.
 - [ ] "Tonight" pick from your watchlist by time available.
-- [ ] Shared deck for two ("match with Dave"): both people's profiles are
-      now in every household device's storage, so the engine can score a
-      title for both and show what you'd both like.
+- [x] Shared deck for two ("match with Dave"): **Watch together** on
+      Discover (the Together pill), "It's a match" when you save something
+      someone else here wants, and "You and Dave both want to watch" first
+      in Library. Decision 21 in PLAN.md.
 - [ ] Lighthouse in CI.
 
 ## Decisions taken in this round (add to PLAN.md's list if they hold)

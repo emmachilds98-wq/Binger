@@ -29,11 +29,16 @@ export function renderLibrary(root, ctx) {
 
   if (tab === 'watchlist') {
     if (ctx.alerts && ctx.alerts.length) list.append(newSeasons(ctx));
+    const shared = ctx.shared || [];
+    if (shared.length) list.append(sharedSection(shared, ctx));
+    const sharedIds = new Set(shared.map((x) => x.item.id));
     if (!wl.length) {
       list.append(empty('Nothing saved yet', 'Swipe right on anything you fancy and it lands here, best match first.'));
       return;
     }
-    const sorted = ctx.sort === 'recent' ? wl.map((item) => ({ item })) : rankWatchlist(wl, profile);
+    const rest = wl.filter((item) => !sharedIds.has(item.id));
+    if (!rest.length) return;
+    const sorted = ctx.sort === 'recent' ? rest.map((item) => ({ item })) : rankWatchlist(rest, profile);
     list.append(h('div', { class: 'row-between list-tools' },
       h('span', { class: 'small muted' }, ctx.sort === 'recent' ? 'Recently added first' : 'Best match for you first'),
       h('button', { type: 'button', class: 'link-btn', onClick: () => ctx.setSort(ctx.sort === 'recent' ? 'match' : 'recent') },
@@ -136,6 +141,25 @@ function monthWords(isoDate) {
   const label = monthLabel(isoDate);
   const thisYear = String(new Date().getFullYear());
   return `in ${label.endsWith(thisYear) ? label.split(' ')[0] : label}`;
+}
+
+// "You and Dave both want to watch" (watch together): matches first.
+function sharedSection(shared, ctx) {
+  const names = [...new Set(shared.flatMap((x) => x.with))];
+  const heading = names.length === 1 ? `You and ${names[0]} both want to watch` : 'Others want to watch these too';
+  return h('section', { class: 'alerts shared', 'aria-labelledby': 'shared-title' },
+    h('h2', { id: 'shared-title', class: 'eyebrow accent' }, heading),
+    h('ul', { class: 'rows' }, shared.map(({ item, with: who }) => {
+      const t = item.title;
+      return h('li', { class: 'row row-alert row-match' },
+        h('button', { type: 'button', class: 'row-main', onClick: () => ctx.onOpen(item) },
+          poster(t),
+          h('span', { class: 'row-text' },
+            h('span', { class: 'row-title' }, t.title),
+            h('span', { class: 'small muted' }, [KIND_NAME[t.kind], metaLine(t)].filter(Boolean).join(' · ')),
+            h('span', { class: 'small accent strong' }, icon('people', 14), ` A match with ${who.join(' and ')}`))),
+        h('button', { type: 'button', class: 'btn btn-chip btn-seen-chip', onClick: () => ctx.onWatched(item) }, 'Watched it'));
+    })));
 }
 
 function empty(title, text) {

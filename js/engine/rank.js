@@ -14,6 +14,7 @@
 import { featuresOf, isFilmLike } from './features.js';
 import { scoreTitle, onServices } from './score.js';
 import { explain } from './explain.js';
+import { togetherScore, togetherReasons } from './together.js';
 
 export const DEFAULT_MIX = { film: 50, tv: 50, anime: 50 };
 const EXPLORE_EVERY = 7;
@@ -113,6 +114,7 @@ export function buildDeck(candidates, profile, opts = {}) {
     filters = null,
     services = [],
     streamOnly = false,
+    partners = [], // watch together: [{ id, name, profile, items }] (together.js)
   } = opts;
   const hidden = new Set(hiddenGenres);
   const block = franchiseBlock(hiddenFranchises);
@@ -121,7 +123,8 @@ export function buildDeck(candidates, profile, opts = {}) {
   for (const t of candidates) {
     if (seen.has(t.id) || !eligible(t, { exclude, hiddenGenres: hidden, kinds, mix, block, filters, services, streamOnly })) continue;
     seen.add(t.id);
-    const s = scoreTitle(t, profile, { now, preferFresh, services });
+    const mine = scoreTitle(t, profile, { now, preferFresh, services });
+    const s = partners.length ? togetherScore(t, mine, partners, { now, preferFresh, services }) : mine;
     pool.push({ title: t, ...s, keys: diversityKeys(t) });
   }
   pool.sort((a, b) => b.score - a.score);
@@ -177,7 +180,10 @@ export function buildDeck(candidates, profile, opts = {}) {
     quality: p.quality,
     explore: !!p.explore,
     onServices: p.onServices,
-    reasons: explain(p.title, p, profile, { now, services }),
+    reasons: partners.length
+      ? togetherReasons(p.title, p, explain(p.title, p, profile, { now, services }))
+      : explain(p.title, p, profile, { now, services }),
+    wantedBy: p.wantedBy || [],
     keys: p.keys,
   }));
 }
