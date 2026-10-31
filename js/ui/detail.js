@@ -1,7 +1,7 @@
 // Full detail for one title: trailer clip, why it was picked, synopsis, cast
 // (people you know highlighted), where to watch, and your own history with it.
 
-import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg, watchWhen } from './dom.js';
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
 import { knownFrom } from './card.js';
@@ -190,7 +190,7 @@ function history(t, ctx) {
     h('ul', { class: 'history-list' }, watches.map((w) => h('li', null,
       h('button', { type: 'button', class: 'history-row', onClick: () => ctx.onEditWatch && ctx.onEditWatch(item, w) },
         h('span', { class: 'stars', 'aria-label': w.rating ? `${w.rating} out of 5 stars` : 'Not rated' }, w.rating ? starsText(w.rating) : 'No rating'),
-        h('span', { class: 'muted small' }, shortDate(w.date)),
+        h('span', { class: 'muted small' }, watchWhen(w)),
         w.review ? h('span', { class: 'history-review' }, w.review) : null,
         w.tags && w.tags.length ? h('span', { class: 'muted small' }, w.tags.join(' · ')) : null)))));
 }

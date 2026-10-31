@@ -585,3 +585,9 @@ kbd { font: 600 12px/1 var(--font-body); padding: 4px 7px; border-radius: 6px; b
 @media (max-width: 379px) {
   .card .people-row .person:nth-child(n+3) { display: none; }
 }
+
+/* `hidden` must win over the display a class gives (the rate sheet's date
+   and year pickers are shown only for "On a date" / "In a year"). */
+[hidden] { display: none !important; }
+/* When did you watch it? The day or year picker sits under the choices. */
+.rate #watch-date, .rate #watch-year { align-self: flex-start; }

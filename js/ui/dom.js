@@ -161,6 +161,21 @@ export function monthLabel(isoDate) {
   return `${MONTHS[m - 1]} ${y}`;
 }
 
+// When a diary entry was watched, in words: a day, a year, or "Ages ago"
+// (rough dates: watch.when in js/state/library.js).
+export function watchWhen(w) {
+  if (w.when === 'ages') return 'Ages ago';
+  if (w.when === 'year') return Number(String(w.date).slice(0, 4)) === new Date().getFullYear() ? 'This year' : String(w.date).slice(0, 4);
+  return shortDate(w.date);
+}
+
+// The diary heading a watch sits under.
+export function watchGroup(w) {
+  if (w.when === 'ages') return 'Ages ago';
+  if (w.when === 'year') return `Sometime in ${String(w.date).slice(0, 4)}`;
+  return monthLabel(w.date);
+}
+
 export function initials(name) {
   return String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }

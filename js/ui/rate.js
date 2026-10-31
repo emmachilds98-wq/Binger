@@ -3,7 +3,7 @@
 
 import { h, icon, KIND_NAME, RATING_WORDS, poster } from './dom.js';
 import { openSheet, closeButton } from './sheet.js';
-import { TAGS } from '../state/library.js';
+import { TAGS, AGES_AGO } from '../state/library.js';
 
 export function steerText(rating, title) {
   if (rating == null) return 'Your rating is the strongest signal Binger has.';
@@ -72,13 +72,38 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
   });
   const review = h('textarea', { id: 'review', rows: '3', maxlength: '4000', placeholder: 'What stuck with you?' });
   review.value = watch ? watch.review || '' : '';
-  const date = h('input', { id: 'watch-date', type: 'date', max: todayIso(), value: watch ? watch.date : todayIso() });
+  // When: today, an exact day, or roughly (this year, a year, ages ago), for
+  // long-time favourites nobody remembers the date of.
+  const thisYear = new Date().getFullYear();
+  let when = !watch ? 'today'
+    : watch.when === 'ages' ? 'ages'
+      : watch.when === 'year' ? (Number(String(watch.date).slice(0, 4)) === thisYear ? 'thisyear' : 'year')
+        : watch.date === todayIso() ? 'today' : 'date';
+  const date = h('input', { id: 'watch-date', type: 'date', max: todayIso(), 'aria-label': 'The day you watched it', value: watch && !watch.when ? watch.date : todayIso() });
+  const year = h('select', { id: 'watch-year', 'aria-label': 'The year you watched it' },
+    Array.from({ length: thisYear - 1949 }, (_, i) => String(thisYear - i)).map((y) => h('option', { value: y }, y)));
+  year.value = watch && watch.when === 'year' ? String(watch.date).slice(0, 4) : String(thisYear - 1);
+  const WHEN = [['today', 'Today'], ['date', 'On a date'], ['thisyear', 'This year'], ['year', 'In a year'], ['ages', 'Ages ago']];
+  const whenBtns = WHEN.map(([key, label]) => h('button', {
+    type: 'button', class: 'pill', 'aria-pressed': String(when === key),
+    onClick: () => { when = key; paintWhen(); if (key === 'date') date.focus(); else if (key === 'year') year.focus(); },
+  }, label));
+  function paintWhen() {
+    whenBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(WHEN[i][0] === when)));
+    date.hidden = when !== 'date';
+    year.hidden = when !== 'year';
+  }
+  const picked = () => (when === 'today' ? { date: todayIso(), when: null }
+    : when === 'date' ? { date: date.value || todayIso(), when: null }
+      : when === 'thisyear' ? { date: `${thisYear}-01-01`, when: 'year' }
+        : when === 'year' ? { date: `${year.value}-01-01`, when: 'year' }
+          : { date: AGES_AGO, when: 'ages' });
 
   // A first-run pick (watch.setup) is reviewed for the first time here.
   const save = h('button', { type: 'button', class: 'btn btn-primary grow' }, watch && watch.setup ? 'Save review' : watch ? 'Save changes' : 'Save to diary');
   save.addEventListener('click', () => {
     saved = true;
-    onSave({ rating, tags: [...tags], review: review.value.trim(), date: date.value || todayIso() });
+    onSave({ rating, tags: [...tags], review: review.value.trim(), ...picked() });
     sheet.close();
   });
 
@@ -94,12 +119,16 @@ export function openRate(title, { watch = null, onSave, onSkip = null, onDelete 
     h('div', { class: 'rate-stars' }, stars, word, steer),
     h('div', { class: 'field' }, h('div', { class: 'eyebrow' }, 'How did it feel?'), h('div', { class: 'pill-wrap' }, tagEls)),
     h('div', { class: 'field' }, h('label', { class: 'eyebrow', for: 'review' }, 'Your thoughts (optional)'), review),
-    h('div', { class: 'field field-inline' }, h('label', { class: 'eyebrow', for: 'watch-date' }, 'Watched on'), date),
+    h('div', { class: 'field' },
+      h('div', { class: 'eyebrow', id: 'when-label' }, 'When did you watch it?'),
+      h('div', { class: 'pill-wrap', role: 'group', 'aria-labelledby': 'when-label' }, whenBtns),
+      date, year),
     h('div', { class: 'sheet-footer' },
       onDelete ? h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => { saved = true; onDelete(); sheet.close(); } }, icon('trash', 18), 'Delete') : null,
       onSkip ? h('button', { type: 'button', class: 'btn btn-quiet', onClick: () => { saved = true; onSkip(); sheet.close(); } }, 'Skip rating') : null,
       save));
   paint();
+  paintWhen();
   sheet.focusFirst();
   return sheet;
 }

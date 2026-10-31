@@ -15,7 +15,10 @@
 //   id, title: Snapshot,                  // a trimmed copy of the Title
 //   status: 'want' | 'watched' | 'passed',
 //   addedAt, updatedAt,                   // ISO strings
-//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '', setup?: true }],
+//   watches: [{ id, date: 'YYYY-MM-DD', rating: 0.5..5 | null, tags: [], review: '', setup?: true, when?: 'year' | 'ages' }],
+//     (when: you don't know the exact day. 'year': sometime that year, date
+//     is 1 January of it; 'ages': long ago, date is AGES_AGO. The date then
+//     only sorts the diary; see fuzzyWatch.)
 //     (setup: picked on the first-run screen and not reviewed yet)
 //   via: [...],                           // why Binger showed it (if it did)
 //   dismissed: ['s3'],                    // new-season alerts you've waved away
@@ -116,13 +119,25 @@ export function setStatus(state, title, status, now = Date.now(), via = null) {
   return withItem(state, title.id, item);
 }
 
+// "Ages ago": a date older than anything real, so these sort at the bottom
+// of the diary and never count as recent.
+export const AGES_AGO = '1900-01-01';
+
+// A watch's date when you only know roughly when: 'year' keeps just the
+// year (1 January), 'ages' uses AGES_AGO. Anything else is an exact day.
+export function fuzzyWatch(when, date, now = Date.now()) {
+  if (when === 'ages') return { date: AGES_AGO, when: 'ages' };
+  if (when === 'year') return { date: `${String(date || today(now)).slice(0, 4)}-01-01`, when: 'year' };
+  return { date: date || today(now) };
+}
+
 // setup: a pick from the first-run screen ("What have you loved?"), logged
 // as loved until you review it properly (setupPicks, updateWatch).
-export function logWatch(state, title, { rating = null, tags = [], review = '', date = null, setup = false } = {}, now = Date.now()) {
+export function logWatch(state, title, { rating = null, tags = [], review = '', date = null, when = null, setup = false } = {}, now = Date.now()) {
   const prev = state.items[title.id];
   const watch = {
     id: newId(now),
-    date: date || today(now),
+    ...fuzzyWatch(when, date, now),
     rating: typeof rating === 'number' ? Math.max(0.5, Math.min(5, Math.round(rating * 2) / 2)) : null,
     tags: [...new Set(tags)].filter((t) => typeof t === 'string').slice(0, 10),
     review: String(review || '').slice(0, 4000),
@@ -144,6 +159,11 @@ export function updateWatch(state, id, watchId, patch, now = Date.now()) {
   const watches = prev.watches.map((w) => {
     if (w.id !== watchId) return w;
     const next = { ...w, ...patch };
+    // A new date says how exact it is: a fuzzy one sets `when`, a day clears it.
+    if ('date' in patch || 'when' in patch) {
+      delete next.when;
+      Object.assign(next, fuzzyWatch(patch.when, patch.date || w.date, now));
+    }
     if (typeof next.rating === 'number') next.rating = Math.max(0.5, Math.min(5, Math.round(next.rating * 2) / 2));
     // Saved from the rating sheet: a first-run pick is now a proper review.
     delete next.setup;

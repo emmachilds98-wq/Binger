@@ -413,6 +413,19 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
 
+### 2026-10-31 (fifth session, end): roughly when you watched it
+- The owner asked for an "unsure when I watched" option, so long-time
+  favourites can go in without a date: the rate sheet now asks "When did you
+  watch it?" with Today, On a date, This year, In a year (a year picker) and
+  Ages ago.
+- Stored as `watch.when` ('year' / 'ages') next to a sorting date (1 January
+  of the year, or `AGES_AGO`, 1900-01-01): `fuzzyWatch` in `library.js`.
+  A rough date doesn't age the rating (it counts from when you logged it,
+  `itemSignal`), and doesn't set off new-season alerts for every season
+  (`seasonAlert` counts from the end of the year, or from when you logged it).
+- Tests: 156 unit (tests/when.test.js); e2e and e2e:sync passing;
+  screenshot `29-when-you-watched`.
+
 ### 2026-10-31 (fifth session, later): mobile polish, Log a watch
 - UPGRADE-PLAN step 4 done: install prompt after three saves (once per
   device); posters with a TMDB `srcset` and the next two preloaded; the two
