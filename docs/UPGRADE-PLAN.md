@@ -117,16 +117,20 @@ PLAN.md). Options, best first:
 
 ### 4. Mobile polish (after 1 to 3)
 
-- [ ] Install prompt (Android `beforeinstallprompt`; an iPhone hint for
-      Share → Add to Home Screen) once someone has saved 3+ things.
-- [ ] Backup nudge on Library when there's no sync and no export in 30 days.
-- [ ] `srcset` for posters (`w342` / `w500` / `w780`) and cast photos; preload
-      the next two cards.
-- [ ] Self-host the two fonts (woff2 in `fonts/`, add to `SHELL`).
-- [ ] Cast on the card: two people instead of three under 380 px.
-- [ ] Swipe on speed as well as distance (`js/ui/deck.js`), light vibration
+- [x] Install prompt (Android `beforeinstallprompt`; an iPhone hint for
+      Share → Add to Home Screen) once someone has saved 3+ things. Once per
+      device (`offerInstall` in `app.js`).
+- [x] Backup nudge: not needed on the live site. Since decision 20 everyone
+      there is signed in and synced; only a copy without sync could use it.
+- [x] `srcset` for posters (`posterSrcset` in `tmdb.js`: w342 / w500 / w780);
+      the next two cards' posters preloaded. (Cast photos are already small.)
+- [x] Self-host the two fonts (`fonts/`, `css/fonts.css`, in `SHELL`; OFL
+      licences alongside).
+- [x] Cast on the card: two people instead of three under 380 px.
+- [x] Swipe on speed as well as distance (`js/ui/gesture.js`), light vibration
       on Android.
-- [ ] Share a title (`navigator.share`) with a `#title/<id>` route.
+- [x] Share a title (`navigator.share`, or the clipboard) with a `#title/<id>`
+      route (`loadTitle` in `lookups.js`).
 
 ### 5. Later
 

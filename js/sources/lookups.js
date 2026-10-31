@@ -214,6 +214,15 @@ export async function loadPerson(personId, { tmdb, anilist }) {
   return anilist ? anilist.person(m[2]) : null;
 }
 
+// 'tmdb:movie:693134', 'tmdb:tv:95396' or 'anilist:154587' -> a full Title
+// (or null): what a shared link (#title/<id>) opens.
+export async function loadTitle(id, { tmdb, anilist }) {
+  const t = String(id).match(/^tmdb:(movie|tv):(\d+)$/);
+  if (t) return tmdb && tmdb.hasKey ? tmdb.details(t[1], t[2]) : null;
+  const a = String(id).match(/^anilist:(\d+)$/);
+  return a && anilist ? anilist.details(a[1]) : null;
+}
+
 // Can this title be hidden as a whole series? Films in a TMDB collection and
 // anime with related entries can; a standalone film is just a pass.
 export function hasFranchise(title) {

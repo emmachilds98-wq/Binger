@@ -23,7 +23,7 @@ import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices, loadPerson, hasFranchise, loadFranchise, checkNewSeasons, searchTitles, starterTitles } from './sources/lookups.js';
+import { serviceChoices, loadPerson, loadTitle, hasFranchise, loadFranchise, checkNewSeasons, searchTitles, starterTitles } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen, choiceSheet } from './ui/sheet.js';
 import { loadDevice, saveDevice } from './state/device.js';
@@ -88,6 +88,9 @@ const timelineMemo = { items: null, value: null };
 // Wide enough for the top card's details to sit beside the deck
 // (docs/DESIGN.md → PC and tablet layout). CSS uses the same width.
 const wideQuery = window.matchMedia('(min-width: 900px)');
+// Installing to the home screen: Android/Chrome's own prompt, kept until
+// someone has used Binger enough for it to be worth asking (offerInstall).
+const install = { prompt: null };
 
 // ---- sources ---------------------------------------------------------------
 
@@ -669,6 +672,7 @@ function detailCtx(title, card) {
     onEditWatch: editWatch,
     onHideSeries: (t) => (hasFranchise(t) && !isSeriesHidden(t) ? hideSeries(t) : null),
     canHideSeries: (t) => hasFranchise(t) && !isSeriesHidden(t),
+    onShare: shareTitle,
   };
 }
 
@@ -846,10 +850,33 @@ function startOnboarding() {
       if (picks.length) {
         toast('Learning your taste…');
         const full = await hydrate(picks, { tmdb });
-        // Loved, until you review them (Library → Diary → "From your first run").
+        // Loved, until you review them (Library → Diary → "Picked, not reviewed yet").
         store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5, setup: true }), s));
       }
       refill({ force: true });
+    },
+  });
+}
+
+// Library → Log a watch: the first run's panel again ("What have you
+// watched?"), with search for anything. Picks go in the diary as loved,
+// waiting for a review, just like first-run picks.
+function showLogPicker() {
+  openOnboarding({
+    mode: 'log',
+    hasKey: tmdb.hasKey,
+    search: searchAll,
+    loadPopular,
+    isWatched: (id) => { const it = store.get().items[id]; return !!it && it.status === 'watched'; },
+    onSettings: showSettings,
+    onImport: () => showImport(),
+    onDone: async (picks) => {
+      if (!picks.length) return;
+      const full = await hydrate(picks, { tmdb });
+      store.update((s) => full.reduce((acc, t) => L.logWatch(acc, t, { rating: 4.5, setup: true }), s));
+      ui.libraryTab = 'diary';
+      if (ui.tab === 'library') render();
+      toast(`${picks.length === 1 ? '1 title' : `${picks.length} titles`} added to your diary. Review them to tell Binger more.`);
     },
   });
 }
@@ -907,7 +934,7 @@ function render() {
       state, profile,
       tab: ui.libraryTab, setTab: (t) => { ui.libraryTab = t; render(); },
       sort: ui.librarySort, setSort: (s) => { ui.librarySort = s; render(); },
-      onLog: showSearch,
+      onLog: showLogPicker,
       onOpen: (item) => showDetail(item.title),
       onWatched: (item) => logSeen(item.title),
       onEditWatch: editWatch,
@@ -944,9 +971,35 @@ function timelineFor(items) {
 }
 
 function route() {
+  // A shared link (#title/<id>) opens that title over Discover.
+  const shared = location.hash.match(/^#title\/(.+)$/);
+  if (shared) {
+    history.replaceState(null, '', `${location.pathname}${location.search}#discover`);
+    openShared(decodeURIComponent(shared[1]));
+  }
   const tab = location.hash.replace('#', '');
   ui.tab = TABS.includes(tab) ? tab : 'discover';
   render();
+}
+
+// "Share" on a title: a link that opens it in Binger (the share sheet on a
+// phone, the clipboard elsewhere).
+function shareTitle(t) {
+  shareOrCopy({
+    title: t.title,
+    text: `${t.title}${t.year ? ` (${t.year})` : ''}: found on Binger`,
+    url: `${location.origin}${location.pathname}#title/${encodeURIComponent(t.id)}`,
+    copied: 'Link copied',
+    failed: 'Couldn’t copy the link.',
+  });
+}
+
+async function openShared(id) {
+  const item = store.get().items[id];
+  if (item) { showDetail(item.title); return; }
+  const t = await loadTitle(id, { tmdb, anilist }).catch(() => null);
+  if (t) showDetail(t);
+  else toast(id.startsWith('tmdb:') && !tmdb.hasKey ? 'That’s a film or show: Binger needs films and TV on to open it.' : 'Couldn’t find that title.');
 }
 
 // ---- wiring ----------------------------------------------------------------
@@ -998,6 +1051,34 @@ document.addEventListener('pointerup', () => {
 });
 
 window.addEventListener('hashchange', route);
+
+// Offer "Add to home screen" once, after three saves or watches: by then
+// Binger has earned a place there. Android and Chrome hand over a prompt to
+// show; an iPhone can't be prompted, so it gets the steps instead.
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  install.prompt = e;
+  offerInstall();
+});
+store.subscribe(() => offerInstall());
+
+function offerInstall() {
+  if (device.installAsked || anySheetOpen()) return;
+  const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if (installed) return;
+  const used = Object.values(store.get().items).filter((it) => it.status === 'want' || it.status === 'watched').length;
+  if (used < 3) return;
+  const iPhone = /iPhone|iPad|iPod/.test(navigator.userAgent) && !install.prompt;
+  if (!install.prompt && !iPhone) return;
+  device.installAsked = true;
+  saveDevice(device);
+  if (install.prompt) {
+    const prompt = install.prompt;
+    toast('Put Binger on your home screen?', { ms: 9000, action: { label: 'Install', fn: () => { prompt.prompt(); install.prompt = null; } } });
+  } else {
+    toast('Put Binger on your home screen: tap Share, then “Add to Home Screen”.', { ms: 9000 });
+  }
+}
 // Settings from any page (the tab bar, or the side rail on a PC).
 document.getElementById('settings-tab').addEventListener('click', () => showSettings());
 // Crossing the wide breakpoint adds or removes the details beside the deck.

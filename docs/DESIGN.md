@@ -123,12 +123,17 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   Anime: "MAL 9.3" on the card, a "MyAnimeList 9.3" chip in details. A card
   picked for being well rated says by whom: "Highly rated: IMDb 8.6".
   Screenshot `24-review-scores`.
-- **Reviewing first-run picks** (built): Library → Diary opens with "From
-  your first run" (eyebrow), a muted line "These are saved as loved (4½★).
+- **Log a watch** (built): Library → Log a watch opens the first run's panel
+  again, titled "What have you watched?" with a close button: the same poster
+  grid (minus what you've already watched), search for any title, and "Add N
+  to your diary" (no minimum, no Skip). Picks go in the diary as loved, under
+  "Picked, not reviewed yet". Screenshot `28-log-a-watch`.
+- **Reviewing first-run picks** (built): Library → Diary opens with "Picked,
+  not reviewed yet" (eyebrow), a muted line "These are saved as loved (4½★).
   Review them to tell Binger more.", and a row per pick in the alert-row
   style with a sky "Review" chip. Review opens the "Seen it" sheet with the
   eyebrow "Review your pick" and the button "Save review". Their diary rows
-  say "First run" where the date would be. Screenshots
+  say "Picked" where the date would be. Screenshots
   `25-first-run-review`, `26-first-run-picks`.
 - **Bring your history** (built): a full sheet (title "Bring your history"),
   a muted intro, then "From a file" (one line each for IMDb, Letterboxd and

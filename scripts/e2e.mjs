@@ -60,6 +60,9 @@ const context = await browser.newContext({ viewport: { width: 390, height: 844 }
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
+// The typefaces are served by Binger itself (css/fonts.css), not Google Fonts.
+const fontRequests = [];
+page.on('request', (r) => { if (/fonts\.(googleapis|gstatic)\.com/.test(r.url())) fontRequests.push(r.url()); });
 page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
 
 // The seeds each AniList deck request asked "more like this" about.
@@ -196,6 +199,8 @@ console.log('Sign in or nothing (the live site, with sync set up)');
 console.log('First run');
 await page.goto(base);
 await page.waitForSelector('.sheet.welcome');
+await page.evaluate(() => document.fonts.ready);
+check(await page.evaluate(() => document.fonts.check('800 30px "Bricolage Grotesque"') && document.fonts.check('600 15px "Instrument Sans"')), 'both typefaces load, from Binger’s own fonts/ folder');
 check(await page.locator('#welcome-email').count() === 0, 'a copy of Binger without sync asks just for a name');
 await page.keyboard.press('Escape');
 check(await page.locator('.sheet.welcome').count() === 1, 'Escape doesn’t skip it');
@@ -248,7 +253,7 @@ await page.click('a[href="#library"]');
 await page.getByRole('tab', { name: /Diary/ }).click();
 await page.waitForSelector('.first-picks .row');
 check(await page.locator('.first-picks .row').count() === 3, 'Library → Diary lists the three first-run picks to review');
-check(await page.locator('.row-title-line', { hasText: 'First run' }).count() === 3, 'their diary entries say "First run" where the date would be');
+check(await page.locator('.row-title-line', { hasText: 'Picked' }).count() === 3, 'their diary entries say "Picked" where the date would be');
 await page.waitForFunction(() => !document.querySelector('#toast .toast'), null, { timeout: 8000 }).catch(() => {});
 await shot('26-first-run-picks');
 const reviewed = (await page.locator('.first-picks .row-title').first().innerText()).trim();
@@ -261,9 +266,28 @@ await page.fill('#review', 'Even better the second time.');
 await shot('25-first-run-review');
 await page.getByRole('button', { name: 'Save review' }).click();
 await page.waitForTimeout(300);
-check(await page.locator('.first-picks .row').count() === 2, 'once reviewed, it leaves "From your first run"');
+check(await page.locator('.first-picks .row').count() === 2, 'once reviewed, it leaves "Picked, not reviewed yet"');
 const entry = await page.evaluate((name) => Object.values(JSON.parse(localStorage.getItem('binger:v1')).items).find((i) => i.title.title === name).watches[0], reviewed);
 check(entry.rating === 5 && entry.review === 'Even better the second time.' && entry.tags.includes('Rewatchable') && !entry.setup, `and its diary entry has the full review (${entry.rating}★, ${entry.tags.join(', ')})`);
+
+console.log('Log a watch: the first-run panel again');
+await page.getByRole('button', { name: 'Log a watch' }).click();
+await page.waitForSelector('.log-picker .tile');
+check(await page.locator('.log-picker h1').innerText() === 'What have you watched?', 'Library → Log a watch opens the first run’s panel: posters to tap, and search');
+const watchedNow = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('binger:v1')).items).filter((i) => i.status === 'watched').map((i) => i.title.title));
+const offered = await page.locator('.log-picker .tile').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label').replace(/ \((Film|TV|Anime)\)$/, '')));
+check(offered.length > 0 && !offered.some((t) => watchedNow.includes(t)), `what you’ve already watched isn’t offered again (${offered.length} titles)`);
+check(await page.locator('.log-picker .onboard-foot .btn-primary').isDisabled(), 'nothing picked: nothing to add yet');
+await page.fill('.log-picker #seed-search', 'vinland');
+await page.waitForSelector('.log-picker .tile[aria-label^="Vinland"]');
+await page.locator('.log-picker .tile[aria-label^="Vinland"]').first().click();
+check(await page.locator('.log-picker .onboard-foot .btn-primary').innerText() === 'Add 1 to your diary', 'search finds any title to tick, and the button counts it');
+await page.waitForTimeout(400);
+await shot('28-log-a-watch');
+await page.locator('.log-picker .onboard-foot .btn-primary').click();
+await page.waitForFunction(() => !document.querySelector('.log-picker'));
+await page.waitForFunction(() => [...document.querySelectorAll('.first-picks .row-title')].some((e) => /Vinland/.test(e.textContent)), null, { timeout: 8000 }).catch(() => {});
+check(await page.locator('.first-picks .row-title', { hasText: 'Vinland' }).count() === 1, 'it’s in the diary as loved, waiting for a review like a first-run pick');
 await page.click('a[href="#discover"]');
 await page.waitForSelector('.deck .card');
 
@@ -299,6 +323,8 @@ await page.waitForTimeout(600);
 await shot('02-discover-film');
 const topTitle = await page.locator('.deck .card:last-of-type h2').innerText();
 check(topTitle === 'Dune: Part Two', `films filter shows a film on top (${topTitle})`);
+const posterSet = await page.locator('.deck .card:last-of-type .card-art img').getAttribute('srcset');
+check(/\/w342\/\S+ 342w, .*\/w780\/\S+ 780w/.test(posterSet || ''), 'a film poster offers TMDB’s sizes, so a phone fetches a smaller one');
 check(await page.locator('.deck .card:last-of-type .play-btn').count() === 1, 'the film card has a trailer clip button');
 await page.locator('.deck .card:last-of-type .play-btn').click();
 check(await page.locator('.deck .card:last-of-type .clip iframe').count() === 1, 'tapping play starts the clip inside the card');
@@ -326,6 +352,25 @@ check((await libraryCount()).passed === 1, `the Pass button passes "${second}"`)
 await page.getByRole('button', { name: 'Undo last swipe' }).click();
 await page.waitForTimeout(300);
 check((await page.locator('.deck .card:last-of-type h2').innerText()) === second && (await libraryCount()).passed === 0, 'Undo brings the passed card back');
+// Speed as well as distance (js/ui/gesture.js): a short quick flick swipes;
+// the same short drag done slowly springs back.
+const shortDrag = async (dx, pauseMs) => {
+  const b = await page.locator('.deck .card:last-of-type').boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 3);
+  await page.mouse.down();
+  for (let i = 1; i <= 4; i++) {
+    await page.mouse.move(b.x + b.width / 2 + (i * dx) / 4, b.y + b.height / 3);
+    if (pauseMs) await page.waitForTimeout(pauseMs);
+  }
+  await page.mouse.up();
+  await page.waitForTimeout(450);
+};
+await shortDrag(-72, 80);
+check((await libraryCount()).passed === 0 && (await page.locator('.deck .card:last-of-type h2').innerText()) === second, 'a slow short drag springs back');
+await shortDrag(-72, 0);
+check((await libraryCount()).passed === 1, 'a quick short flick passes the card');
+await page.getByRole('button', { name: 'Undo last swipe' }).click();
+await page.waitForTimeout(300);
 
 console.log('Detail');
 await page.getByRole('button', { name: 'More about this title' }).click();
@@ -352,7 +397,8 @@ await shot('04-rate');
 await page.getByRole('button', { name: 'Save to diary' }).click();
 await page.waitForTimeout(400);
 const after = await libraryCount();
-check(after.watched === 4, `"${rated}" is saved to the diary with a rating`);
+// Watched by now: three first-run picks, Vinland Saga (Log a watch) and this one.
+check(after.watched === 5, `"${rated}" is saved to the diary with a rating`);
 
 console.log('Library and taste');
 await page.click('a[href="#library"]');
@@ -371,7 +417,7 @@ console.log('Persistence');
 await page.reload();
 await page.waitForSelector('.view');
 const persisted = await libraryCount();
-check(persisted.want === 1 && persisted.watched === 4, 'everything is still there after a reload');
+check(persisted.want === 1 && persisted.watched === 5, 'everything is still there after a reload');
 check(await page.locator('.onboarding').count() === 0, 'onboarding does not reappear');
 
 console.log('Deck filters');
@@ -731,11 +777,37 @@ await page.waitForSelector('.deck .card');
 await page.waitForFunction(() => !document.querySelector('.deck-side'), null, { timeout: 5000 }).catch(() => {});
 const phoneTabs = await page.evaluate(() => getComputedStyle(document.getElementById('tabbar')).flexDirection);
 check(phoneTabs === 'row' && await page.locator('.deck-side').count() === 0 && !(await page.locator('.key-hint').first().isVisible()), 'on a small phone it is the phone layout: tabs at the bottom, no side panel, no key hints');
+const faces = await page.locator('.deck .card:last-of-type .people-row .person').evaluateAll((els) => ({ all: els.length, shown: els.filter((e) => getComputedStyle(e).display !== 'none').length }));
+check(faces.shown === Math.min(2, faces.all), `on a small phone a card shows two faces, not three (${faces.shown} of ${faces.all})`);
 await fits('at 360 px');
 await page.waitForTimeout(400);
 await shot('19-small-phone');
+// After a few saves, Binger offers the home screen once. Chromium's own
+// prompt event is stood in for here; Install hands over to it.
+check(await page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')).installAsked !== true), 'nothing has offered the home screen yet (no prompt from this browser)');
+await page.evaluate(() => {
+  const e = new Event('beforeinstallprompt', { cancelable: true });
+  e.prompt = () => { window.__installPrompted = true; };
+  window.dispatchEvent(e);
+});
+await page.waitForSelector('.toast');
+check(/home screen/.test(await page.locator('.toast').innerText()), 'once the browser can install it, Binger offers the home screen');
+await page.locator('.toast').getByRole('button', { name: 'Install' }).click();
+check(await page.evaluate(() => window.__installPrompted === true && JSON.parse(localStorage.getItem('binger:device')).installAsked === true), 'Install opens the browser’s own prompt, and it won’t ask again');
+
+console.log('Share a title');
+await page.goto(base + '#title/tmdb:movie:693134');
+await page.waitForSelector('.sheet.detail .detail-title');
+check(await page.locator('.sheet.detail .detail-title').innerText() === 'Dune: Part Two' && await page.evaluate(() => location.hash) === '#discover', 'a shared link (#title/…) opens that title');
+await page.evaluate(() => { navigator.share = async (d) => { window.__shared = d; }; });
+await page.locator('.sheet.detail .share-btn').click();
+const sharedLink = await page.evaluate(() => window.__shared);
+check(!!sharedLink && /#title\/tmdb%3Amovie%3A693134$/.test(sharedLink.url) && /Dune: Part Two/.test(sharedLink.text), 'Share hands over a link straight back to the title');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(350);
 await page.setViewportSize({ width: 390, height: 844 });
 
+check(fontRequests.length === 0, `nothing was fetched from Google Fonts${fontRequests.length ? `: ${fontRequests[0]}` : ''}`);
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
 
 console.log('Keys built into the site: TMDB, and review scores');

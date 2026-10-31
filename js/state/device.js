@@ -19,6 +19,8 @@ export function loadDevice(storage = globalThis.localStorage) {
     household: typeof d.household === 'string' ? d.household : null,
     // The welcome ("What should we call you?") has been shown on this device.
     welcomed: d.welcomed === true,
+    // "Add Binger to your home screen" has been offered on this device.
+    installAsked: d.installAsked === true,
   };
 }
 

@@ -52,10 +52,8 @@ Do these in order:
 3. **Firebase is connected and live-checked** (`binger-5cee3`). Sign-in is
    now required where sync is set up (decision 20): the main e2e run plays a
    copy without sync; signing in is covered by `npm run e2e:sync`.
-4. **Next work, in order:**
-   [UPGRADE-PLAN.md → 4. Mobile polish](UPGRADE-PLAN.md#4-mobile-polish-after-1-to-3)
-   (install prompt, backup nudge, `srcset` posters, self-hosted fonts, swipe
-   on speed, share a title). Then the leftovers in COVERAGE-PLAN: anime
+4. **Next work, in order:** mobile polish is done (2026-10-31, fifth
+   session). The leftovers in COVERAGE-PLAN: anime
    rated on IMDb or Letterboxd should map to AniList (known gap), Coming
    soon (the owner said "not now"), Trakt (the owner's call). Phase 3's
    shared deck ("match with Dave") after that.
@@ -414,6 +412,23 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fifth session, later): mobile polish, Log a watch
+- UPGRADE-PLAN step 4 done: install prompt after three saves (once per
+  device); posters with a TMDB `srcset` and the next two preloaded; the two
+  fonts served from `fonts/` (nothing from Google Fonts now, and they work
+  offline); two faces on cards under 380 px; a quick flick swipes
+  (`js/ui/gesture.js`) with a light vibration; Share on a title with a
+  `#title/<id>` link that opens it. The backup nudge isn't needed since
+  decision 20.
+- The owner asked for the first run's "What have you loved?" panel from the
+  diary too: Library → Log a watch now opens it ("What have you watched?"),
+  closeable, no minimum, without what you've already watched, with search
+  for any title. Picks go in the diary as loved under "Picked, not reviewed
+  yet" (was "From your first run").
+- Tests: 152 unit; e2e and e2e:sync passing; screenshots 28 new, 19 changed.
+- **Next:** the coverage leftovers (COVERAGE-PLAN.md): anime rated on IMDb or
+  Letterboxd should map to AniList.
 
 ### 2026-10-31 (fifth session): the two intermittent CI failures on #13
 - **e2e, "Bring your history"** (Enter on the AniList field did nothing, so

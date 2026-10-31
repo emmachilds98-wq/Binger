@@ -13,6 +13,14 @@ const IMG = 'https://image.tmdb.org/t/p/';
 
 export const img = (path, size) => (path ? IMG + size + path : null);
 
+// TMDB serves posters at fixed widths. A srcset lets a small phone fetch
+// w342 and a sharp or wide screen w780, instead of everyone getting w500.
+// Anything that isn't a TMDB image (AniList's covers) gets null.
+export function posterSrcset(url) {
+  const m = /^(https:\/\/image\.tmdb\.org\/t\/p\/)w\d+(\/[^\s,]+)$/.exec(url || '');
+  return m ? [342, 500, 780].map((w) => `${m[1]}w${w}${m[2]} ${w}w`).join(', ') : null;
+}
+
 export function authFor(key) {
   const k = String(key || '').trim();
   if (!k) return null;
