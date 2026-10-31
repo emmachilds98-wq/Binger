@@ -1,0 +1,81 @@
+{
+ "title": "Jaws",
+ "year": 1975,
+ "released": "1975-06-20",
+ "runtime": 124,
+ "score": 86,
+ "ids": {
+  "imdb": "tt0073195",
+  "trakt": 457,
+  "tmdb": 578,
+  "tvdb": null,
+  "mal": null,
+  "mdblist": "om"
+ },
+ "type": "movie",
+ "ratings": [
+  {
+   "source": "imdb",
+   "value": 8.1,
+   "score": 81,
+   "votes": 673852,
+   "url": 99
+  },
+  {
+   "source": "metacritic",
+   "value": 87,
+   "score": 87,
+   "votes": 21,
+   "url": "/jaws"
+  },
+  {
+   "source": "metacriticuser",
+   "value": null,
+   "score": null,
+   "votes": null,
+   "url": null
+  },
+  {
+   "source": "trakt",
+   "value": 78,
+   "score": 78,
+   "votes": 14033,
+   "url": null
+  },
+  {
+   "source": "tomatoes",
+   "value": 97,
+   "score": 97,
+   "votes": 102,
+   "url": "/m/jaws"
+  },
+  {
+   "source": "tmdb",
+   "value": 76,
+   "score": 76,
+   "votes": 10114,
+   "url": null
+  },
+  {
+   "source": "letterboxd",
+   "value": 8,
+   "score": 80,
+   "votes": 876082,
+   "url": "/film/jaws/"
+  },
+  {
+   "source": "rogerebert",
+   "value": 4,
+   "score": null,
+   "votes": null,
+   "url": "great-movie-jaws-1975"
+  },
+  {
+   "source": "myanimelist",
+   "value": null,
+   "score": null,
+   "votes": null,
+   "url": null
+  }
+ ]
+}

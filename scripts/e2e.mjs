@@ -30,6 +30,7 @@ const providersList = fx('tmdb-providers-movie.json');
 const personChalamet = fx('tmdb-person.json');
 const staffTanezaki = fx('anilist-staff-tanezaki.json');
 const duneCollection = fx('tmdb-collection.json');
+const mdblistJaws = fx('mdblist-movie.json');
 // Severance with season 3 announced: episode 1 airs in 77 days.
 const s3Date = new Date(Date.now() + 77 * 86400000).toISOString().slice(0, 10);
 const severanceNow = { ...tvDetail, next_episode_to_air: { id: 6001, name: 'Season 3, Episode 1', air_date: s3Date, episode_number: 1, season_number: 3 } };
@@ -97,6 +98,10 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p === '/tv/95396') return json(severanceNow);
   if (p === '/search/movie') return json(trending);
   if (p === '/search/tv') return json(tvList);
+  if (p === '/search/person') {
+    const who = /chalamet/i.test(url.searchParams.get('query') || '');
+    return json({ results: who ? [{ id: 1190668, name: 'Timothée Chalamet', popularity: 50, known_for_department: 'Acting', profile_path: null, known_for: [{ ...trending.results[0], media_type: 'movie' }] }] : [] });
+  }
   // Details for any other listed title: its list entry, with no streaming in GB.
   const other = p.match(/^\/(movie|tv)\/(\d+)$/);
   if (other) {
@@ -384,6 +389,15 @@ await page.waitForSelector('.search .search-service');
 check(/Apple TV\+ shows and films first/.test(await page.locator('.search .search-service').innerText()), 'typing "apple tv" says Apple TV+’s shows come first');
 check(await page.locator('.search .row-title').first().innerText() === 'Severance', 'and Severance (an Apple original) leads the results');
 await shot('22-search-service');
+await page.fill('#search-q', 'timothée chalamet');
+await page.waitForSelector('.search .search-people .row-title');
+check(await page.locator('.search .search-people .row-title').first().innerText() === 'Timothée Chalamet', 'typing an actor’s name brings them up');
+check(/known for Dune: Part Two/.test(await page.locator('.search .search-people').innerText()), 'with what they’re known for');
+await shot('23-search-person');
+await page.getByRole('button', { name: 'Timothée Chalamet: see their films and shows' }).click();
+await page.waitForSelector('.person-sheet .row-title');
+check(/Timothée Chalamet/.test(await page.locator('.person-sheet .detail-title').innerText()), 'and tapping them opens their films and shows, best for you first');
+await page.keyboard.press('Escape');
 await page.keyboard.press('Escape');
 await page.waitForTimeout(200);
 
@@ -564,6 +578,57 @@ await shot('19-small-phone');
 await page.setViewportSize({ width: 390, height: 844 });
 
 check(errors.length === 0, `no script errors${errors.length ? ': ' + errors.join(' | ') : ''}`);
+
+console.log('Keys built into the site: TMDB, and review scores');
+// The live site has a TMDB key built in (scripts/build-site.mjs): Settings
+// has no key field there, and nothing saved on a device can override it.
+// With an MDBList key built in too, films and series show review scores.
+const built = await context.newPage();
+await built.setViewportSize({ width: 390, height: 844 });
+const keysUsed = [];
+built.on('request', (r) => { if (r.url().startsWith('https://api.themoviedb.org/')) keysUsed.push(new URL(r.url()).searchParams.get('api_key')); });
+await built.route('**/js/config.js', async (route) => {
+  const res = await route.fetch();
+  await route.fulfill({ response: res, body: (await res.text()).replace("tmdbKey: ''", "tmdbKey: 'e2e-test-key'").replace("mdblistKey: ''", "mdblistKey: 'e2eMdblistKey'") });
+});
+// MDBList's documented example (Jaws), plus an audience score, for any title.
+await built.route('https://api.mdblist.com/**', (route) => route.fulfill({ status: 200, contentType: 'application/json',
+  body: JSON.stringify({ ...mdblistJaws, ratings: [...mdblistJaws.ratings, { source: 'popcorn', value: 90, score: 90, votes: 250000, url: '/m/jaws' }] }) }));
+const setSavedKeys = (key) => built.evaluate((k) => {
+  for (const name of Object.keys(localStorage).filter((n) => n.startsWith('binger:'))) {
+    try {
+      const v = JSON.parse(localStorage.getItem(name));
+      if (v && v.settings) v.settings.tmdbKey = k;
+      if (v && 'tmdbKey' in v) v.tmdbKey = k;
+      localStorage.setItem(name, JSON.stringify(v));
+    } catch { /* not JSON */ }
+  }
+}, key);
+await built.goto(base + '#discover');
+await setSavedKeys('wrong-key');
+await built.reload();
+await built.waitForTimeout(500);
+if (await built.locator('.who .who-tile').count()) await built.locator('.who .who-tile', { hasText: 'Emma' }).click();
+await built.waitForSelector('.deck .card');
+await built.getByRole('button', { name: 'Search', exact: true }).click();
+await built.fill('#search-q', 'Dune');
+await built.locator('.search .row-main', { hasText: /^Dune: Part Two/ }).first().click();
+await built.waitForSelector('.detail .scores');
+const scoreText = await built.locator('.detail .scores').innerText();
+check(/IMDb 8\.1/.test(scoreText) && /RT critics 97%/.test(scoreText) && /RT audience 90%/.test(scoreText), `details show review scores: ${scoreText.replace(/\s+/g, ' ')}`);
+check((await built.locator('.detail .scores a', { hasText: 'IMDb' }).getAttribute('href')) === 'https://www.imdb.com/title/tt0073195/', 'each score opens its own site (IMDb here)');
+await built.waitForTimeout(300);
+await built.screenshot({ path: new URL('24-review-scores.jpg', SHOTS).pathname, type: 'jpeg', quality: 78 });
+await built.keyboard.press('Escape');
+await built.keyboard.press('Escape');
+await built.waitForTimeout(200);
+await built.click('a[href="#taste"]');
+await built.getByRole('button', { name: 'Settings' }).first().click();
+await built.waitForSelector('.settings .settings-body');
+check(await built.locator('#tmdb-key').count() === 0 && !/TMDB key/.test(await built.locator('.settings').innerText()), 'with a key built into the site, Settings has no TMDB key section');
+check(keysUsed.length > 0 && keysUsed.every((k) => k === 'e2e-test-key'), `the built-in key is used, even with another saved on the device (${keysUsed.length} TMDB calls)`);
+await setSavedKeys('e2e-test-key');
+await built.close();
 
 console.log('Offline support');
 // The run above blocks the service worker (so API mocks apply). Check it on

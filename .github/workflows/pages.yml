@@ -51,6 +51,8 @@ jobs:
     env:
       # Whichever name the secret was saved under. GitHub masks it in logs.
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY || secrets.TMDB_KEY || secrets.TMDB_TOKEN || secrets.TMDB }}
+      # Optional: review scores (IMDb, Rotten Tomatoes…) from MDBList.
+      MDBLIST_API_KEY: ${{ secrets.MDBLIST_API_KEY || secrets.MDBLIST_KEY || secrets.MDBLIST }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -58,7 +60,7 @@ jobs:
           node-version: 22
       - name: Checks
         run: npm run check && npm test
-      - name: Build the site, with the TMDB key
+      - name: Build the site, with the TMDB (and MDBList) keys
         run: node scripts/build-site.mjs _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

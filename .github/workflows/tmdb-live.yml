@@ -9,9 +9,9 @@ on:
     - cron: '17 6 * * 1'
   push:
     branches: [main]
-    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
   pull_request:
-    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
+    paths: ['js/sources/tmdb.js', 'js/sources/services.js', 'js/sources/genres.js', 'js/sources/lookups.js', 'js/sources/ratings.js', 'js/sources/candidates.js', 'scripts/tmdb-live.mjs', '.github/workflows/tmdb-live.yml']
 
 jobs:
   live:
@@ -19,6 +19,8 @@ jobs:
     env:
       # Whichever name the secret was saved under. GitHub masks it in logs.
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY || secrets.TMDB_KEY || secrets.TMDB_TOKEN || secrets.TMDB }}
+      # Optional: checks review scores (js/sources/ratings.js) too when set.
+      MDBLIST_API_KEY: ${{ secrets.MDBLIST_API_KEY || secrets.MDBLIST_KEY || secrets.MDBLIST }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

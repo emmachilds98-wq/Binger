@@ -96,6 +96,9 @@ PLAN.md). Options, best first:
 - [x] **Chosen (2026-10-31): built in at deploy time** from the repository
       secret (`.github/workflows/pages.yml`, `scripts/build-site.mjs`); never
       committed. Needs Pages → Source: GitHub Actions (PLAN.md → Phase 1.1).
+- [x] Settings has no key field on the live site now (the built-in key
+      always wins; 2026-10-31, the owner's ask). The items below are kept
+      for a copy without a built-in key.
 - [ ] **Now, no code:** paste the key once in Settings on one device. With
       sync connected (step 1) it's shared through the household, so Dave
       gets films and TV too. (A cloud session's `TMDB_API_KEY` secret is

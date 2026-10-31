@@ -102,6 +102,19 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   reason style. Typing a service into search adds a muted line above the
   results, "Apple TV+ shows and films first, then everything else that
   matches." Screenshots `21-onboarding-search`, `22-search-service`.
+- **People in search** (built): someone whose name you type gets a row
+  above the results: a 60px round photo (initials without one), their name,
+  "Actor · known for Severance, Parks and Recreation" muted, and a chevron;
+  it opens their page. Screenshot `23-search-person`.
+- **Review scores** (built): the card's meta line ends "IMDb 8.1 · RT
+  audience 90%" (critics when there's no audience score; TMDB's own score
+  when there are none). Details have a row of chips under the crew line,
+  "IMDb 8.1", "RT critics 97%", "RT audience 90%", "Metacritic 87",
+  "Letterboxd 4.0", each a link to that site with a small external-link
+  icon (Metacritic has no link). Just "IMDb" when there are no scores yet.
+  Screenshot `24-review-scores`.
+- **Settings** (built): no "Films & TV (TMDB key)" group where a key is
+  built into the site, which is the live site.
 - **PC layout** (built; see below). Designed here rather than on the canvas,
   which the 2026-10-31 session couldn't open from its account. Add a desktop
   row to the canvas when someone with access can, and copy it to `design/canvas/`.

@@ -13,6 +13,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createTmdb, fromTmdbDetail, fromTmdbPerson, fromTmdbCollection, fromTmdbProviders, NOT_FOR_DECK } from '../js/sources/tmdb.js';
 import { TMDB_NETWORKS } from '../js/sources/services.js';
 import { searchTitles, starterTitles } from '../js/sources/lookups.js';
+import { gatherCandidates } from '../js/sources/candidates.js';
+import { createRatings } from '../js/sources/ratings.js';
+import { buildProfile } from '../js/engine/index.js';
 
 const KEY = process.env.TMDB_API_KEY || '';
 if (!KEY) {
@@ -165,6 +168,65 @@ await step('search', async () => {
   const apple = await searchTitles('apple tv', { tmdb });
   console.log(`    "apple tv": ${apple.titles.slice(0, 8).map((t) => t.title).join('; ')}`);
   check(apple.service === 'Apple TV+' && apple.titles.length > 10, `search "apple tv" lists Apple TV+'s shows (${apple.titles.length})`);
+});
+
+await step('people and years in search', async () => {
+  const adam = await searchTitles('adam scott', { tmdb });
+  console.log(`    "adam scott": ${adam.people.map((p) => `${p.name} (${p.known})`).join('; ')} · ${adam.titles.slice(0, 5).map((t) => t.title).join('; ')}`);
+  check(adam.people[0] && adam.people[0].name === 'Adam Scott' && adam.titles.some((t) => t.title === 'Severance'), 'search "adam scott" brings him up, and Severance among his work');
+  const dune = await searchTitles('dune 2021', { tmdb });
+  check(!!(dune.titles[0] && dune.titles[0].title === 'Dune' && dune.titles[0].year === 2021), `search "dune 2021" → first result ${dune.titles[0] ? `"${dune.titles[0].title}" (${dune.titles[0].year})` : 'none'}`);
+  const blade = await searchTitles('blade runner 2049', { tmdb });
+  check(!!(blade.titles[0] && /2049/.test(blade.titles[0].title)), `search "blade runner 2049" still finds the film (${blade.titles[0] && blade.titles[0].title})`);
+  const similar = await tmdb.similar('movie', 693134);
+  check(similar.length > 5, `"similar" answers for Dune: Part Two (${similar.length})`);
+});
+
+// Review scores (js/sources/ratings.js), when the repository has an
+// MDBLIST_API_KEY secret. Prints the raw source names MDBList sends, so a
+// rename (it has called the audience score "popcorn" and "tomatoesaudience")
+// shows up here first.
+const MDBLIST_KEY = process.env.MDBLIST_API_KEY || '';
+await step('review scores', async () => {
+  if (!MDBLIST_KEY) { notes.push('No MDBLIST_API_KEY: review scores not checked (optional).'); return; }
+  const sources = new Set();
+  const capture = async (url, init) => {
+    const res = await fetch(url, init);
+    const text = await res.text();
+    try { for (const r of JSON.parse(text).ratings || []) if (r && r.value != null) sources.add(r.source); } catch { /* not JSON */ }
+    return new Response(text, { status: res.status, headers: res.headers });
+  };
+  const ratings = createRatings({ key: MDBLIST_KEY, fetchImpl: capture });
+  const dune = await ratings.forTitle({ source: 'tmdb', sourceId: 693134, mediaType: 'movie' });
+  const severance = await ratings.forTitle({ source: 'tmdb', sourceId: 95396, mediaType: 'tv' });
+  const show = (r) => (r ? Object.entries(r).filter(([k, v]) => v && k !== 'imdbId').map(([k, v]) => `${k} ${v.value}`).join(', ') : 'none');
+  console.log(`    sources with a score: ${[...sources].sort().join(', ')}`);
+  console.log(`    Dune: Part Two: ${show(dune)} · Severance: ${show(severance)}`);
+  check(!!(dune && dune.imdb && dune.critics && dune.imdbId === 'tt15239678'), 'Dune: Part Two has IMDb and Rotten Tomatoes scores, and its IMDb id');
+  check(!!(dune && dune.audience), 'and Rotten Tomatoes’ audience score');
+  check(!!(severance && severance.imdb), 'Severance (a series) has an IMDb score');
+});
+
+// How far the deck reaches: a few refills with and without the page memory.
+await step('deck reach', async () => {
+  const twoYearsAgo = Date.now() - 730 * 86400000;
+  const reach = async (pages) => {
+    const seen = new Map();
+    const added = [];
+    for (let i = 0; i < 5; i++) {
+      const { pool } = await gatherCandidates({ tmdb, anilist: null, items: {}, profile: buildProfile([]), settings: {}, pages });
+      const before = seen.size;
+      for (const t of pool) seen.set(t.id, t);
+      added.push(seen.size - before);
+    }
+    const recent = [...seen.values()].filter((t) => t.releaseDate && Date.parse(t.releaseDate) >= twoYearsAgo).length;
+    return { total: seen.size, recent, added };
+  };
+  const without = await reach(null);
+  const withMemory = await reach({});
+  console.log(`    5 refills without page memory: ${without.total} titles (${without.recent} from the last two years), new per refill ${without.added.join(', ')}`);
+  console.log(`    5 refills with page memory:    ${withMemory.total} titles (${withMemory.recent} from the last two years), new per refill ${withMemory.added.join(', ')}`);
+  check(withMemory.total > without.total && withMemory.added[4] >= 20, 'with page memory, later refills keep finding new titles');
 });
 
 await step('first-run grid', async () => {

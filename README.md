@@ -20,7 +20,9 @@ teaches Binger your taste, and every card tells you why it was picked:
 - **Always current.** Live data from TMDB (films, TV) and AniList (anime):
   this week's trending, new releases, shows airing now, the last two years' hits,
   the streamers' own shows (Apple TV+, Netflix, BBC…), the current anime season.
-  Search finds any film or show on TMDB; type a service ("apple tv") to see its shows.
+  Search finds any film or show on TMDB; type a service ("apple tv") to see its
+  shows, or a person to see theirs. Review scores from IMDb, Rotten Tomatoes
+  (critics and audience), Metacritic and Letterboxd, via MDBList.
 - **Yours.** Your library stays on your device. Export/import backups anytime.
 
 **Plan, status and handover: [docs/PLAN.md](docs/PLAN.md)**. Start there.

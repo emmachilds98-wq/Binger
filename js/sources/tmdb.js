@@ -126,6 +126,8 @@ export function fromTmdbDetail(d, mediaType, region = 'GB') {
     t.certification = (cr && cr.rating) || null;
   }
   t.studios = (d.production_companies || []).map((c) => c.name).slice(0, 2);
+  // For the IMDb link in details (films carry it; series via external_ids).
+  t.imdbId = d.imdb_id || (d.external_ids && d.external_ids.imdb_id) || null;
   t.trailer = pickTrailer(d.videos && d.videos.results);
 
   const wp = d['watch/providers'] && d['watch/providers'].results && d['watch/providers'].results[region];
@@ -218,6 +220,20 @@ export function fromTmdbPerson(d) {
   };
 }
 
+// Someone from /search/person: who they are, and the titles they're known
+// for (as list-level Titles; Japanese animation left to AniList).
+export function fromTmdbPersonHit(r) {
+  if (!r || !r.id || r.adult) return null;
+  return {
+    id: `tmdb:p:${r.id}`,
+    name: r.name || '',
+    photo: img(r.profile_path, 'w185'),
+    known: KNOWN_FOR[r.known_for_department] || r.known_for_department || null,
+    popularity: r.popularity ?? 0,
+    knownFor: (r.known_for || []).map((k) => fromTmdbList(k, k.media_type)).filter((t) => t && !t.animeLike),
+  };
+}
+
 // Every film in a TMDB collection, for "Not this franchise".
 export function fromTmdbCollection(d) {
   if (!d || !d.id) return null;
@@ -295,10 +311,15 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
     async recommendations(mediaType, id) {
       return deckList(await get(`/${mediaType}/${id}/recommendations`, {}, DAY), mediaType);
     },
+    // Same genres and keywords: what "more like this" falls back on when a
+    // new or niche title has few recommendations yet.
+    async similar(mediaType, id) {
+      return deckList(await get(`/${mediaType}/${id}/similar`, {}, DAY), mediaType);
+    },
     async details(mediaType, id) {
       const append = mediaType === 'movie'
         ? 'credits,keywords,videos,watch/providers,release_dates'
-        : 'aggregate_credits,keywords,videos,watch/providers,content_ratings';
+        : 'aggregate_credits,keywords,videos,watch/providers,content_ratings,external_ids';
       const d = await get(`/${mediaType}/${id}`, { append_to_response: append, include_video_language: 'en,null' }, 3 * DAY);
       return fromTmdbDetail(d, mediaType, region);
     },
@@ -317,14 +338,23 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
     // Films and series asked for separately: /search/multi shares its 20
     // results with people, so a show could miss out to an actor's namesake.
     // Merged most popular first; js/sources/lookups.js ranks by closeness.
-    async search(query) {
+    // year: only titles from that year (a film's release, a series' first episode).
+    async search(query, { year = null } = {}) {
       const q = String(query || '').trim();
       if (!q) return [];
+      const yearParam = (m) => (year ? (m === 'movie' ? { year } : { first_air_date_year: year }) : {});
       // One half failing still returns the other; both failing is an error.
-      const settled = await Promise.allSettled(['movie', 'tv'].map((m) => get(`/search/${m}`, { query: q, include_adult: 'false' }, HOUR).then((json) => list(json, m))));
+      const settled = await Promise.allSettled(['movie', 'tv'].map((m) => get(`/search/${m}`, { query: q, include_adult: 'false', ...yearParam(m) }, HOUR).then((json) => list(json, m))));
       const ok = settled.filter((r) => r.status === 'fulfilled').flatMap((r) => r.value);
       if (settled.every((r) => r.status === 'rejected')) throw settled[0].reason;
       return ok.filter((t) => !t.animeLike).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+    },
+    // People whose name matches, most popular first, with what they're known for.
+    async searchPeople(query) {
+      const q = String(query || '').trim();
+      if (!q) return [];
+      const json = await get('/search/person', { query: q, include_adult: 'false' }, HOUR);
+      return ((json && json.results) || []).map(fromTmdbPersonHit).filter(Boolean);
     },
     // id: a TMDB network id (TMDB_NETWORKS in services.js), for the live check.
     async network(id) {

@@ -4,6 +4,11 @@ export const CONFIG = {
   // this deployment without them pasting their own in Settings. Leave it
   // empty if the repository is public: anything here is visible to anyone.
   tmdbKey: '',
+  // Optional. An MDBList key (mdblist.com → Preferences → API) adds review
+  // scores: IMDb, Rotten Tomatoes (critics and audience), Metacritic and
+  // Letterboxd. Built into the deployed site from the MDBLIST_API_KEY
+  // repository secret, like the TMDB key; leave it empty here.
+  mdblistKey: '',
   // Optional. The Firebase project's web config, for sync between people and
   // devices (docs/FIREBASE.md). Unlike the TMDB key this isn't a secret:
   // anyone can see it in the page, and the security rules (firestore.rules)

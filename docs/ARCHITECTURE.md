@@ -34,6 +34,7 @@ each one only talks to the one below it.
 | `js/sources/tmdb.js` | TMDB client + normalisers (films, TV) |
 | `js/sources/anilist.js` | AniList client + normaliser (anime); one batched deck query |
 | `js/sources/candidates.js` | Builds the candidate pool from both sources (incl. your services and deck filters); `hydrate` fetches TMDB details |
+| `js/sources/ratings.js` | Review scores from MDBList (IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd), by TMDB id; needs `CONFIG.mdblistKey` |
 | `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, service choices, new-season checks |
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |
 | `js/state/store.js` | localStorage persistence + change notifications |
@@ -73,6 +74,8 @@ Every adapter turns its API's response into this shape, and nothing outside
   nextEpisode: { season, episode, date },    // when the next episode airs (AniList adds `at`, ms)
   lastEpisode, seasonList: [{ number, date, episodes, name }],   // TMDB TV details
   url, detailed: boolean,                    // false = list data (no cast/keywords/runtime/streaming yet)
+  imdbId: 'tt15239678' | null,               // TMDB details (films: imdb_id; series: external_ids)
+  ratings: { imdb, critics, audience, metacritic, letterboxd, imdbId } | undefined,   // review scores (ratings.js): each { value, votes, url } or null
   via: [{ type: 'seed' | 'sequel' | 'fresh' | 'genre' | 'stream' | 'originals' | 'trending' | 'wider' | 'popular', seedTitle, label, ... }]
 }
 ```
@@ -193,12 +196,17 @@ On every refill (deck below 8 cards, a filter change, or "Fetch fresh cards"):
 
 TV lists for the deck never include news, talk shows or daily soaps
 (`NOT_FOR_DECK` in `tmdb.js`: asked for with `without_genres`, and filtered
-again from lists that can't take it, like trending). Then: TMDB copies of Japanese animation are dropped, AniList OVAs/specials and
+again from lists that can't take it, like trending). Every pull's page goes through `turnPage` with the session's page memory
+(`deck.pages` in `app.js`), so each refill asks for the next page rather
+than a random one again. "Because you liked" falls back on `/similar` when
+`/recommendations` has fewer than 10 titles, and seeds from 5 titles (not 3)
+once a source has 30+ you loved. Then: TMDB copies of Japanese animation are dropped, AniList OVAs/specials and
 adult titles are dropped, anything already in your library is dropped, and
 "Season 2" of something you haven't watched is dropped (but kept, marked as
 the next part, when you have). The top few TMDB titles are then *hydrated*
 (one detail call each, with credits, keywords, videos, watch providers and
-certificates appended) so their cards have cast and trailers.
+certificates appended) so their cards have cast and trailers, and, with an
+MDBList key, their review scores (`ratings.js`, one call each, cached a week).
 
 ## Search and the first-run grid (`sources/lookups.js`)
 
@@ -208,7 +216,10 @@ certificates appended) so their cards have cast and trailers.
   word; accents, punctuation and a leading "The" ignored), then each source's
   own order. Typing a service's name ("apple tv", "netflix originals",
   "iplayer": `serviceFromQuery`) lists that service's shows first: its TMDB
-  networks' series, then what's included with it in your region.
+  networks' series, then what's included with it in your region. A person's
+  name (`/search/person`, `matchingPeople`) gives them a row of their own
+  and adds what they're known for; a year at the end (`splitYear`: "dune
+  2021") asks TMDB for that year too and ranks it first.
 - **First run** (`starterTitles`): this week's trending, TMDB's most-rated
   films and series of all time, the most-rated of the last three years, and
   AniList's most popular anime; films, TV and anime take turns. "Show more"
