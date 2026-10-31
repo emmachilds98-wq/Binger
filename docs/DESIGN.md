@@ -82,12 +82,33 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   lilac, orange), the current one ringed. The **who chip** (initial + name;
   initial only under 420 px) sits at the right of every screen's header.
   **People and sync** is a full sheet in the Settings style.
-- **PC layout**: not designed yet. Design it on the canvas before building
-  (UPGRADE-PLAN.md, next step 2).
+- **PC layout** (built; see below). Designed here rather than on the canvas,
+  which the 2026-10-31 session couldn't open from its account. Add a desktop
+  row to the canvas when someone with access can, and copy it to `design/canvas/`.
+
+### PC and tablet layout
+
+The phone layout is the design; wider screens give it room rather than
+inventing new screens. **Under 700 px nothing changes.** Same tokens, type and
+components throughout.
+
+| Width | What changes |
+|---|---|
+| < 700 px | Phone, exactly as designed (390 × 844 artboards). |
+| ≥ 700 px | Sheets become centred windows instead of edge-to-edge: bottom sheets (Rate, Filters, confirmations) are a 560 px dialog in the middle of the screen; full sheets (Detail, Search, Settings, People, a person's work, Services) are a 680 px panel with 24 px clear above and below, 28 px corners and a `--line` border. Library rows sit in columns (auto-fill, min 320 px). The app column widens to 960 px. Shortcut hints appear under the deck buttons when there's a mouse. |
+| ≥ 900 px | **Details beside the deck.** Discover becomes two columns: the deck (card stack 440 px wide, actions under it) and, to its right, the top card's details: why it was picked, the full synopsis, cast (people you know ringed), where to watch, your diary. It follows the top card as you swipe. The trailer and the Want / Pass / Seen buttons stay on the card. Taste flows into two columns. |
+| ≥ 1100 px | **Side rail** instead of the bottom tab bar: Discover / Library / Taste stacked at the top left, icon + label, 220 px wide, `--surface-2` rule on its right; the current tab amber. The app goes up to 1280 px wide. |
+
+- Library is rows in columns, not a poster grid: each row keeps its match %,
+  "why" and actions, which a poster grid would hide.
+- **Keyboard** (with a mouse, ≥ 700 px): each deck button shows its key under
+  it in a small `--muted` label (Z, ←, ↑, →, Enter). `/` opens Search from any
+  tab; `?` opens the list of shortcuts. Keys never fire while typing or while
+  a sheet is open (except Escape, which closes it).
 
 ## Interaction rules
 
-- Every gesture has a button twin and a key: → Want, ← Pass, ↑ Seen it, Enter details, Z undo.
+- Every gesture has a button twin and a key: → Want, ← Pass, ↑ Seen it, Enter details, Z undo; / search, ? shortcuts.
 - Filters that hide things always say so on screen (the summary line, the dot) and can be cleared in one tap.
 - An empty deck under filters says it's the filters ("Nothing matches those filters yet") and offers Clear.
 - A drag can start anywhere on a card, even on the play button; a tap on the button still plays.

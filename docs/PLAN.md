@@ -48,8 +48,9 @@ Do these in order:
    `js/config.js`, console steps done, [live check passed](FIREBASE.md#on-the-real-project)).
    Only Google sign-in is untested by script: ask the owner to try it once.
 4. Then [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order):
-   2. a proper PC layout (design first), 3. films and TV for everyone,
-   4. mobile polish.
+   the PC layout is done (step 2), so 3. films and TV for everyone, then
+   4. mobile polish. If someone with canvas access is around, add a desktop
+   row to the canvas from DESIGN.md → "PC and tablet layout".
 5. Tick the boxes here and add a [status log](#status-log) entry.
 
 ### New to the project? (human engineers)
@@ -324,7 +325,7 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - [x] Firebase sync code (household, invite, merge, shared TMDB key), unit-tested
 - [x] The live check on the Firebase emulators (`npm run e2e:sync`, in CI)
 - [x] Connect the real Firebase project and do the live check there ([FIREBASE.md](FIREBASE.md)): passed 2026-10-31
-- [ ] PC layout (design first)
+- [x] PC layout (designed in DESIGN.md, built, e2e at 1280 / 768 / 360 px)
 - [ ] Films and TV for everyone (the TMDB key)
 - [ ] Mobile polish
 Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
@@ -344,6 +345,27 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (third session, later): PC layout
+- After #4 merged, the owner asked to carry on and merge to `main`. Built the
+  PC and tablet layout from UPGRADE-PLAN step 2. The canvas couldn't be opened
+  from this account, so the design is written in DESIGN.md → "PC and tablet
+  layout" (the plan's fallback).
+- Under 700 px nothing changes: the phone screenshots are byte-identical to
+  `main`'s. ≥ 700 px: sheets are centred windows, Library rows in columns, a
+  wider app. ≥ 900 px: the top card's details beside the deck (`detailPanel`,
+  shared `detailCtx` in `app.js`), Taste in two columns. ≥ 1100 px: a side
+  rail instead of the bottom tabs. Key hints under the deck buttons with a
+  mouse; `/` search and `?` shortcuts from any tab.
+- Found by the new checks: Taste's two CSS columns on its fixed-height scroll
+  area spilled a third column off the right edge; the columns now sit on an
+  inner wrapper that grows with its content.
+- e2e: new passes at 1280×800, 768×1024 and 360×640 (side rail, details
+  follow the top card, centred dialogs, columns, nothing wider than the
+  screen); screenshots 15–19.
+- `TMDB_API_KEY` still isn't visible to sessions started before the owner set
+  it; they've also added it as a GitHub repository secret, so the live TMDB
+  check can run in GitHub Actions instead.
 
 ### 2026-10-31 (third session): Firebase sync tested for real
 - The owner asked to carry on from the last session, connect Firebase and

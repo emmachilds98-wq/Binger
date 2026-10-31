@@ -64,6 +64,7 @@ const SHELL = [
   'js/ui/onboarding.js',
   'js/ui/filters.js',
   'js/ui/services.js',
+  'js/ui/shortcuts.js',
   'js/ui/person.js',
 ];
 

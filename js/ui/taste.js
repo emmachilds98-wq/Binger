@@ -24,8 +24,13 @@ export function renderTaste(root, ctx) {
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Your taste'),
       h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings')))));
-  const page = h('div', { class: 'page-scroll taste' });
-  root.append(head, page);
+  // The scroll area holds an inner column that grows with its content: on a
+  // wide screen that column flows into two (CSS columns on a fixed-height box
+  // would spill into extra columns off to the side instead).
+  const scroll = h('div', { class: 'page-scroll' });
+  const page = h('div', { class: 'taste' });
+  scroll.append(page);
+  root.append(head, scroll);
 
   page.append(h('p', { class: 'lede' }, st.items
     ? `Learned from ${plural(st.rated, 'rating')}, ${plural(st.wants, 'save')} and ${plural(st.passes, 'pass', 'passes')}. Recent ones count most, so this shifts as your taste does.`

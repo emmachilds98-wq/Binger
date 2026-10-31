@@ -12,7 +12,7 @@ import { createAniList } from './sources/anilist.js';
 import { gatherCandidates, hydrate } from './sources/candidates.js';
 import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
-import { openDetail } from './ui/detail.js';
+import { openDetail, detailPanel } from './ui/detail.js';
 import { openRate } from './ui/rate.js';
 import { renderLibrary } from './ui/library.js';
 import { renderTaste } from './ui/taste.js';
@@ -33,6 +33,7 @@ import {
 import { connectFirebase, authMessage } from './sync/firebase.js';
 import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
 import { openWhoIsWatching, openPeople, askName, shareOrCopy } from './ui/people.js';
+import { openShortcuts } from './ui/shortcuts.js';
 
 // ---- state -----------------------------------------------------------------
 
@@ -77,6 +78,9 @@ const seasons = { alerts: [], basis: '', checking: null };
 // Taste over time rebuilds your profile at six points, so it's worked out
 // once per library change, not on every render.
 const timelineMemo = { items: null, value: null };
+// Wide enough for the top card's details to sit beside the deck
+// (docs/DESIGN.md → PC and tablet layout). CSS uses the same width.
+const wideQuery = window.matchMedia('(min-width: 900px)');
 
 // ---- sources ---------------------------------------------------------------
 
@@ -645,10 +649,12 @@ function showPeople() {
 
 // ---- actions shared by every screen ----------------------------------------
 
-function showDetail(title, { card = null } = {}) {
+// What the detail sheet (and, on a wide screen, the panel beside the deck)
+// needs to show a title and act on it.
+function detailCtx(title, card) {
   const item = store.get().items[title.id] || null;
   const reasons = card ? card.reasons : item ? [] : explain(title, scoreTitle(title, profile), profile);
-  openDetail(title, {
+  return {
     reasons,
     item,
     profile,
@@ -664,7 +670,11 @@ function showDetail(title, { card = null } = {}) {
     onEditWatch: editWatch,
     onHideSeries: (t) => (hasFranchise(t) && !isSeriesHidden(t) ? hideSeries(t) : null),
     canHideSeries: (t) => hasFranchise(t) && !isSeriesHidden(t),
-  });
+  };
+}
+
+function showDetail(title, { card = null } = {}) {
+  openDetail(title, detailCtx(title, card));
 }
 
 async function addToWatchlist(t) {
@@ -811,6 +821,7 @@ function renderDiscoverView({ force = false } = {}) {
     onRefresh: () => refill({ force: true }),
     onSettings: showSettings,
     who: who(),
+    detail: wideQuery.matches ? (card) => detailPanel(card.title, detailCtx(card.title, card)) : null,
   });
 }
 
@@ -898,9 +909,13 @@ function isTyping(el) {
 }
 
 document.addEventListener('keydown', (e) => {
-  if (ui.tab !== 'discover' || anySheetOpen() || isTyping(e.target) || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (anySheetOpen() || isTyping(e.target) || e.metaKey || e.ctrlKey || e.altKey) return;
+  // From any tab: / to search, ? for the list of shortcuts (js/ui/shortcuts.js).
+  if (e.key === '/') { e.preventDefault(); showSearch(); return; }
+  if (e.key === '?') { e.preventDefault(); openShortcuts(); return; }
+  if (ui.tab !== 'discover') return;
   const top = deck.cards[0];
-  if (e.key === 'z' || e.key === 'Backspace') { e.preventDefault(); undo(); return; }
+  if (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace') { e.preventDefault(); undo(); return; }
   if (!top || !discoverHandle) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); discoverHandle.swipe('right'); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); discoverHandle.swipe('left'); }
@@ -913,6 +928,8 @@ document.addEventListener('pointerup', () => {
 });
 
 window.addEventListener('hashchange', route);
+// Crossing the wide breakpoint adds or removes the details beside the deck.
+wideQuery.addEventListener('change', () => renderDiscoverView({ force: true }));
 
 // After "Who's watching?" (or straight away): first run for a new person, or
 // the join screen for someone who opened an invite link.
