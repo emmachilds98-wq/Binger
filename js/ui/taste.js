@@ -3,7 +3,8 @@
 // genres to hide.
 
 import { h, icon, clear, KIND_NAME, titleCase } from './dom.js';
-import { topFeatures } from '../engine/index.js';
+import { topFeatures, feelingSummary } from '../engine/index.js';
+import { ASPECTS } from '../state/library.js';
 import { servicesSummary } from './services.js';
 import { tasteMoved, howYouWatch } from './timeline.js';
 import { whoChip } from './people.js';
@@ -67,6 +68,20 @@ export function renderTaste(root, ctx) {
 
   const how = howYouWatch(profile);
   if (how) page.append(how);
+
+  // From your feeling tags and rated parts (the "How did it feel?" sheet).
+  const feel = feelingSummary(Object.values(state.items));
+  const partName = (k) => (ASPECTS.find(([key]) => key === k) || [k, k])[1].toLowerCase();
+  if (feel.loved.length || feel.strong.length) {
+    page.append(section('What you love in a watch', h('div', null,
+      feel.loved.length ? chips(feel.loved.map((f) => (f.n > 1 ? `${f.tag} ×${f.n}` : f.tag))) : null,
+      feel.strong.length ? h('p', { class: 'small muted' }, `The parts you rate highest: ${feel.strong.slice(0, 3).map((p) => partName(p.key)).join(', ')}.`) : null)));
+  }
+  if (feel.off.length || feel.weak.length) {
+    page.append(section('What puts you off', h('div', null,
+      feel.off.length ? chips(feel.off.map((f) => (f.n > 1 ? `${f.tag} ×${f.n}` : f.tag))) : null,
+      feel.weak.length ? h('p', { class: 'small muted' }, `Often weak for you: ${feel.weak.slice(0, 3).map((p) => partName(p.key)).join(', ')}.`) : null)));
+  }
 
   const dislikes = [...topFeatures(profile, 'genre', { limit: 4, sign: -1 }), ...topFeatures(profile, 'keyword', { limit: 4, sign: -1 })];
   if (dislikes.length) page.append(section('Not really your thing', chips(dislikes.map((d) => d.label))));

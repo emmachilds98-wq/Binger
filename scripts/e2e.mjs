@@ -262,13 +262,25 @@ await page.waitForSelector('.rate .stars-input');
 check(/review your pick/i.test(await page.locator('.rate').innerText()), 'Review opens the same sheet as "Seen it": stars, how it felt, your thoughts, the date');
 await page.locator('.rate .star').nth(4).click();
 await page.locator('.rate .pill', { hasText: 'Rewatchable' }).click();
+await page.locator('.rate .pill', { hasText: /^Violent$/ }).click();
 await page.fill('#review', 'Even better the second time.');
 await shot('25-first-run-review');
+check(await page.locator('.rate .tag-group-name').allInnerTexts().then((n) => n.length === 4 && n.includes('What didn’t work')), 'feeling tags come in groups, from how it felt to what didn’t work');
+await page.locator('.rate .parts summary').click();
+await page.getByRole('button', { name: 'Story: Loved' }).click();
+await page.getByRole('button', { name: 'Ending: Weak' }).click();
+await page.getByRole('button', { name: 'Look: Loved' }).click();
+await page.getByRole('button', { name: 'Look: Loved' }).click();
+check(await page.locator('.part-btns .pill[aria-pressed="true"]').count() === 2, 'Go deeper: each part loved, fine or weak, and a second tap clears it');
+await page.locator('.rate .parts').scrollIntoViewIfNeeded();
+await shot('30-go-deeper');
 await page.getByRole('button', { name: 'Save review' }).click();
 await page.waitForTimeout(300);
 check(await page.locator('.first-picks .row').count() === 2, 'once reviewed, it leaves "Picked, not reviewed yet"');
 const entry = await page.evaluate((name) => Object.values(JSON.parse(localStorage.getItem('binger:v1')).items).find((i) => i.title.title === name).watches[0], reviewed);
 check(entry.rating === 5 && entry.review === 'Even better the second time.' && entry.tags.includes('Rewatchable') && !entry.setup, `and its diary entry has the full review (${entry.rating}★, ${entry.tags.join(', ')})`);
+check(JSON.stringify(entry.aspects) === '{"story":1,"ending":-1}' && entry.tags.includes('Violent'), `the parts are saved with it (${JSON.stringify(entry.aspects)})`);
+check(await page.locator('.row', { hasText: reviewed }).filter({ hasText: 'Rewatchable · Violent · Loved the story · Weak ending' }).count() === 1, 'the diary row sums the review up: tags, loved and weak parts');
 
 console.log('Log a watch: the first-run panel again');
 await page.getByRole('button', { name: 'Log a watch' }).click();
@@ -355,6 +367,19 @@ check(await page.locator('.deck .card:last-of-type .clip iframe').count() === 1,
 await page.getByRole('button', { name: 'Stop clip' }).click();
 check(await page.locator('.deck .card:last-of-type .clip').count() === 0, 'the clip can be stopped');
 
+// The pills combine: Films and TV together, no anime.
+await page.getByRole('button', { name: 'TV', exact: true }).click();
+await page.waitForSelector('.deck .card');
+const pressed = await page.locator('.pills .pill[aria-pressed="true"]').allInnerTexts();
+check(pressed.join(',') === 'Films,TV', `Films and TV can be picked together (${pressed.join(', ')})`);
+const kindsShown = await page.locator('.deck .card .badge').evaluateAll((els) => els.map((e) => e.className));
+check(kindsShown.length > 0 && kindsShown.every((c) => !/badge-anime/.test(c)), 'with Films and TV picked, no anime cards show');
+await page.getByRole('button', { name: 'Anime', exact: true }).click();
+check((await page.locator('.pills .pill[aria-pressed="true"]').allInnerTexts()).join(',') === 'All', 'picking all three kinds goes back to All');
+await page.getByRole('button', { name: 'Films', exact: true }).click();
+await page.getByRole('button', { name: 'Films', exact: true }).click();
+check((await page.locator('.pills .pill[aria-pressed="true"]').allInnerTexts()).join(',') === 'All', 'unpicking the last kind goes back to All');
+
 console.log('Swiping');
 await page.getByRole('button', { name: 'All' }).click();
 await page.waitForSelector('.deck .card');
@@ -436,6 +461,8 @@ await page.click('a[href="#taste"]');
 await page.waitForSelector('.bars .bar-row');
 await shot('06-taste');
 check(await page.locator('.bars .bar-row').count() >= 1, 'taste shows learned genres');
+const loveSection = await page.locator('.taste section', { hasText: 'What you love in a watch' }).innerText().catch(() => '');
+check(/Violent/.test(loveSection) && /parts you rate highest: story/.test(loveSection), 'Taste sums up your feeling tags and the parts you rate highest');
 
 console.log('Persistence');
 await page.reload();

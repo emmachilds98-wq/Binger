@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   featuresOf, buildProfile, topFeatures, scoreTitle, quality, freshness, buildDeck,
-  rankWatchlist, ratingBaseline, itemSignal, latestRating, explain,
+  rankWatchlist, ratingBaseline, itemSignal, latestRating, explain, toggleKind,
 } from '../js/engine/index.js';
 
 const NOW = Date.parse('2026-10-18T12:00:00Z');
@@ -209,4 +209,18 @@ test('wildcards do not claim to match your taste; one cast reason per card', () 
   const asWildcard = explain(both, { ...scored, explore: true }, p, { now: NOW });
   assert.equal(asWildcard[0].kind, 'explore');
   assert.ok(asWildcard.every((r) => !['genre', 'cast', 'creator', 'keyword', 'seed'].includes(r.kind)), JSON.stringify(asWildcard));
+});
+
+test('Discover pills: any mix of kinds, All when none or every one is picked', () => {
+  let k = toggleKind(new Set(), 'film');
+  assert.deepEqual([...k], ['film']);
+  k = toggleKind(k, 'tv');
+  assert.deepEqual([...k].sort(), ['film', 'tv']);
+  assert.equal(toggleKind(k, 'anime').size, 0, 'all three is All');
+  assert.deepEqual([...toggleKind(k, 'film')], ['tv'], 'tapping again unpicks');
+  assert.equal(toggleKind(new Set(['tv']), 'tv').size, 0, 'none left is All');
+  assert.equal(toggleKind(k, 'all').size, 0);
+  const pool = ['film', 'tv', 'anime', 'film', 'tv', 'anime'].map((kind) => title({ kind }));
+  const deck = buildDeck(pool, buildProfile([], { now: NOW }), { now: NOW, size: 6, kinds: k });
+  assert.ok(deck.length === 4 && deck.every((d) => d.title.kind !== 'anime'));
 });

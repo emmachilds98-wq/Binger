@@ -413,6 +413,26 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
 
+### 2026-10-31 (fifth session, last): combined pills, deeper reviews
+- The owner asked to pick several Discover pills at once (Films and TV, not
+  Anime): the pills are toggles now (`toggleKind` in `js/engine/rank.js`;
+  `deck.kinds` in `app.js`, empty = All).
+- The owner asked whether the library steers Discover. It does, two ways:
+  what gets fetched (rated titles seed TMDB / AniList recommendations,
+  sequels of anime you watched, your top genres) and how every card is ranked
+  (`buildProfile` over the whole library; ratings, feeling tags, recency;
+  library titles are never shown again). Covered by the existing
+  gatherCandidates and engine tests.
+- The owner asked for more "How did it feel?" tags (Violent, for action
+  films) and deeper reviews: 31 tags in four groups, and "Go deeper: rate the
+  parts" (story, acting, characters, look, sound, ending: loved / fine /
+  weak, `watch.aspects`, `cleanAspects` in `library.js`). Tags that describe
+  rather than judge (Violent, Dark, Scary) don't move a rating; judging ones
+  and rated parts nudge it inside the same quarter-star cap (`TAG_NUDGE`,
+  `ASPECT_NUDGE`). Taste shows "What you love in a watch" and "What puts you
+  off" (`feelingSummary`). Every old tag is still offered.
+- Tests: 162 unit; e2e passing; screenshot `30-go-deeper`.
+
 ### 2026-10-31 (fifth session, end): roughly when you watched it
 - The owner asked for an "unsure when I watched" option, so long-time
   favourites can go in without a date: the rate sheet now asks "When did you

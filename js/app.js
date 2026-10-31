@@ -11,7 +11,7 @@ import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
 import { createRatings } from './sources/ratings.js';
 import { gatherCandidates, hydrate, needsHydrating } from './sources/candidates.js';
-import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline } from './engine/index.js';
+import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline, toggleKind } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
 import { openDetail, detailPanel } from './ui/detail.js';
 import { openRate } from './ui/rate.js';
@@ -69,7 +69,7 @@ const deck = {
   loading: false,
   queued: false,     // a forced refill asked for while one was running
   errors: [],
-  filter: 'all',
+  kinds: new Set(),  // Discover pills: empty = All, else any mix of film / tv / anime
   filters: { short: false, decade: null }, // length and decade, this session only
   undo: [],          // [{ id, prev, title }]
   pages: {},         // which page each pull has reached this session (turnPage)
@@ -132,7 +132,7 @@ function rerank() {
     exclude: new Set(Object.keys(items)),
     hiddenGenres: settings.hiddenGenres,
     hiddenFranchises: settings.hiddenFranchises,
-    kinds: deck.filter === 'all' ? null : new Set([deck.filter]),
+    kinds: deck.kinds.size ? deck.kinds : null,
     mix: tmdb && tmdb.hasKey ? settings.mix : { ...settings.mix, film: 0, tv: 0 },
     filters: deck.filters,
     services: settings.services,
@@ -265,7 +265,7 @@ function undo() {
 }
 
 function setFilter(key) {
-  deck.filter = key;
+  deck.kinds = toggleKind(deck.kinds, key);
   deck.topId = null;
   rerank();
   renderDiscoverView({ force: true });
@@ -897,7 +897,7 @@ function renderDiscoverView({ force = false } = {}) {
     loading: deck.loading,
     errors: deck.errors.filter((e) => e.source !== 'tmdb' || tmdb.hasKey),
     errorText: deck.errors.length ? `Problem talking to ${[...new Set(deck.errors.map((e) => (e.source === 'tmdb' ? 'TMDB' : 'AniList')))].join(' and ')}.` : '',
-    filter: deck.filter,
+    kinds: deck.kinds,
     hasKey: tmdb.hasKey,
     profile,
     showMatch: warmth(profile) >= 0.25,

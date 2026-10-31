@@ -1,7 +1,8 @@
 // Full detail for one title: trailer clip, why it was picked, synopsis, cast
 // (people you know highlighted), where to watch, and your own history with it.
 
-import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg, watchWhen } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg, watchWhen, reviewLine } from './dom.js';
+import { ASPECTS } from '../state/library.js';
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
 import { knownFrom } from './card.js';
@@ -192,7 +193,7 @@ function history(t, ctx) {
         h('span', { class: 'stars', 'aria-label': w.rating ? `${w.rating} out of 5 stars` : 'Not rated' }, w.rating ? starsText(w.rating) : 'No rating'),
         h('span', { class: 'muted small' }, watchWhen(w)),
         w.review ? h('span', { class: 'history-review' }, w.review) : null,
-        w.tags && w.tags.length ? h('span', { class: 'muted small' }, w.tags.join(' · ')) : null)))));
+        reviewLine(w, ASPECTS) ? h('span', { class: 'muted small' }, reviewLine(w, ASPECTS)) : null)))));
 }
 
 function footer(t, ctx, sheet) {

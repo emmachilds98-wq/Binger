@@ -123,6 +123,22 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   Anime: "MAL 9.3" on the card, a "MyAnimeList 9.3" chip in details. A card
   picked for being well rated says by whom: "Highly rated: IMDb 8.6".
   Screenshot `24-review-scores`.
+- **Discover pills combine** (built): All, Films, TV and Anime are toggles.
+  Tap Films then TV to see both without anime; tapping a picked one unpicks
+  it. All three picked, or none, is All again (`toggleKind` in
+  `js/engine/rank.js`). Like the other deck filters they last for the session.
+- **How did it feel?** (built, the rate sheet): the tags come in four small
+  labelled groups: **How it felt** (Gripping, Tense, Funny, Moving, Feel-good,
+  Romantic, Dark, Scary, Mind-bending, Comfort watch), **What it's like**
+  (Action-packed, Violent, Gory, Thought-provoking, Slow burn, Light-hearted,
+  Epic, Weird), **What stood out** (Clever, Beautiful, Rewatchable,
+  Binge-worthy, Great twist, Quotable) and **What didn't work** (Slow, Too
+  long, Confusing, Predictable, Too violent, Dull, Overhyped). Under them,
+  **Go deeper: rate the parts** opens six rows (Story, Acting or voices,
+  Characters, Look, Music and sound, Ending), each **Loved / Fine / Weak**
+  (Weak in the danger colour; tap again to clear). The diary line reads
+  "Gripping · Violent · Loved the story · Weak ending". Taste gains **What you
+  love in a watch** and **What puts you off**. Screenshot `30-go-deeper`.
 - **When did you watch it?** (built, the rate sheet): five pills instead of a
   date field: **Today** (the default), **On a date** (shows the date picker),
   **This year**, **In a year** (shows a year picker, back to 1950) and **Ages

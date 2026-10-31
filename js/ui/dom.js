@@ -169,6 +169,20 @@ export function watchWhen(w) {
   return shortDate(w.date);
 }
 
+// A watch's tags and rated parts as one short line: "Gripping · Violent ·
+// Loved the story and ending · Weak characters". Empty when there's nothing.
+export function reviewLine(w, aspectNames) {
+  const bits = [...((w && w.tags) || [])];
+  const a = (w && w.aspects) || {};
+  const names = (v) => aspectNames.filter(([k]) => a[k] === v).map(([, label]) => label.toLowerCase());
+  const and = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : xs[0]);
+  const loved = names(1);
+  const weak = names(-1);
+  if (loved.length) bits.push(`Loved the ${and(loved)}`);
+  if (weak.length) bits.push(`Weak ${and(weak)}`);
+  return bits.join(' · ');
+}
+
 // The diary heading a watch sits under.
 export function watchGroup(w) {
   if (w.when === 'ages') return 'Ages ago';
