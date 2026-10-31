@@ -415,6 +415,22 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
 
+### 2026-10-31 (fifth session): the two intermittent CI failures on #13
+- **e2e, "Bring your history"** (Enter on the AniList field did nothing, so
+  the wait timed out): a real bug in `js/ui/sheet.js`. Each sheet focused its
+  own panel a frame after opening, unconditionally, so a field focused in that
+  frame lost the cursor. And a sheet opened just before (Settings) did the
+  same once another sheet (history) was on top. Now the deferred focus only
+  happens if the sheet is still on top and nothing inside it has focus. The
+  e2e check opens the sheet and focuses the field in one go, then waits two
+  frames; it fails on the old code every time.
+- **e2e:sync, "Both ways, live"**: switching person reloads the page, and the
+  test went on before the reload, so Dave's ArrowRight landed on the old page
+  and nothing was saved for Emma. It now waits for the reload, for Emma's
+  who chip with a ready top card and no sheet open, and checks the save in
+  Dave's localStorage before looking at Emma's browser.
+- Ran `npm run e2e` and `npm run e2e:sync` three times each: all green.
+
 ### 2026-10-31 (fourth session, end): handover
 - The owner merged #12 and asked to stop here for the next agent. Start
   here is refreshed for them; everything below is merged into `main`.

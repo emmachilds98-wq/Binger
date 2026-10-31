@@ -79,7 +79,13 @@ export function openSheet({ label, variant = 'full', className = '', dismissible
   clearToast(); // a toast from the screen behind would sit on top of the sheet
   stack.push(api);
   document.body.append(backdrop, panel);
-  requestAnimationFrame(() => panel.focus({ preventScroll: true }));
+  // Focus the sheet itself on the next frame, unless something inside it has
+  // focus by then (focusFirst(), or someone already typing in a field) or
+  // another sheet has opened on top in the meantime: either way, focus is
+  // already where the person is.
+  requestAnimationFrame(() => {
+    if (stack[stack.length - 1] === api && !panel.contains(document.activeElement)) panel.focus({ preventScroll: true });
+  });
   return api;
 }
 
