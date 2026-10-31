@@ -568,8 +568,17 @@ await shot('12-taste-time');
 console.log('Bring your history');
 await page.goto(base + '#taste');
 await page.getByRole('button', { name: 'Settings' }).first().click();
-await page.getByRole('button', { name: /Bring your history/ }).click();
-await page.waitForSelector('.import #anilist-user');
+// Open the sheet and put the cursor in the AniList field in the same moment
+// (the worst case for the sheet focusing itself a frame later), then give it
+// two frames: the cursor must still be there. It used to be taken back, and
+// Enter then went nowhere (CI caught it intermittently).
+const keptFocus = await page.evaluate(async () => {
+  [...document.querySelectorAll('button')].find((b) => /Bring your history/.test(b.textContent)).click();
+  document.querySelector('#anilist-user').focus();
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return document.activeElement && document.activeElement.id;
+});
+check(keptFocus === 'anilist-user', `typing straight into a sheet keeps the cursor there (${keptFocus || 'nothing'})`);
 const statusText = () => page.locator('.import-status').innerText();
 const finished = () => page.waitForFunction(() => /^(Done|Nothing new)|not found|private|couldn/i.test(document.querySelector('.import-status')?.textContent || ''), null, { timeout: 15000 });
 const watchedBefore = (await libraryCount()).watched;

@@ -207,20 +207,32 @@ await dave.page.locator('.who-chip').first().click();
 await dave.page.waitForSelector('.who .who-tile');
 const tilesOnDave = await dave.page.locator('.who .who-tile-name').allInnerTexts();
 check(tilesOnDave.includes('Emma') && tilesOnDave.includes('Dave'), `"Who's watching?" on Dave's phone shows Emma too (${tilesOnDave.join(', ')})`);
+// Switching person reloads the page (after flushing sync). Wait for that
+// reload, then for the new page to be Emma's with a top card ready and no
+// sheet open; otherwise the checks below run against the old page.
+const reloaded = dave.page.waitForEvent('load', { timeout: 15000 });
 await dave.page.locator('.who .who-tile', { hasText: 'Emma' }).click();
-await dave.page.waitForSelector('.deck', { timeout: 15000 });
-await dave.page.waitForFunction(() => {
-  const d = JSON.parse(localStorage.getItem('binger:device'));
-  const me = d.profiles.list.find((p) => p.id === d.profiles.current);
-  const s = JSON.parse(localStorage.getItem(me.key) || '{}');
-  return Object.values(s.items || {}).some((i) => i.status === 'want');
-}, null, { timeout: 15000 }).catch(() => {});
+await reloaded;
+const emmaReady = () => dave.page.waitForFunction(() => {
+  const chip = document.querySelector('.who-chip');
+  return chip && /Emma/.test(chip.getAttribute('aria-label') || '')
+    && document.querySelector('.deck .card:last-of-type:not([data-flying])')
+    && !document.querySelector('.sheet:not(.is-leaving)');
+}, null, { timeout: 15000 });
+await emmaReady();
 const emmaOnDave = await lib(dave.page);
 check(emmaOnDave.who === 'Emma' && JSON.stringify(emmaOnDave.want) === JSON.stringify(emmaFirst), `switching to Emma on Dave's phone shows her watchlist (${emmaOnDave.want.join(', ')})`);
 // A change on Dave's phone (as Emma) reaches Emma's browser…
-await dave.page.waitForSelector('.deck .card');
-await dave.page.waitForTimeout(800);
+await dave.page.locator('body').focus();
 await dave.page.keyboard.press('ArrowRight');
+// Saved on Dave's phone first, or there's nothing to sync.
+const savedOnDave = await dave.page.waitForFunction(() => {
+  const d = JSON.parse(localStorage.getItem('binger:device'));
+  const me = d.profiles.list.find((p) => p.id === d.profiles.current);
+  const s = JSON.parse(localStorage.getItem(me.key) || '{}');
+  return Object.values(s.items || {}).filter((i) => i.status === 'want').length === 2;
+}, null, { timeout: 5000 }).then(() => true).catch(() => false);
+check(savedOnDave, 'Dave’s phone, as Emma, saves a second title');
 const t0 = Date.now();
 const reached = await emma.page.waitForFunction(() => {
   const d = JSON.parse(localStorage.getItem('binger:device'));
