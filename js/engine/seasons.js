@@ -16,7 +16,13 @@ const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
 export function seasonAlert(item, show, { now = Date.now() } = {}) {
   if (!item || !show || show.kind !== 'tv' || item.status !== 'watched') return null;
   const last = latestWatch(item);
-  const since = (last && last.date) || String(item.updatedAt || '').slice(0, 10);
+  // A rough date can't place you in the show's run: "sometime in 2014" counts
+  // from the end of that year, "ages ago" from when you logged it.
+  const logged = String(item.updatedAt || '').slice(0, 10);
+  const since = !last ? logged
+    : last.when === 'ages' ? logged
+      : last.when === 'year' ? `${String(last.date).slice(0, 4)}-12-31`
+        : last.date;
   if (!since) return null;
 
   const fresh = (show.seasonList || [])

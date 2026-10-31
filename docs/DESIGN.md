@@ -123,6 +123,13 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   Anime: "MAL 9.3" on the card, a "MyAnimeList 9.3" chip in details. A card
   picked for being well rated says by whom: "Highly rated: IMDb 8.6".
   Screenshot `24-review-scores`.
+- **When did you watch it?** (built, the rate sheet): five pills instead of a
+  date field: **Today** (the default), **On a date** (shows the date picker),
+  **This year**, **In a year** (shows a year picker, back to 1950) and **Ages
+  ago**, for long-time favourites nobody remembers the date of. The diary
+  files rough ones under "Sometime in 2014" / "Ages ago" (at the bottom) and
+  shows "2014", "This year" or "Ages ago" where the date would be. Screenshot
+  `29-when-you-watched`.
 - **Log a watch** (built): Library → Log a watch opens the first run's panel
   again, titled "What have you watched?" with a close button: the same poster
   grid (minus what you've already watched), search for any title, and "Add N

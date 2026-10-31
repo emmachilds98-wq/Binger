@@ -81,7 +81,10 @@ export function itemSignal(item, baseline) {
   if (item.status === 'watched' || (item.watches && item.watches.length)) {
     const r = latestRating(item);
     const w = latestWatch(item);
-    const at = Date.parse((w && w.date) || item.updatedAt || item.addedAt || 0) || 0;
+    // A rough date ("ages ago", "sometime in 2014") says nothing about how
+    // current your opinion is, so it counts from when you logged it instead:
+    // a long-time favourite rated today is today's opinion.
+    const at = Date.parse((w && !w.when && w.date) || item.updatedAt || item.addedAt || 0) || 0;
     const nudge = tagNudge(latestTags(item));
     if (r == null) return { s: SIGNAL.watchedUnrated + nudge, at, halfLife: HALF_LIFE_DAYS.watched };
     // Half absolute (3 stars = neutral), half relative to your own baseline.

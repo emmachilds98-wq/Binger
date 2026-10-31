@@ -1,7 +1,7 @@
 // The Library tab: your Watchlist (best match first, so it doubles as "what
 // should I watch tonight?") and your Diary of everything you've watched.
 
-import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, poster, starsText, shortDate, monthLabel, watchWhen, watchGroup } from './dom.js';
 import { latestWatch } from '../engine/index.js';
 import { whoChip } from './people.js';
 import { watchlist, diary, setupPicks } from '../state/library.js';
@@ -66,7 +66,7 @@ export function renderLibrary(root, ctx) {
   let month = null;
   let ul = null;
   for (const { item, watch } of rows) {
-    const m = monthLabel(watch.date);
+    const m = watchGroup(watch);
     if (m !== month) {
       month = m;
       ul = h('ul', { class: 'rows' });
@@ -77,7 +77,7 @@ export function renderLibrary(root, ctx) {
       h('button', { type: 'button', class: 'row-main', onClick: () => ctx.onEditWatch(item, watch), 'aria-label': `Edit your entry for ${t.title}` },
         poster(t),
         h('span', { class: 'row-text' },
-          h('span', { class: 'row-title-line' }, h('span', { class: 'row-title' }, t.title), h('span', { class: 'small muted' }, watch.setup ? 'Picked' : shortDate(watch.date))),
+          h('span', { class: 'row-title-line' }, h('span', { class: 'row-title' }, t.title), h('span', { class: 'small muted' }, watch.setup ? 'Picked' : watchWhen(watch))),
           h('span', { class: 'stars small', 'aria-label': watch.rating ? `${watch.rating} out of 5` : 'Not rated' }, watch.rating ? starsText(watch.rating) : 'Not rated'),
           watch.review ? h('span', { class: 'row-review' }, watch.review) : null,
           watch.tags && watch.tags.length ? h('span', { class: 'small muted' }, watch.tags.join(' · ')) : null)),
@@ -120,7 +120,7 @@ function newSeasons(ctx) {
           h('span', { class: 'row-text' },
             h('span', { class: 'row-title' }, t.title),
             h('span', { class: `small strong ${a.state === 'soon' ? 'sky' : 'accent'}` }, seasonState(a)),
-            last && last.date ? h('span', { class: 'small muted' }, `You watched it ${monthWords(last.date)}`) : null)),
+            last && last.date ? h('span', { class: 'small muted' }, `You watched it ${last.when === 'ages' ? 'ages ago' : last.when === 'year' ? `in ${String(last.date).slice(0, 4)}` : monthWords(last.date)}`) : null)),
         h('button', { type: 'button', class: 'btn btn-chip btn-seen-chip', onClick: () => ctx.onAlertWatched(a) }, 'Watched it'),
         h('button', { type: 'button', class: 'icon-btn icon-btn-narrow', 'aria-label': `Not interested in ${t.title}'s new season`, onClick: () => ctx.onAlertDismiss(a) }, icon('x', 18)));
     })));
