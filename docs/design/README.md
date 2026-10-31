@@ -25,9 +25,9 @@ bottom of each file holds the sample data and the interactive states.
 | 3 | `Filters.dc.html` | 7 · Deck filters: length, decade, streaming | ✅ `js/ui/filters.js` ("Where" waits for 8) |
 | 3 | `Services.dc.html` | 8 · Your streaming services | ✅ `js/ui/services.js` |
 | 3 | `Person.dc.html` | 9 · A person's work, best for you first | ✅ `js/ui/person.js` |
-| 3 | `HideSeries.dc.html` | 10 · Not this franchise | ⏳ next, see docs/PLAN.md |
-| 3 | `Seasons.dc.html` | 11 · Library: new seasons of shows you watched | ⏳ next |
-| 3 | `TasteTime.dc.html` | 12 · Taste over time + your words | ⏳ next |
+| 3 | `HideSeries.dc.html` | 10 · Not this franchise | ✅ built (`js/app.js`, `js/ui/detail.js`, `js/ui/taste.js`) |
+| 3 | `Seasons.dc.html` | 11 · Library: new seasons of shows you watched | ✅ built (`js/ui/library.js`) |
+| 3 | `TasteTime.dc.html` | 12 · Taste over time + your words | ✅ built (`js/ui/timeline.js`) |
 
 `canvas.json` is the canvas index: where each artboard sits, its title, and
 the sticky notes (the look, and the Phase 2 rules).

@@ -34,6 +34,12 @@ copy its files there again in the same PR.
   raw TMDB / AniList JSON. Streaming-service names go through
   `js/sources/services.js`, genres through `js/sources/genres.js`.
 - **Library rules** live only in `js/state/library.js` (pure). The store just persists.
+- **Sync** lives only in `js/sync/`: `firebase.js` is the only file that
+  touches Firebase, `sync.js` decides what to push and pull. What wins when
+  two copies of a library differ is `mergeStates` in `js/state/library.js`.
+- **People on this device** (who's watching, the TMDB key, the Firebase
+  config, the household) live in `js/state/profiles.js` (pure) and
+  `js/state/device.js`, never inside a person's library.
 - **The version** lives only in `js/version.js`. The service worker
   deliberately has no app version (it's network-first), so there is nothing
   to keep in sync.
@@ -50,6 +56,8 @@ a top-level call it's reachable from throws a TDZ `ReferenceError` at load.
 ## Safety
 
 - Never commit an API key. `js/config.js` must keep `tmdbKey: ''` (tested).
+  The Firebase web config is the exception: it isn't a secret (the rules in
+  `firestore.rules` protect the data), so it may go in `config.firebase`.
   Keys go in the app's Settings (per device) or in a session's environment
   secret (`TMDB_API_KEY`).
 - Put API text into the page with `h()` / `textContent`, never `innerHTML`.

@@ -19,27 +19,22 @@ and the decisions that shouldn't be quietly undone. Update the
 
 ## Start here (next session)
 
-Where things stand on 2026-10-18:
+Where things stand on 2026-10-31:
 
-- **Phase 1 (MVP) is live on `main`.** The first build's PR was merged by
-  fast-forward; `main` holds the whole app.
-- **Phase 2 is more than half built.** All of its logic is done and
-  unit-tested: the engine, both API adapters, and the library rules. Four
-  items are finished end to end: **deck filters**, **feeling tags in scoring**,
-  **step 1, streaming services** and **step 2, a person's work** (both on
-  PR #2's branch until it merges). The other three are **designed** (canvas
-  row 3) and need only their screens built and wired. Each one is a
-  self-contained step in [Phase 2: build order](#phase-2-build-order).
-  **Next: step 3, "Not this franchise".**
-- **Checks:** `npm test` 94 passing, `npm run e2e` 49/49 on the PR #2 branch
-  (`main` at `e86c79f`: 90 and 32/32, CI green).
-- **Not live yet:** GitHub Pages is still off (the site URL returned 404 at
-  14:20 UTC). The repo is public, so Pages is free; turning it on is in
-  [Phase 1.1](#phase-11-go-live-needs-the-owner-).
-- **Default branch:** GitHub's default branch is still
-  `claude/happy-cerf-qei1lg` (the first build's working branch), not `main`.
-  Clone or branch from **`main`**: `git clone -b main …`, or
-  `git checkout main` after cloning.
+- **The site is live** at https://emmachilds98-wq.github.io/Binger/
+  (GitHub Pages, deployed from `main`).
+- **Phase 2 is finished** (all five steps), and **people + Firebase sync**
+  are built: separate libraries for each person (Emma, Dave…), a chip
+  showing whose library it is, "Who's watching?", and sync code for a
+  household. All on PR #3 (`claude/inspiring-ride-ieuekd`), which also
+  carries PR #2.
+- **Next, in order: [UPGRADE-PLAN.md → Next steps](UPGRADE-PLAN.md#next-steps-in-order).**
+  1. Connect the real Firebase project (the owner has one, "binger"; steps in
+     [FIREBASE.md](FIREBASE.md)). 2. A proper PC layout. 3. Films and TV for
+     everyone (the TMDB key). 4. Mobile polish.
+- **Checks:** `npm test` 102 passing, `npm run e2e` all passing.
+- **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
+  from **`main`**.
 
 Do these in order:
 
@@ -204,7 +199,7 @@ Everything technical you need is in this file,
 - [x] Merge the first PR into `main`
 - [ ] Set the default branch to `main`: repo **Settings → General → Default branch**
       (it's still `claude/happy-cerf-qei1lg`, the first build's working branch)
-- [ ] Switch on GitHub Pages (still off at 2026-10-18 14:20 UTC): repo **Settings → Pages → Build and deployment →
+- [x] Switch on GitHub Pages (on by 2026-10-31, from `main`): repo **Settings → Pages → Build and deployment →
       Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
       The app appears at `https://emmachilds98-wq.github.io/Binger/`
 - [ ] On your phone: open that link, Taste → ⚙ Settings → paste TMDB key → Test & save
@@ -214,7 +209,7 @@ Everything technical you need is in this file,
       `TMDB_API_KEY` secret wasn't present in any of the three sessions so far. Steps in
       [Verifying TMDB live](#verifying-tmdb-live).
 
-### Phase 2: Smarter suggestions ◐
+### Phase 2: Smarter suggestions ✅
 
 Logic (engine, sources, library) is done and tested for every item. Status of
 each item end to end:
@@ -228,9 +223,9 @@ each item end to end:
       anime shows AniList's official streaming links
 - [x] **Step 2. Tap a person → their other work, ranked for you** (canvas 9), from the
       detail sheet's cast row and crew line, and Taste's "People you rate highly"
-- [ ] **Step 3. "Not this franchise"** (canvas 10)
-- [ ] **Step 4. New-season alerts for TV you've watched** (canvas 11)
-- [ ] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
+- [x] **Step 3. "Not this franchise"** (canvas 10)
+- [x] **Step 4. New-season alerts for TV you've watched** (canvas 11)
+- [x] **Step 5. Taste over time + "how you like to watch"** (canvas 12)
 
 #### Phase 2: build order
 
@@ -319,13 +314,17 @@ Fixtures for every API call below already exist in `tests/fixtures/`.
 - e2e: write a library with past-dated ratings into localStorage, reload,
   check rows and trend words. Screenshot `12-taste-time`.
 
-### After Phase 2: PC and mobile upgrade
-The 2026-10-31 review's plan: mobile polish, a real desktop layout, one
-library across devices, films and TV without a key, importing history.
-Milestones and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
+### After Phase 2: PC and mobile upgrade ◐
+- [x] People: separate libraries for each person, "Who's watching?", the who chip
+- [x] Firebase sync code (household, invite, merge, shared TMDB key), unit-tested
+- [ ] Connect the real Firebase project and do the live check ([FIREBASE.md](FIREBASE.md))
+- [ ] PC layout (design first)
+- [ ] Films and TV for everyone (the TMDB key)
+- [ ] Mobile polish
+Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 ### Phase 3: Grows with you everywhere
-- [ ] Optional sync across devices (Firebase Auth + Firestore, as in the owner's other apps)
+- [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
 - [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
 - [ ] Shared watchlist / "match with a friend" deck (two profiles, one deck)
 
@@ -339,6 +338,21 @@ Milestones and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (second session): Phase 2 finished, people and sync
+- The owner turned on Pages (live from `main`) and asked for: the upgrades,
+  a PC layout, Firebase, and a way for "Dave and I" to tell who is who, then
+  to merge soon and leave next steps so someone else can finish.
+- Built Phase 2 steps 3 to 5 to artboards 10 to 12. Taste over time now takes
+  one snapshot per calendar month (30-day steps gave two "Oct"s).
+- Built people and Firebase sync (see UPGRADE-PLAN.md → Done). Library state
+  gained `removed` tombstones, `settingsAt` and `changedAt` (on undo) so two
+  copies merge correctly; `mergeStates` / `syncText` are pure and tested.
+- Not done: the PC layout (next), mobile polish. Firebase not yet connected:
+  no access to the owner's project from the session; steps in FIREBASE.md.
+  `TMDB_API_KEY` was not set in this session either.
+- Tests: 102 unit (was 94), e2e all passing; screenshots 10 to 14 new.
+- **Next:** UPGRADE-PLAN.md → Next steps.
 
 ### 2026-10-31: review + upgrade plan for PC and mobile
 - The owner asked for a review, the link to view the app, and a plan to make it

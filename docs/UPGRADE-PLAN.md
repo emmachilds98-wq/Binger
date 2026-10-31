@@ -1,175 +1,138 @@
-# Binger: upgrade plan for PC and mobile
+# Binger: upgrade plan for PC and mobile (handover)
 
-Written 2026-10-31 after a review of the whole repo. It sits alongside
-[PLAN.md](PLAN.md), which stays the source of truth: when a milestone here
-starts, its items move into PLAN.md's roadmap and status log.
+First written 2026-10-31 after a review of the whole repo; updated the same
+day after the first round of upgrades. **If you're picking this up, start
+with [Next steps](#next-steps-in-order).** [PLAN.md](PLAN.md) stays the
+source of truth for decisions and the status log; this file is the plan for
+the upgrade work.
 
-## Where things stand
+## Owner's priorities (in their words, 2026-10-31)
 
-**What's good.** The core of the brief works: swipe across films, TV and
-anime, rate and review, a library, and an engine that re-ranks after every
-swipe and explains each pick. The code is tidy, with one job per file, pure
-logic kept apart from the screens, 94 unit tests and 49 browser checks, all
-passing on this branch (2026-10-31). Phase 2 steps 1 and 2 (streaming services,
-a person's work) are built.
+> Optimise the UI for a PC web view as well as having this nice mobile UI.
+> Allow me to connect with Firebase and make a way Dave and I can
+> differentiate who is who when using. This should be ASAP.
+> The TMDB API key … should be used for the app so we can have wider range.
 
-**What's holding it back**, most important first:
+## Done (on `claude/inspiring-ride-ieuekd`, PR #3)
 
-1. **Nobody can open it yet.** GitHub Pages is off (the site URL returns 404),
-   GitHub's default branch is still `claude/happy-cerf-qei1lg`, and
-   [PR #2](https://github.com/emmachilds98-wq/Binger/pull/2) (steps 1 and 2)
-   isn't merged into `main`.
-2. **Films and TV need each device to get its own TMDB key.** Without one the app
-   is anime-only. Getting a key means making a TMDB account and filling in a form,
-   which most people won't do. It's the biggest drop-off in the whole app.
-3. **On a PC it's a phone in the middle of the screen.** The whole app is a
-   480 px column (`.app { max-width: 480px }`), so on a 1440 px monitor two
-   thirds of the screen is empty. Sheets cover the deck, so you can't read
-   details while you swipe.
-4. **Your PC and your phone don't share a library.** Everything lives in one
-   browser. Someone who swipes on their phone and browses on their laptop
-   ends up with two Bingers that know different things about them. Export and
-   Import exist, but they're manual.
-5. **Mobile polish gaps:** no install prompt (iPhone users need to Add to Home
-   Screen, or Safari may clear the library after 7 days unused); posters
-   are always fetched at `w500` (more data than a phone card needs on
-   mobile data); fonts come from Google Fonts and aren't cached, so offline
-   it falls back to system fonts; cast names on the card cut off early
-   ("Timoth…", "Paul Atr…"); no way to share a title with a friend.
-6. **Only tested at one size.** The browser run uses a 390×844 phone. Nothing
-   checks a small phone (360×640), a tablet or a desktop.
+- [x] **Phase 2 finished.** Step 3, "Not this franchise" (toast after a Pass,
+      link in details, unhide on Taste). Step 4, new-season alerts (Library →
+      "Back with new episodes", dot on the Library tab). Step 5, taste over
+      time (small-multiples chart, one snapshot per calendar month) and "How
+      you like to watch". Screenshots 10 to 12.
+- [x] **People: you and Dave** (screenshots 13, 14). Each person has their own
+      library and suggestions. A chip on every screen shows whose library it
+      is (name and colour; just the initial on narrow phones). "Who's
+      watching?" asks on open when there's more than one person (can be
+      switched off per device). Settings → **People and sync** adds,
+      renames, removes and switches people.
+- [x] **Firebase sync code**: sign in (Google or email), start a household,
+      invite by code or link (`#join=…`), "Which one is you?", live sync per
+      person, the TMDB key shared through the household. Merge rules are in
+      `js/state/library.js` (`mergeStates`); Firestore rules in
+      `firestore.rules`; setup in [FIREBASE.md](FIREBASE.md).
+      Tested in Node against a stand-in Firebase (`tests/sync.test.js`:
+      two people on two devices, one person on two devices, deletes).
+      **Not yet run against the real Firebase project.**
+- Checks at hand-over: `npm test` 102/102, `npm run e2e` all passing.
 
-## Milestones
+## Next steps (in order)
 
-Work top to bottom. Each item is about one PR. Items marked **owner** need
-a decision or a settings change from the repo owner.
+### 1. Connect the real Firebase project (owner, then anyone) — ASAP
 
-### M0. Go live (owner, about 10 minutes)
+The owner has a Firebase project called **binger**. Nobody in the build
+sessions had access to it, so this is the one piece that needs a person.
 
-- [ ] Merge [PR #2](https://github.com/emmachilds98-wq/Binger/pull/2) into `main`.
-- [ ] Settings → General → Default branch → `main`.
-- [ ] Settings → Pages → Deploy from a branch → `main` / `(root)` → Save.
-      The app appears at **https://emmachilds98-wq.github.io/Binger/** a
-      minute or two later.
-- [ ] On your phone: open it, Taste → ⚙ Settings → paste a TMDB key → Test & save,
-      then Add to Home Screen.
-- [ ] Verify TMDB live (steps in PLAN.md, "Verifying TMDB live"). This is still
-      not done, and every film and TV screen depends on it.
+- [ ] Owner: the console steps in [FIREBASE.md §1](FIREBASE.md#1-in-the-firebase-console-the-owner-once-about-10-minutes)
+      (web app, Google + Email sign-in, authorised domain
+      `emmachilds98-wq.github.io`, Firestore, publish `firestore.rules`).
+- [ ] Put the web config in `js/config.js` → `firebase: { … }` (it isn't a
+      secret; see FIREBASE.md §2). Update the shell test if you want to
+      assert its shape.
+- [ ] Do the [live check](FIREBASE.md#live-check) with two browsers, and
+      fix anything it turns up in `js/sync/`.
 
-### M1. Finish Phase 2 (already designed)
+### 2. A proper PC layout — ASAP
 
-The screens are on the canvas (row 3) and the logic is written and tested.
-Build order and checks are in PLAN.md.
+Today every screen is a 480 px phone column in the middle of the monitor
+(`.app { max-width: 480px }` in `css/app.css`). Mobile stays exactly as it is.
 
-- [ ] Step 3: "Not this franchise" (artboard 10)
-- [ ] Step 4: New-season alerts for TV you've watched (artboard 11)
-- [ ] Step 5: Taste over time + how you like to watch (artboard 12)
+- [ ] **Design first** (CLAUDE.md: build to the canvas). Add a desktop row to
+      the canvas (Discover, Library, Taste, Detail at 1280×800) and copy it
+      to `docs/design/canvas/`. If there's no canvas access, sketch it in
+      `docs/DESIGN.md` and get the owner's OK.
+- [ ] **Breakpoints in `css/app.css`.** Under 700 px: unchanged. 700 to
+      1099 px: deck left, details right. 1100 px and up: a side rail
+      (Discover / Library / Taste, plus the who chip) instead of the bottom
+      tab bar, and the main area up to about 1200 px wide.
+- [ ] **Details beside the deck.** On wide screens render `openDetail`'s
+      content into a panel next to the deck that follows the top card,
+      instead of a full sheet (`js/ui/detail.js` builds the parts;
+      `js/ui/sheet.js` decides how they're shown). Rate, Filters and
+      Settings become centred dialogs (`.sheet-bottom` at ≥ 700 px:
+      `max-width: 560px; border-radius: 28px; bottom: auto; top: 50%; transform: translateY(-50%)`).
+- [ ] **Library as a poster grid** (3 to 6 columns) at ≥ 700 px; **Taste in
+      two columns** (learned on the left, steering on the right).
+- [ ] **Keyboard and mouse.** Keys already work (← Pass, → Want, ↑ Seen it,
+      Enter details, Z undo; `keydown` in `js/app.js`). Show them as small
+      hints on the action buttons under `@media (hover: hover)`, add `/` to
+      search and `?` for a shortcuts list.
+- [ ] **e2e at three sizes** (`scripts/e2e.mjs` uses one 390×844 context):
+      add 360×640 (touch) and 1280×800 (mouse) runs of the main flow, with
+      screenshots, and keep the "nothing wider than the screen" check.
 
-### M2. Mobile polish
+### 3. Films and TV for everyone (the TMDB key)
 
-Phones are where Binger is used most, so this comes before desktop.
+The owner wants the TMDB key used app-wide. The repo is public and the site
+is static, so **anything built into the site is readable by every visitor**,
+and `tests/shell.test.js` fails if `js/config.js` holds a key (decision 4 in
+PLAN.md). Options, best first:
 
-- [ ] **Install prompt.** On Android/Chrome, catch `beforeinstallprompt` and offer
-      "Add Binger to your home screen" once the user has saved 3+ things. On iPhone
-      Safari (not already standalone), show a one-time hint with the Share →
-      Add to Home Screen steps, and say why: it keeps the library safe.
-- [ ] **Backup nudge.** If the library has 20+ entries and no export in 30 days, a
-      quiet line on Library: "Back up your library". One tap exports.
-- [ ] **Lighter images.** Add `srcset` for posters (`w342` / `w500` / `w780`) and
-      cast photos (`w92` / `w185`) in `js/sources/tmdb.js` + `js/ui/dom.js`, so phones
-      download only the size they draw. Preload the next two cards' posters so a
-      swipe never shows a blank card.
-- [ ] **Self-host the fonts.** Put the two font files (woff2, Latin subset) in `fonts/`
-      and add them to `SHELL`. Offline then looks the same as online, there's no
-      Google request on every open, and text appears sooner.
-- [ ] **Card fit on small screens.** On the card, show two people instead of three
-      below 380 px, so names don't cut off. Add a 360×640 run to the e2e (see M5).
-- [ ] **Swipe feel.** A fast flick should count even if it's a short drag (use
-      speed as well as distance in `js/ui/deck.js`); a light vibration on Want / Pass
-      where the phone supports it (`navigator.vibrate`, Android only), with
-      reduced-motion respected.
-- [ ] **Share a title.** "Share" on the detail sheet uses the phone's share menu
-      (`navigator.share`), copying a link where that isn't available. The link opens
-      that title's details: add a `#title/<id>` route to `js/app.js`.
+- [ ] **Now, no code:** paste the key once in Settings on one device. With
+      sync connected (step 1) it's shared through the household, so Dave
+      gets films and TV too. (A cloud session's `TMDB_API_KEY` secret is
+      only for development: use it for [Verifying TMDB live](PLAN.md#verifying-tmdb-live).)
+- [ ] **For anyone who opens the link:** a tiny proxy (e.g. a free
+      Cloudflare Worker) that holds the key as its own secret and forwards
+      only Binger's read-only TMDB calls; point `js/sources/tmdb.js` at it
+      (a base-URL setting; a user's own key still wins). Needs the owner to
+      create the Worker account.
+- [ ] Not recommended: inject the key into `js/config.js` at deploy time
+      from a GitHub Actions secret. It still ends up public on the site.
+      If the owner chooses it anyway, update decision 4 in PLAN.md and the
+      shell test together.
+- [ ] Still outstanding from Phase 1.1: [Verifying TMDB live](PLAN.md#verifying-tmdb-live)
+      in a session where `TMDB_API_KEY` is actually set (it wasn't in this one).
 
-### M3. A proper PC layout
+### 4. Mobile polish (after 1 to 3)
 
-Design first: per CLAUDE.md, screens are built to the canvas. Add a desktop row
-to the canvas (Discover, Library, Taste at 1280×800), copy it to
-`docs/design/canvas/`, then build.
+- [ ] Install prompt (Android `beforeinstallprompt`; an iPhone hint for
+      Share → Add to Home Screen) once someone has saved 3+ things.
+- [ ] Backup nudge on Library when there's no sync and no export in 30 days.
+- [ ] `srcset` for posters (`w342` / `w500` / `w780`) and cast photos; preload
+      the next two cards.
+- [ ] Self-host the two fonts (woff2 in `fonts/`, add to `SHELL`).
+- [ ] Cast on the card: two people instead of three under 380 px.
+- [ ] Swipe on speed as well as distance (`js/ui/deck.js`), light vibration
+      on Android.
+- [ ] Share a title (`navigator.share`) with a `#title/<id>` route.
 
-- [ ] **Breakpoints.** Phone (< 700 px): exactly as now. Tablet (700–1099 px):
-      deck on the left, details on the right. Desktop (≥ 1100 px): a narrow side
-      rail for Discover / Library / Taste instead of the bottom tab bar, the deck
-      in the middle, and the detail panel open alongside it.
-- [ ] **Details beside the deck, not over it.** On wide screens the detail view
-      (trailer, why, cast, where to watch) is a panel that follows the top card,
-      so you can read and swipe at the same time. Sheets stay for Rate, Filters and
-      Settings, drawn as centred dialogs rather than bottom sheets.
-- [ ] **Library as a poster grid.** Watchlist and Diary in 3 to 6 columns with
-      sort and filter (kind, rating, year), instead of one long phone list.
-- [ ] **Taste in two columns.** What's been learned on the left, steering controls
-      on the right.
-- [ ] **Keyboard and mouse.** The keys already work (← Pass, → Want, ↑ Seen it,
-      Enter details, Z undo); show them as small hints on the buttons on devices
-      with a mouse (`@media (hover: hover)`), add `/` to search and `?` for a
-      shortcuts list. A bigger trailer on desktop, unmuted on click.
+### 5. Later
 
-### M4. One library on every device (owner decision)
+- [ ] Import history: Letterboxd CSV, AniList / MyAnimeList, Trakt.
+- [ ] "Tonight" pick from your watchlist by time available.
+- [ ] Shared deck for two ("match with Dave"): both people's profiles are
+      now in every household device's storage, so the engine can score a
+      title for both and show what you'd both like.
+- [ ] Lighthouse in CI.
 
-This is Phase 3 in PLAN.md. It's moved up because it's what makes PC and phone
-feel like one app.
+## Decisions taken in this round (add to PLAN.md's list if they hold)
 
-- [ ] **Owner: choose how to sync.** The plan says Firebase Auth + Firestore, as in
-      your other apps. Sign-in stays optional, and without it nothing changes.
-- [ ] Move the library from localStorage to IndexedDB first (localStorage holds
-      about 5 MB, and sync touches the same code in `js/state/store.js`).
-- [ ] Sync the library and settings (not the TMDB key) with last-write-wins per
-      entry. Library rules stay pure in `js/state/library.js`.
-- [ ] **Interim, no account:** "Move to another device" in Settings shows a QR code
-      / link with the export, so moving a library from phone to PC takes seconds.
-
-### M5. Films and TV without a key (owner decision)
-
-- [ ] **Owner: choose.** Either keep "bring your own key" (free, nothing to run),
-      or add a tiny proxy (for example a Cloudflare Worker on the free plan) that
-      holds one TMDB key and forwards only the read-only calls Binger makes. The
-      key never reaches the browser or the repo, and everyone gets films and TV
-      on first open. The same small backend is what Phase 4 (AI assist) needs.
-- [ ] If yes: `js/sources/tmdb.js` gets a base URL setting; a user's own key in
-      Settings still overrides it. Cache headers on the Worker keep it within
-      TMDB's limits.
-
-### M6. Smarter from day one
-
-- [ ] **Import history** (PLAN.md Phase 3): Letterboxd CSV, AniList / MyAnimeList
-      export, Trakt. A new user with years of ratings gets good picks in their first
-      minute instead of after 50 swipes. Parsing lives in `js/sources/`, matching
-      reuses search.
-- [ ] **"Tonight" pick.** One button on Library → Watchlist: "What should I watch
-      tonight?" Asks how long you've got (the length buckets already exist) and
-      picks the best match from your own watchlist, using the engine's ranking.
-
-### M7. Testing on every size (alongside M2 and M3)
-
-- [ ] Run the e2e at three sizes: 360×640 (small phone, touch), 390×844 (now),
-      1280×800 (desktop, mouse). Save screenshots for each in `docs/screenshots/`.
-- [ ] Keep the "nothing wider than the screen" check at every size, and add one
-      that the deck's action buttons are fully on screen at 360×640.
-- [ ] A Lighthouse run in CI (performance, accessibility, PWA), failing below
-      agreed scores.
-
-## Decisions needed from the owner
-
-| Decision | Options | Recommendation |
-|---|---|---|
-| Go live (M0) | — | Do it now: nothing else matters until it can be opened |
-| Desktop design (M3) | Design on the canvas first, or build straight away | Canvas first, so it matches the rest |
-| Sync (M4) | Firebase, or stay local-only with QR transfer | QR transfer now, Firebase after M3 |
-| TMDB key (M5) | Bring your own key, or a small proxy | Proxy: it's free and removes the biggest drop-off |
-
-## Suggested order
-
-M0 → M1 → M2 + M7 (small-phone checks) → M3 + M7 (desktop checks) → M4 → M5 → M6.
-M5 can move earlier if you want to show Binger to friends: it's what lets
-someone open the link and see films straight away.
+- **People are profiles on the device; sync is per household.** Each person
+  signs in with their own account, but libraries belong to people, not
+  accounts, so a shared PC can switch between Emma and Dave.
+- **Switching person reloads the page.** Every piece of state (deck, caches,
+  profile, sync) belongs to one person; a reload swaps them all safely.
+- **Firebase web config may be committed; the TMDB key may not.**
+- **Sync merges with the library's own rules** (`mergeStates`, pure,
+  unit-tested). Newest change per title wins; deletes are tombstoned.
