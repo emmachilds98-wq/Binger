@@ -200,12 +200,14 @@ await step('review scores', async () => {
   const ratings = createRatings({ key: MDBLIST_KEY, fetchImpl: capture });
   const dune = await ratings.forTitle({ source: 'tmdb', sourceId: 693134, mediaType: 'movie' });
   const severance = await ratings.forTitle({ source: 'tmdb', sourceId: 95396, mediaType: 'tv' });
+  const frieren = await ratings.forTitle({ source: 'anilist', sourceId: 154587, malId: 52991 });
   const show = (r) => (r ? Object.entries(r).filter(([k, v]) => v && k !== 'imdbId').map(([k, v]) => `${k} ${v.value}`).join(', ') : 'none');
   console.log(`    sources with a score: ${[...sources].sort().join(', ')}`);
-  console.log(`    Dune: Part Two: ${show(dune)} · Severance: ${show(severance)}`);
+  console.log(`    Dune: Part Two: ${show(dune)} · Severance: ${show(severance)} · Frieren: ${show(frieren)}`);
   check(!!(dune && dune.imdb && dune.critics && dune.imdbId === 'tt15239678'), 'Dune: Part Two has IMDb and Rotten Tomatoes scores, and its IMDb id');
   check(!!(dune && dune.audience), 'and Rotten Tomatoes’ audience score');
   check(!!(severance && severance.imdb), 'Severance (a series) has an IMDb score');
+  check(!!(frieren && frieren.mal), 'Frieren (anime, by its MyAnimeList id) has a MyAnimeList score');
 });
 
 // How far the deck reaches: a few refills with and without the page memory.

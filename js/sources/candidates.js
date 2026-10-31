@@ -303,18 +303,32 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
   return { pool: out, errors };
 }
 
-// Film/TV list results lack cast, keywords and trailers; fetch full details for
-// the titles about to be shown, and their review scores (js/sources/ratings.js)
-// when there's a key for them. Anime already arrives complete.
+// Does this title still need fetching before it's shown? Film/TV list
+// results lack cast, keywords and trailers; and with a key for review scores
+// (js/sources/ratings.js), anything not yet asked about (ratings undefined;
+// null means asked, none) that has an id to ask by.
+export function needsHydrating(t, { tmdb = null, ratings = null } = {}) {
+  if (!t) return false;
+  if (t.source === 'tmdb' && !t.detailed) return !!(tmdb && tmdb.hasKey);
+  return !!(ratings && ratings.hasKey && t.ratings === undefined && (t.source === 'tmdb' || t.malId));
+}
+
+// Fetch what needsHydrating says is missing: full details for films and TV
+// (with their scores, side by side), scores alone for anime and for films
+// already detailed. A failed details lookup leaves the title as it was; a
+// failed scores lookup counts as "no scores", so a day's quota running out
+// doesn't mean asking again on every swipe.
 export async function hydrate(titles, { tmdb, ratings = null, concurrency = 4 } = {}) {
+  const scoresOf = (t) => (ratings && ratings.hasKey ? ratings.forTitle(t).catch(() => null) : undefined);
   return mapLimit(titles, concurrency, async (t) => {
-    if (t.detailed || t.source !== 'tmdb' || !tmdb || !tmdb.hasKey) return t;
+    if (!needsHydrating(t, { tmdb, ratings })) return t;
+    if (t.source !== 'tmdb' || t.detailed) {
+      const scores = await scoresOf(t);
+      return scores === undefined ? t : { ...t, ratings: scores };
+    }
     try {
-      const [d, scores] = await Promise.all([
-        tmdb.details(t.mediaType, t.sourceId),
-        ratings && ratings.hasKey ? ratings.forTitle(t).catch(() => null) : null,
-      ]);
-      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing, streamHint: t.streamHint || undefined, ratings: scores || undefined } : t;
+      const [d, scores] = await Promise.all([tmdb.details(t.mediaType, t.sourceId), scoresOf(t)]);
+      return d ? { ...d, via: t.via || [], airing: d.airing || t.airing, streamHint: t.streamHint || undefined, ratings: scores } : t;
     } catch {
       return t;
     }

@@ -44,7 +44,7 @@ const SNAPSHOT_KEYS = [
   'id', 'source', 'sourceId', 'mediaType', 'kind', 'title', 'originalTitle', 'year', 'releaseDate', 'lastAirDate',
   'overview', 'poster', 'backdrop', 'color', 'genres', 'keywords', 'studios', 'language', 'runtime', 'episodes',
   'seasons', 'format', 'formatLabel', 'score', 'votes', 'trailer', 'url', 'networks', 'certification',
-  'prequelIds', 'sequelIds', 'franchiseIds', 'collection', 'detailed',
+  'prequelIds', 'sequelIds', 'franchiseIds', 'collection', 'detailed', 'imdbId', 'malId',
 ];
 
 // Enough of a Title to show it in your library and learn from it, without

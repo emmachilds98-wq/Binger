@@ -112,6 +112,8 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   "IMDb 8.1", "RT critics 97%", "RT audience 90%", "Metacritic 87",
   "Letterboxd 4.0", each a link to that site with a small external-link
   icon (Metacritic has no link). Just "IMDb" when there are no scores yet.
+  Anime: "MAL 9.3" on the card, a "MyAnimeList 9.3" chip in details. A card
+  picked for being well rated says by whom: "Highly rated: IMDb 8.6".
   Screenshot `24-review-scores`.
 - **Settings** (built): no "Films & TV (TMDB key)" group where a key is
   built into the site, which is the live site.

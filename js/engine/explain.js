@@ -14,6 +14,15 @@ function monthYear(ms) {
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
+// "Highly rated: IMDb 8.6" when a review score is known (js/sources/ratings.js).
+function highlyRated(t) {
+  const r = t.ratings || {};
+  if (r.imdb) return `Highly rated: IMDb ${r.imdb.value.toFixed(1)}`;
+  if (r.audience) return `Highly rated: ${r.audience.value}% of Rotten Tomatoes’ audience liked it`;
+  if (r.mal) return `Highly rated: MyAnimeList ${r.mal.value.toFixed(1)}`;
+  return 'Highly rated';
+}
+
 export function explain(title, scored, profile, { now = Date.now(), max = 3, services = null } = {}) {
   const out = [];
   const push = (kind, text) => {
@@ -78,6 +87,6 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3, ser
   if (out.length < max && viaOf(title, 'trending')) push('trending', 'Trending this week');
   // Reached by a "wider" pull (js/sources/candidates.js): say how.
   if (out.length < max && viaOf(title, 'wider')) push('explore', viaOf(title, 'wider').label);
-  if (!out.length) push('quality', scored.quality > 0.3 ? 'Highly rated' : 'Popular right now');
+  if (!out.length) push('quality', scored.quality > 0.3 ? highlyRated(title) : 'Popular right now');
   return out.slice(0, max);
 }

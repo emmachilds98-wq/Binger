@@ -34,7 +34,7 @@ each one only talks to the one below it.
 | `js/sources/tmdb.js` | TMDB client + normalisers (films, TV) |
 | `js/sources/anilist.js` | AniList client + normaliser (anime); one batched deck query |
 | `js/sources/candidates.js` | Builds the candidate pool from both sources (incl. your services and deck filters); `hydrate` fetches TMDB details |
-| `js/sources/ratings.js` | Review scores from MDBList (IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd), by TMDB id; needs `CONFIG.mdblistKey` |
+| `js/sources/ratings.js` | Review scores from MDBList (IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd), by TMDB id; MyAnimeList's for anime, by `malId`; needs `CONFIG.mdblistKey` |
 | `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, service choices, new-season checks |
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |
 | `js/state/store.js` | localStorage persistence + change notifications |
@@ -75,7 +75,8 @@ Every adapter turns its API's response into this shape, and nothing outside
   lastEpisode, seasonList: [{ number, date, episodes, name }],   // TMDB TV details
   url, detailed: boolean,                    // false = list data (no cast/keywords/runtime/streaming yet)
   imdbId: 'tt15239678' | null,               // TMDB details (films: imdb_id; series: external_ids)
-  ratings: { imdb, critics, audience, metacritic, letterboxd, imdbId } | undefined,   // review scores (ratings.js): each { value, votes, url } or null
+  ratings: { imdb, critics, audience, metacritic, letterboxd, mal, imdbId } | null | undefined,   // review scores (ratings.js): each { value, votes, url } or null; null = asked, none
+  malId: 52991 | null,                       // AniList only: MyAnimeList's id (for anime scores)
   via: [{ type: 'seed' | 'sequel' | 'fresh' | 'genre' | 'stream' | 'originals' | 'trending' | 'wider' | 'popular', seedTitle, label, ... }]
 }
 ```
@@ -143,7 +144,7 @@ Arrival") and a people index (for "You loved Little Women").
 where `w` (warmth, 0-1) grows with how much you've told Binger and
 `h = 1/(1+0.6·hype)` shrinks as you call things "Overhyped". New users get
 mostly well-rated and popular titles; affinity takes over as you rate.
-Quality is a Bayesian average (a 9.0 from 12 votes counts as roughly 6.9).
+Quality is a Bayesian average (a 9.0 from 12 votes counts as roughly 6.9). With review scores (`title.ratings`), it's a weighted mean of TMDB's or AniList's own (×1), IMDb (×1.5, shrunk the same way), Rotten Tomatoes' audience score ((pct − 70) / 25) and MyAnimeList (×1); critics' scores aren't used.
 `onServices` is true / false / unknown: known from the title's `streaming`
 list once detailed (AniList always), or from `streamHint`.
 

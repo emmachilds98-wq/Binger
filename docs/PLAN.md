@@ -31,7 +31,7 @@ Where things stand on 2026-10-31 (fourth session):
   real SDK and `firestore.rules` (`npm run e2e:sync`, 34 checks, in CI).
 - **PRs:** #2, #3 and #4 are merged into `main` (2026-10-31), so Phase 2,
   people and sync with the owner's Firebase project are live.
-- **Checks:** `npm test` 131 passing, `npm run e2e` all passing,
+- **Checks:** `npm test` 134 passing, `npm run e2e` all passing,
   `npm run e2e:sync` 34/34.
 - **Default branch:** may still be `claude/happy-cerf-qei1lg`; clone or branch
   from **`main`**.
@@ -374,8 +374,9 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 - [x] Step 2: people and years in search, `/similar` fallback, page memory,
       review scores (IMDb, Rotten Tomatoes critics + audience, Metacritic,
       Letterboxd via MDBList), no TMDB key field where one is built in
-- [ ] Step 3: scores in the engine, browse by service on the first run and
-      coming soon (both design first), anime scores
+- [x] Step 3 (part): scores in the engine, anime scores (MyAnimeList)
+- [ ] Step 3 (rest): browse by service on the first run and coming soon
+      (both design first: the owner's OK)
 - [ ] Step 4 (owner): `MDBLIST_API_KEY` repository secret (switches scores
       on); `TMDB_API_KEY` + `MDBLIST_API_KEY` in the cloud environment; Trakt later, maybe
 
@@ -394,6 +395,18 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session, latest): scores in the engine, anime scores
+- The owner merged #10 ("merge it and continue").
+- Built COVERAGE-PLAN step 3, items 1 and 4: the engine's quality term
+  blends IMDb, Rotten Tomatoes' audience score and MyAnimeList with TMDB's
+  or AniList's own when known ("Highly rated: IMDb 8.6"); anime asks
+  MDBList by MyAnimeList id (AniList's `idMal`, checked live). Library
+  snapshots keep `imdbId` and `malId`. All inert until the owner's
+  `MDBLIST_API_KEY` secret exists.
+- Browse by service on the first run and Coming soon need a design: put to
+  the owner.
+- Tests: 134 unit; e2e and e2e:sync passing.
 
 ### 2026-10-31 (fourth session, later): coverage step 2, review scores
 - The owner merged #9 ("merge it and start"), then asked for more sources

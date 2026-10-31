@@ -7,7 +7,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fromMdblist, createRatings } from '../js/sources/ratings.js';
 import { createTmdb } from '../js/sources/tmdb.js';
-import { hydrate } from '../js/sources/candidates.js';
+import { hydrate, needsHydrating } from '../js/sources/candidates.js';
+import { fromAniList } from '../js/sources/anilist.js';
+import { quality, explain, buildProfile } from '../js/engine/index.js';
 import { reviewScores, cardScore } from '../js/ui/dom.js';
 
 const fx = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
@@ -79,7 +81,7 @@ test('details come with their scores, and a failing score lookup never holds the
   const broken = { hasKey: true, forTitle: async () => { throw new Error('quota'); } };
   const [still] = await hydrate([light], { tmdb, ratings: broken });
   assert.equal(still.detailed, true);
-  assert.equal(still.ratings, undefined);
+  assert.equal(still.ratings, null, 'asked, none: not asked again on every swipe');
 });
 
 test('the card shows IMDb and Rotten Tomatoes’ audience score, else critics, else TMDB’s own', () => {
@@ -89,4 +91,49 @@ test('the card shows IMDb and Rotten Tomatoes’ audience score, else critics, e
   assert.equal(cardScore({ ...base, ratings: r }), 'IMDb 8.1 · RT critics 97%');
   assert.equal(cardScore({ ...base, ratings: { ...r, audience: { value: 90, url: null } } }), 'IMDb 8.1 · RT audience 90%');
   assert.deepEqual(reviewScores({ ratings: r }).map((s) => s.text), ['IMDb 8.1', 'RT critics 97%', 'Metacritic 87', 'Letterboxd 4.0']);
+});
+
+// ---- Scores in the engine, and anime scores (COVERAGE-PLAN step 3) ----
+
+test('the engine’s quality blends IMDb and Rotten Tomatoes’ audience score with TMDB’s own', () => {
+  const base = { source: 'tmdb', score: 7.0, votes: 500 };
+  const alone = quality(base);
+  const loved = quality({ ...base, ratings: { imdb: { value: 8.7, votes: 900000 }, audience: { value: 96 } } });
+  const panned = quality({ ...base, ratings: { imdb: { value: 5.1, votes: 40000 }, audience: { value: 38 } } });
+  assert.ok(loved > alone && alone > panned, `${panned.toFixed(2)} < ${alone.toFixed(2)} < ${loved.toFixed(2)}`);
+  assert.equal(quality({ ...base, ratings: { critics: { value: 99 } } }), alone, 'critics’ scores don’t change it');
+  assert.ok(quality({ source: 'anilist', score: 8.0, votes: 50000, ratings: { mal: { value: 9.3, votes: 1000000 } } }) > quality({ source: 'anilist', score: 8.0, votes: 50000 }));
+  assert.equal(quality({ source: 'tmdb' }), 0, 'nothing known: neutral');
+});
+
+test('"Highly rated" says by whom when a review score is known', () => {
+  const profile = buildProfile([], {});
+  const said = (t) => explain(t, { contributions: [], quality: 0.6 }, profile, {})[0].text;
+  assert.equal(said({ source: 'tmdb' }), 'Highly rated');
+  assert.equal(said({ source: 'tmdb', ratings: { imdb: { value: 8.64 } } }), 'Highly rated: IMDb 8.6');
+  assert.equal(said({ source: 'tmdb', ratings: { audience: { value: 94 } } }), 'Highly rated: 94% of Rotten Tomatoes’ audience liked it');
+});
+
+test('anime scores: AniList’s MyAnimeList id asks MDBList for MyAnimeList’s score', async () => {
+  const media = fx('anilist-frieren.json').data.Media;
+  const frieren = fromAniList({ ...media, idMal: 52991 });
+  assert.equal(frieren.malId, 52991);
+  assert.equal(fromAniList(media).malId ?? null, null, 'no idMal, no MyAnimeList id');
+  const body = { ids: { mal: 52991, imdb: 'tt22248376' }, ratings: [{ source: 'myanimelist', value: 9.3, score: 93, votes: 610000, url: null }, { source: 'imdb', value: 8.9, score: 89, votes: 30000, url: null }] };
+  const fetchImpl = fakeFetch([['/mal/any/52991', 200, body]]);
+  const ratings = createRatings({ key: 'abc123KEY', fetchImpl });
+  const r = await ratings.forTitle(frieren);
+  assert.deepEqual(r.mal, { value: 9.3, votes: 610000, url: 'https://myanimelist.net/anime/52991' });
+  assert.ok(fetchImpl.calls[0].url.startsWith('https://api.mdblist.com/mal/any/52991?apikey='));
+  assert.equal(cardScore({ ...frieren, ratings: { mal: r.mal } }), 'MAL 9.3');
+  assert.ok(reviewScores({ ratings: r }).some((s) => s.text === 'MyAnimeList 9.3'));
+
+  // Anime arrives complete: only its scores are fetched, once.
+  assert.equal(needsHydrating(frieren, { ratings }), true);
+  const [scored] = await hydrate([frieren], { tmdb: null, ratings });
+  assert.equal(scored.ratings.mal.value, 9.3);
+  assert.equal(scored.overview, frieren.overview);
+  assert.equal(needsHydrating(scored, { ratings }), false, 'asked once');
+  assert.equal(needsHydrating({ ...frieren, malId: null }, { ratings }), false, 'no id to ask by');
+  assert.equal(needsHydrating(frieren, { ratings: createRatings({ key: '' }) }), false, 'no key');
 });

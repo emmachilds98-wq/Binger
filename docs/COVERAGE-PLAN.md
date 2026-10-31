@@ -107,28 +107,34 @@ it's built in.
        and audience, Metacritic and Letterboxd, on cards ("IMDb 8.1 · RT
        audience 90%") and in details (each opens its site). From MDBList: see
        [Sources](#sources-what-each-could-add) for why. Needs the owner's
-       key (step 3, item 1); until then nothing shows and nothing breaks.
+       key (step 4, item 1); until then nothing shows and nothing breaks.
        Details also link to the title's IMDb page, key or not.
 6. [x] **No TMDB key in Settings on the live site.** The key built into the
        site always wins; the field only appears on a copy with none built
        in (forks, local development). Decision 4 updated.
 
-## Step 3: next (no owner input needed)
+## Step 3: next
 
-1. [ ] **Scores in the engine.** Use IMDb / Rotten Tomatoes audience
-       scores, where known, in the engine's quality term (today it's TMDB's
-       vote average), so well-loved titles rank higher. Pure change in
-       `js/engine/score.js`, after a week of real scores in the cache.
-2. [ ] **Browse by service on the first run.** A row of service chips above
+1. [x] **Scores in the engine** (built, PR #11). The quality term blends
+       TMDB's (or AniList's) own score with IMDb (weighted most: it has the
+       most votes), Rotten Tomatoes' audience score (70% middling, 95%
+       superb) and MyAnimeList, where known. Critics' scores aren't used:
+       they say whether critics approved, not how much people enjoy it. A
+       "Highly rated" card says by whom ("Highly rated: IMDb 8.6"). Inert
+       until the MDBList key is in.
+2. [ ] **Browse by service on the first run** (design first: owner's OK). A row of service chips above
        the grid (Apple TV+, Netflix, Prime Video, Disney+, BBC iPlayer…); a
        tap fills the grid with that service's shows (`serviceTitles`, page by
        page). **Design first**: add it to canvas artboard 1, or sketch it in
        DESIGN.md and get the owner's OK.
-3. [ ] **Coming soon.** Films and series not out yet (TMDB discover with
+3. [ ] **Coming soon** (design first: owner's OK). Films and series not out yet (TMDB discover with
        future dates, most anticipated first), so they can go on the
        watchlist now. Needs a place on screen: design first.
-4. [ ] **Anime scores.** MDBList also knows MyAnimeList ids; AniList gives
-       `idMal`. Add it to the AniList query and show MyAnimeList's score.
+4. [x] **Anime scores** (built, PR #11). AniList's `idMal` (checked live:
+       Frieren is 52991) asks MDBList by MyAnimeList id; cards say "MAL 9.3"
+       and details add a MyAnimeList chip. Anime arrives complete, so only
+       its scores are fetched, once per session (a failed lookup counts as
+       none, so a used-up daily quota doesn't mean asking on every swipe).
 
 ## Step 4: needs the owner (connections)
 

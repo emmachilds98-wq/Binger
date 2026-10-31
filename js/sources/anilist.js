@@ -15,7 +15,7 @@ export const DECK_FORMATS = ['TV', 'TV_SHORT', 'MOVIE', 'ONA'];
 export function fragment(voiceLanguage = 'JAPANESE') {
   const lang = voiceLanguage === 'ENGLISH' ? 'ENGLISH' : 'JAPANESE';
   return `fragment M on Media {
-  id type title { romaji english } format status episodes duration season seasonYear
+  id idMal type title { romaji english } format status episodes duration season seasonYear
   startDate { year month day } endDate { year month day } nextAiringEpisode { airingAt episode }
   countryOfOrigin isAdult description(asHtml: false) genres averageScore popularity
   coverImage { extraLarge large color } bannerImage trailer { id site }
@@ -82,6 +82,7 @@ export function fromAniList(m) {
     id: `anilist:${m.id}`,
     source: 'anilist',
     sourceId: m.id,
+    malId: m.idMal || null, // MyAnimeList's id, for review scores (js/sources/ratings.js)
     mediaType: 'anime',
     kind: 'anime',
     title: (m.title && (m.title.english || m.title.romaji)) || 'Untitled',

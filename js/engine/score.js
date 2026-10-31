@@ -48,14 +48,29 @@ export function affinityOf(title, profile) {
   return { value: weight ? total / weight : 0, contributions };
 }
 
-// Bayesian average: a 9.0 from 12 voters is treated as roughly a 6.9.
+// Bayesian average on a 10-point scale, as a -1..1 signal around 6.5: a 9.0
+// from 12 voters is treated as roughly a 6.9.
+const C = 6.5;
+const shrunk = (score, votes, m) => {
+  const v = Math.max(0, votes || 0);
+  return clamp((((v * score + m * C) / (v + m)) - C) / 2, -1, 1);
+};
+
+// How well people rate it. TMDB's or AniList's own score, blended with the
+// review scores when they're known (title.ratings, js/sources/ratings.js):
+// IMDb (most votes, so it counts most), Rotten Tomatoes' audience score
+// (a share of people who liked it: 70% is middling, 95% superb) and
+// MyAnimeList. Critics' scores aren't used: they say whether critics
+// approved, not how much people enjoy it.
 export function quality(title) {
-  if (typeof title.score !== 'number') return 0;
-  const C = 6.5;
-  const m = title.source === 'anilist' ? 2000 : 150;
-  const v = Math.max(0, title.votes || 0);
-  const bayes = (v * title.score + m * C) / (v + m);
-  return clamp((bayes - C) / 2, -1, 1);
+  const parts = [];
+  if (typeof title.score === 'number') parts.push([shrunk(title.score, title.votes, title.source === 'anilist' ? 2000 : 150), 1]);
+  const r = title.ratings;
+  if (r && r.imdb && typeof r.imdb.value === 'number') parts.push([shrunk(r.imdb.value, r.imdb.votes ?? 1000, 1000), 1.5]);
+  if (r && r.audience && typeof r.audience.value === 'number') parts.push([clamp((r.audience.value - 70) / 25, -1, 1), 1]);
+  if (r && r.mal && typeof r.mal.value === 'number') parts.push([shrunk(r.mal.value, r.mal.votes ?? 1000, 1000), 1]);
+  const weight = parts.reduce((s, [, w]) => s + w, 0);
+  return weight ? parts.reduce((s, [q, w]) => s + q * w, 0) / weight : 0;
 }
 
 export function latestDate(title) {
