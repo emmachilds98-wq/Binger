@@ -91,6 +91,15 @@ await context.route('https://graphql.anilist.co/**', async (route) => {
   else data = { Page: { media: allAnime.slice(0, 12) } };
   await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data }) });
 });
+// The main run plays a copy of Binger without sync (it can't reach Firebase),
+// which asks just for a name. The live site's sign-in-only welcome is
+// checked on its own below ("Sign in or nothing"), and signing in for real
+// by npm run e2e:sync against the Firebase emulators.
+const withoutSync = (text) => text.replace(/\n  firebase: \{[\s\S]*?\n  \},/, '\n  firebase: null,');
+await context.route('**/js/config.js', async (route) => {
+  const res = await route.fetch();
+  await route.fulfill({ response: res, body: withoutSync(await res.text()) });
+});
 await context.route('https://api.themoviedb.org/**', async (route) => {
   const url = new URL(route.request().url());
   const p = url.pathname.replace('/3', '');
@@ -142,22 +151,61 @@ const libraryCount = () => page.evaluate(() => {
   return { want: items.filter((i) => i.status === 'want').length, watched: items.filter((i) => i.status === 'watched').length, passed: items.filter((i) => i.status === 'passed').length };
 });
 
+console.log('Sign in or nothing (the live site, with sync set up)');
+{
+  // Its own browser context with the real config: Firebase's servers are
+  // blocked, so this checks the screen, not signing in (e2e:sync does that).
+  const live = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, serviceWorkers: 'block' });
+  await live.route(/^https:\/\/(identitytoolkit|securetoken|firestore|firebase[a-z]*)\.googleapis\.com\//, (route) => route.abort());
+  await live.route('https://graphql.anilist.co/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { Page: { media: [] } } }) }));
+  const lp = await live.newPage();
+  await lp.goto(base);
+  await lp.waitForSelector('.sheet.welcome');
+  check(await lp.locator('.sheet.welcome h1').innerText() === 'Welcome to Binger', 'a first visit opens on the welcome');
+  check(await lp.getByRole('button', { name: 'Continue with Google' }).count() === 1 && await lp.locator('#welcome-email').count() === 1, 'it offers Google, or email and a password');
+  check(!/just my name|later/i.test(await lp.locator('.sheet.welcome').innerText()), 'and no way past without signing in');
+  check(await lp.locator('#welcome-code').count() === 1, 'an invite code field joins someone’s household instead of starting a new one');
+  await lp.waitForTimeout(400);
+  await lp.screenshot({ path: new URL('20-welcome.jpg', SHOTS).pathname, type: 'jpeg', quality: 78 });
+  await lp.keyboard.press('Escape');
+  await lp.waitForTimeout(300);
+  check(await lp.locator('.sheet.welcome').count() === 1, 'Escape doesn’t skip it');
+  await lp.getByRole('button', { name: 'Create account' }).click();
+  check(/Add your name first/.test(await lp.locator('.sheet.welcome [role=alert]').innerText()), 'a new account needs a name');
+  await lp.goto(`${base}#join=abcdefghjkmn`);
+  await lp.reload();
+  await lp.waitForSelector('.sheet.welcome');
+  check(/invited to a household/.test(await lp.locator('.sheet.welcome').innerText()) && await lp.locator('#welcome-code').inputValue() === 'abcd-efgh-jkmn', 'an invite link opens the welcome with its code filled in');
+  check(await lp.locator('.sheet.people').count() === 0, 'not People and sync: signing in is the first step');
+  // A device that went on with "just a name" before this change: asked to
+  // sign in now, keeping what it has.
+  await lp.goto(base);
+  await lp.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('binger:device'));
+    d.welcomed = true;
+    d.profiles.list[0].name = 'Emma';
+    localStorage.setItem('binger:device', JSON.stringify(d));
+    localStorage.setItem(d.profiles.list[0].key, JSON.stringify({ items: { 'anilist:1': { id: 'anilist:1', status: 'want', title: { id: 'anilist:1', source: 'anilist', title: 'Cowboy Bebop', kind: 'anime' }, watches: [] } }, onboarded: true }));
+  });
+  await lp.reload();
+  await lp.waitForSelector('.sheet.welcome');
+  check(/Sign in to keep going\. Everything you’ve saved on this device comes with you/.test(await lp.locator('.sheet.welcome').innerText()), 'a device that skipped signing in before is asked now, and told its library comes too');
+  await live.close();
+}
+
 console.log('First run');
 await page.goto(base);
 await page.waitForSelector('.sheet.welcome');
-check(await page.locator('.sheet.welcome h1').innerText() === 'Welcome to Binger', 'a first visit opens on the welcome');
-check(await page.getByRole('button', { name: 'Continue with Google' }).count() === 1 && await page.locator('#welcome-email').count() === 1, 'it offers sign-in straight away: Google, or email');
-await page.waitForTimeout(400);
-await shot('20-welcome');
+check(await page.locator('#welcome-email').count() === 0, 'a copy of Binger without sync asks just for a name');
 await page.keyboard.press('Escape');
 check(await page.locator('.sheet.welcome').count() === 1, 'Escape doesn’t skip it');
-await page.getByRole('button', { name: 'Just my name for now' }).click();
-check(/Add your name first/.test(await page.locator('.sheet.welcome [role=alert]').innerText()), '"Just my name" needs a name');
+await page.getByRole('button', { name: 'Continue' }).click();
+check(/Add your name first/.test(await page.locator('.sheet.welcome [role=alert]').innerText()), 'it needs a name');
 await page.fill('#welcome-name', 'Emma');
-await page.getByRole('button', { name: 'Just my name for now' }).click();
+await page.getByRole('button', { name: 'Continue' }).click();
 await page.waitForSelector('.onboarding .tile');
 const afterWelcome = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')));
-check(afterWelcome.welcomed === true && afterWelcome.profiles.list[0].name === 'Emma', '"Just my name" goes on to the first run as Emma, and the welcome won’t ask again');
+check(afterWelcome.welcomed === true && afterWelcome.profiles.list[0].name === 'Emma', 'then the first run, as Emma; the welcome won’t ask again');
 check(await page.locator('.onboarding h1').innerText() === 'What have you loved?', 'onboarding opens on first visit');
 check(await page.locator('.onboard-import').count() === 1, 'it offers to bring your history in from IMDb, Letterboxd or AniList');
 await page.waitForTimeout(800);
@@ -218,6 +266,17 @@ const entry = await page.evaluate((name) => Object.values(JSON.parse(localStorag
 check(entry.rating === 5 && entry.review === 'Even better the second time.' && entry.tags.includes('Rewatchable') && !entry.setup, `and its diary entry has the full review (${entry.rating}★, ${entry.tags.join(', ')})`);
 await page.click('a[href="#discover"]');
 await page.waitForSelector('.deck .card');
+
+console.log('Settings from any page');
+for (const where of ['discover', 'library', 'taste']) {
+  await page.goto(`${base}#${where}`);
+  await page.waitForTimeout(200);
+  await page.locator('#settings-tab').click();
+  await page.waitForSelector('.sheet.settings');
+  check(await page.locator('.sheet.settings h1').innerText() === 'Settings', `the Settings button in the tab bar opens Settings from ${where[0].toUpperCase()}${where.slice(1)}`);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+}
 
 console.log('Adding a TMDB key');
 await page.goto(base + '#taste');
@@ -599,6 +658,7 @@ await page.goto(base + '#discover');
 await page.waitForSelector('.deck .card');
 await page.waitForSelector('.deck-side .detail-title');
 const rail = await page.evaluate(() => getComputedStyle(document.getElementById('tabbar')).flexDirection);
+check((await rectOf('#settings-tab')).bottom > (await rectOf('#tabbar a[data-tab="taste"]')).bottom + 200, 'Settings sits at the foot of the side rail');
 check(rail === 'column' && (await rectOf('#tabbar')).right <= (await rectOf('#view')).left + 1, 'on a PC the tabs are a side rail on the left');
 const topName = await page.locator('.deck .card:last-of-type h2').innerText();
 check(await page.locator('.deck-side .detail-title').innerText() === topName, `the top card's details sit beside the deck (${topName})`);
@@ -679,7 +739,7 @@ const keysUsed = [];
 built.on('request', (r) => { if (r.url().startsWith('https://api.themoviedb.org/')) keysUsed.push(new URL(r.url()).searchParams.get('api_key')); });
 await built.route('**/js/config.js', async (route) => {
   const res = await route.fetch();
-  await route.fulfill({ response: res, body: (await res.text()).replace("tmdbKey: ''", "tmdbKey: 'e2e-test-key'").replace("mdblistKey: ''", "mdblistKey: 'e2eMdblistKey'") });
+  await route.fulfill({ response: res, body: withoutSync((await res.text()).replace("tmdbKey: ''", "tmdbKey: 'e2e-test-key'").replace("mdblistKey: ''", "mdblistKey: 'e2eMdblistKey'")) });
 });
 // MDBList's documented example (Jaws), plus an audience score, for any title.
 await built.route('https://api.mdblist.com/**', (route) => route.fulfill({ status: 200, contentType: 'application/json',

@@ -640,6 +640,8 @@ function showPeople() {
       saveDevice(device);
       if (sync.fb) await sync.fb.signOut();
       toast('Signed out. Everyone’s library stays on this device.');
+      // Sign in or nothing (needsWelcome): straight back to the welcome.
+      if (needsWelcome()) { if (peopleSheet) peopleSheet.sheet.close(); showWelcome(); }
     }),
   });
 }
@@ -996,23 +998,30 @@ document.addEventListener('pointerup', () => {
 });
 
 window.addEventListener('hashchange', route);
+// Settings from any page (the tab bar, or the side rail on a PC).
+document.getElementById('settings-tab').addEventListener('click', () => showSettings());
 // Crossing the wide breakpoint adds or removes the details beside the deck.
 wideQuery.addEventListener('change', () => renderDiscoverView({ force: true }));
 
-// After "Who's watching?" (or straight away): the join screen for someone who
-// opened an invite link; the welcome on a device's first visit; then the
+// After "Who's watching?" (or straight away): the welcome until this device
+// is signed in (an invite link's code already filled in); People and sync
+// for an invite opened on a device that's already in a household; then the
 // first run for a new person.
 function afterWho() {
-  if (sync.pendingCode) { showPeople(); return; }
+  if (sync.pendingCode && !firebaseConfig()) { showPeople(); return; }
   if (needsWelcome()) { showWelcome(); return; }
+  if (sync.pendingCode) { showPeople(); return; }
   if (!store.get().onboarded) startOnboarding();
 }
 
-// The welcome, once per device, before anything else: sign in straight away
-// (so syncing and inviting friends are set up from the start, not linked
-// later), or "Just my name" to go on without.
+// Where sync is set up (the live site), Binger is sign in or nothing: the
+// welcome stays until this device is signed in and in a household, so
+// everyone's library syncs from the first moment and nobody is ever a
+// nameless or mismatched person (the owner's ask, 2026-10-31; decision 20).
+// A copy without sync just asks for a name, once.
 function needsWelcome() {
-  return !device.welcomed && !device.household && !currentProfile(device.profiles).name;
+  if (firebaseConfig()) return !device.household;
+  return !device.welcomed && !currentProfile(device.profiles).name;
 }
 
 function setMyName(name) {
@@ -1021,51 +1030,95 @@ function setMyName(name) {
 }
 
 function showWelcome() {
+  if (welcome) return;
   if (firebaseConfig()) ensureFirebase();
   welcome = openWelcome({
     get: () => ({
       hasConfig: !!firebaseConfig(),
       busy: sync.busy || (!!firebaseConfig() && !sync.fb && !!sync.loading),
       error: sync.error,
+      // Signed in, but not in a household yet (a join that failed, say).
+      user: sync.user && !device.household ? sync.user : null,
+      code: welcomeCode() ? formatCode(welcomeCode()) : '',
+      invited: !!sync.pendingCode,
+      returning: Object.keys(store.get().items).length > 0,
     }),
-    onGoogle: (name) => welcomeSignIn(name, (fb) => fb.signInGoogle()),
-    onEmail: (name, email, password, create) => welcomeSignIn(name, (fb) => {
+    onGoogle: (name, code) => welcomeSignIn(name, code, (fb) => fb.signInGoogle()),
+    onEmail: (name, code, email, password, create) => welcomeSignIn(name, code, (fb) => {
       if (!email || !password) throw Object.assign(new Error(), { code: 'auth/invalid-email' });
       return create ? fb.createAccount(email, password) : fb.signInEmail(email, password);
     }),
+    onJoin: (code) => { if (setWelcomeCode(code) !== false) welcomeSignedIn(); },
+    onStart: () => { setWelcomeCode(''); welcomeSignedIn(); },
     onNameOnly: (name) => finishWelcome({ name }),
-    // Closed some other way (the phone's back gesture): carry on without
-    // marking it done, so it asks again next time.
-    onClose: () => { if (welcome) { welcome = null; if (!store.get().onboarded) startOnboarding(); } },
+    // Closed some other way (the phone's back gesture). Where sync is set up
+    // there's no way past without signing in, so it comes straight back.
+    onClose: () => {
+      if (!welcome) return;
+      welcome = null;
+      if (needsWelcome()) setTimeout(showWelcome, 0);
+      else if (!store.get().onboarded) startOnboarding();
+    },
   });
+}
+
+// The invite code typed on the welcome (or from an invite link). Kept for
+// the session too, as Google sign-in can leave the page and come back.
+function welcomeCode() {
+  let kept = null;
+  try { kept = sessionStorage.getItem('binger:welcome-code'); } catch { /* private mode */ }
+  return sync.welcomeCode || kept || sync.pendingCode || null;
+}
+function setWelcomeCode(text) {
+  const code = text ? parseCode(text) : null;
+  if (text && !code) { syncError('That isn’t an invite code. They look like abcd-efgh-jkmn.'); return false; }
+  sync.welcomeCode = code;
+  if (!code) sync.pendingCode = null;
+  try { if (code) sessionStorage.setItem('binger:welcome-code', code); else sessionStorage.removeItem('binger:welcome-code'); } catch { /* private mode */ }
+  return code;
 }
 
 // The name goes on this device's person first, so a new household (or
 // "Someone new" in a household) already knows it.
-async function welcomeSignIn(name, signIn) {
+async function welcomeSignIn(name, code, signIn) {
+  if (setWelcomeCode(code) === false) return;
   setMyName(name);
   await syncAction(async () => { const fb = await ensureFirebase(); if (fb) await signIn(fb); });
   // onUser carries on from here once Firebase says who's signed in.
 }
 
-// Signed in: an account with a household joins it (onUser has already asked
-// "Which one is you?"); a new account gets its own household, so inviting a
-// friend is one link from now on.
+// Signed in: an account with a household is back in it (onUser has already
+// asked "Which one is you?"); with an invite code, it joins that household;
+// otherwise a new account gets its own, so inviting a friend is one link
+// from now on.
 async function welcomeSignedIn() {
   if (!welcome || welcome.finishing || !sync.user) return;
   welcome.finishing = true;
+  sync.busy = true;
+  sync.error = '';
+  refreshPeople();
   try {
     if (!device.household) {
       if (!currentProfile(device.profiles).name && sync.user.name) setMyName(sync.user.name.split(' ')[0]);
-      device.household = await createHousehold(sync.fb, sync.user.uid, device.profiles);
+      const code = welcomeCode();
+      if (code) {
+        const hh = await joinHousehold(sync.fb, sync.user.uid, code);
+        await whichOneIsYou((hh && hh.profiles) || []);
+        device.household = code;
+      } else {
+        device.household = await createHousehold(sync.fb, sync.user.uid, device.profiles);
+      }
       saveDevice(device);
+      setWelcomeCode('');
       await beginSync();
     }
   } catch (err) {
     welcome.finishing = false;
-    syncError(authMessage(err));
+    sync.busy = false;
+    syncError(err.code === 'not-found' || err.code === 'bad-code' ? err.message : authMessage(err));
     return;
   }
+  sync.busy = false;
   finishWelcome({ signedIn: true });
 }
 

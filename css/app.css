@@ -76,6 +76,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .tab[aria-current="page"] { color: var(--accent); font-weight: 700; }
 .tab:hover { color: var(--text); }
+button.tab { border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; padding: 0; }
 
 /* ---- controls ---- */
 .icon-btn {
@@ -559,6 +560,9 @@ kbd { font: 600 12px/1 var(--font-body); padding: 4px 7px; border-radius: 6px; b
   .tabbar { grid-column: 1; grid-row: 1; flex-direction: column; gap: 4px; border-top: 0; border-right: 1px solid var(--surface-2); padding: 24px 12px; }
   .tab { flex: none; flex-direction: row; justify-content: flex-start; gap: 12px; min-height: 48px; padding: 0 14px; font-size: 15px; }
   .tab[aria-current="page"] { background: var(--accent-soft); }
+  button.tab { font-size: 15px; padding: 0 14px; }
+  /* Settings sits at the foot of the rail. */
+  .tab-settings { margin-top: auto; }
   .topbar { padding: 20px 24px 8px; }
   .page-head { padding: 24px 24px 12px; }
   .page-scroll { padding: 0 24px 32px; }

@@ -45,11 +45,15 @@ export function openWhoIsWatching(ctx) {
   return sheet;
 }
 
-// First visit: sign in straight away, so syncing (and inviting friends) is
-// set up from the start rather than linked later. "Just my name" is the only
-// way past without signing in. ctx.get() returns { hasConfig, busy, error };
-// actions: onGoogle(name), onEmail(name, email, password, create),
-// onNameOnly(name), onClose(). The app closes it once someone is signed in.
+// Sign in or nothing, where sync is set up (decision 20): Google or email,
+// so every device is in a household from the first moment and nobody is a
+// nameless or mismatched person. An invite code (filled in from an invite
+// link) joins that household instead of starting a new one. A copy of Binger
+// without sync just asks for a name.
+// ctx.get() returns { hasConfig, busy, error, user, code, invited, returning };
+// actions: onGoogle(name, code), onEmail(name, code, email, password,
+// create), onJoin(code), onStart(), onNameOnly(name), onClose(). The app
+// closes it once this device is signed in and in a household.
 export function openWelcome(ctx) {
   const sheet = openSheet({ label: 'Welcome to Binger', variant: 'full', className: 'who welcome', dismissible: false, onClose: ctx.onClose });
   const body = h('div', { class: 'who-body welcome-body' });
@@ -57,8 +61,8 @@ export function openWelcome(ctx) {
   let need = '';
 
   const val = (id) => { const el = body.querySelector(`#${id}`); return el ? el.value.trim() : ''; };
-  // A name is needed for a new account and for "Just my name", so friends can
-  // tell whose library is whose. Google and an existing account bring theirs.
+  // A new account needs a name, so friends can tell whose library is
+  // whose. Google and an existing account bring theirs.
   const requireName = () => {
     if (val('welcome-name')) return true;
     need = 'Add your name first, so friends can tell whose library is whose.';
@@ -66,43 +70,60 @@ export function openWelcome(ctx) {
     body.querySelector('#welcome-name').focus();
     return false;
   };
+  const codeField = (st) => [
+    h('label', { class: 'small', for: 'welcome-code' }, st.invited ? 'Your invite code' : 'Invite code (if someone sent you one)'),
+    h('input', { id: 'welcome-code', type: 'text', autocomplete: 'off', spellcheck: 'false', placeholder: 'abcd-efgh-jkmn', value: st.code || '' }),
+  ];
 
   function render() {
     const st = ctx.get();
     const typed = new Map([...body.querySelectorAll('input[id]')].map((el) => [el.id, el.value]));
     const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : null;
     clear(body);
-    const name = h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', placeholder: 'Your name' });
-    const parts = [
-      h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
-      h('h1', { class: 'page-title' }, 'Welcome to Binger'),
-      h('p', { class: 'small muted' }, st.hasConfig
-        ? 'Sign in so your watchlist and ratings follow you to every device, and friends can join you.'
-        : 'Everyone gets their own watchlist, diary and suggestions.'),
-      h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
-      name,
+    const brand = h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger'));
+    const messages = [
+      st.busy ? h('p', { class: 'small muted', role: 'status' }, 'Signing in…') : null,
+      st.error ? h('p', { class: 'small error', role: 'alert' }, st.error) : null,
+      need ? h('p', { class: 'small error', role: 'alert' }, need) : null,
     ];
-    if (st.hasConfig) {
+    let parts;
+    if (!st.hasConfig) {
+      parts = [brand, h('h1', { class: 'page-title' }, 'Welcome to Binger'),
+        h('p', { class: 'small muted' }, 'Everyone gets their own watchlist, diary and suggestions.'),
+        h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
+        h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', placeholder: 'Your name' }),
+        ...messages,
+        h('div', { class: 'welcome-actions' }, h('button', { type: 'button', class: 'btn btn-primary', onClick: () => { if (requireName()) ctx.onNameOnly(val('welcome-name')); } }, 'Continue'))];
+    } else if (st.user) {
+      // Signed in, not in a household yet: join one, or start your own.
+      parts = [brand, h('h1', { class: 'page-title' }, 'Nearly there'),
+        h('p', { class: 'small muted' }, `Signed in as ${st.user.email || st.user.name || 'you'}. Join the household you were invited to, or start your own.`),
+        ...codeField(st),
+        ...messages,
+        h('div', { class: 'welcome-actions' },
+          h('button', { type: 'button', class: `btn ${st.code ? 'btn-primary' : 'btn-quiet'}`, disabled: st.busy, onClick: () => { need = ''; ctx.onJoin(val('welcome-code')); } }, 'Join household'),
+          h('button', { type: 'button', class: `btn ${st.code ? 'btn-quiet' : 'btn-primary'}`, disabled: st.busy, onClick: () => { need = ''; ctx.onStart(); } }, 'Start my own household'))];
+    } else {
       const email = h('input', { id: 'welcome-email', type: 'email', autocomplete: 'username', placeholder: 'you@example.com' });
       const pw = h('input', { id: 'welcome-password', type: 'password', autocomplete: 'current-password', placeholder: 'Password (6 or more characters)' });
-      parts.push(
+      parts = [brand, h('h1', { class: 'page-title' }, 'Welcome to Binger'),
+        h('p', { class: 'small muted' }, st.invited
+          ? 'You’ve been invited to a household. Sign in, or create an account, to join it.'
+          : st.returning
+            ? 'Sign in to keep going. Everything you’ve saved on this device comes with you, and stays in step on every device.'
+            : 'Sign in so your watchlist and ratings follow you to every device, and the people you watch with can join you.'),
+        h('label', { class: 'small', for: 'welcome-name' }, 'What should we call you?'),
+        h('input', { id: 'welcome-name', type: 'text', maxlength: '30', autocomplete: 'given-name', placeholder: 'Your name' }),
+        ...codeField(st),
         h('div', { class: 'welcome-actions' },
-          h('button', { type: 'button', class: 'btn btn-primary', disabled: st.busy, onClick: () => { need = ''; ctx.onGoogle(val('welcome-name')); } }, 'Continue with Google'),
+          h('button', { type: 'button', class: 'btn btn-primary', disabled: st.busy, onClick: () => { need = ''; ctx.onGoogle(val('welcome-name'), val('welcome-code')); } }, 'Continue with Google'),
           h('p', { class: 'small muted welcome-or' }, 'or with email'),
           h('label', { class: 'sr-only', for: 'welcome-email' }, 'Email'), email,
           h('label', { class: 'sr-only', for: 'welcome-password' }, 'Password'), pw,
           h('div', { class: 'row-gap welcome-email-actions' },
-            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { if (requireName()) { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-email'), body.querySelector('#welcome-password').value, true); } } }, 'Create account'),
-            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-email'), body.querySelector('#welcome-password').value, false); } }, 'Sign in'))),
-        st.busy ? h('p', { class: 'small muted', role: 'status' }, 'Signing in…') : null,
-        st.error ? h('p', { class: 'small error', role: 'alert' }, st.error) : null,
-        need ? h('p', { class: 'small error', role: 'alert' }, need) : null,
-        h('button', { type: 'button', class: 'link-btn welcome-skip', disabled: st.busy, onClick: () => { if (requireName()) ctx.onNameOnly(val('welcome-name')); } }, 'Just my name for now'),
-        h('p', { class: 'small muted' }, 'You can sign in to sync across devices later, in Settings → People and sync.'));
-    } else {
-      parts.push(
-        need ? h('p', { class: 'small error', role: 'alert' }, need) : null,
-        h('div', { class: 'welcome-actions' }, h('button', { type: 'button', class: 'btn btn-primary', onClick: () => { if (requireName()) ctx.onNameOnly(val('welcome-name')); } }, 'Continue')));
+            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { if (requireName()) { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-code'), val('welcome-email'), body.querySelector('#welcome-password').value, true); } } }, 'Create account'),
+            h('button', { type: 'button', class: 'btn btn-quiet grow', disabled: st.busy, onClick: () => { need = ''; ctx.onEmail(val('welcome-name'), val('welcome-code'), val('welcome-email'), body.querySelector('#welcome-password').value, false); } }, 'Sign in'))),
+        ...messages];
     }
     append(body, parts);
     for (const [id, value] of typed) { const el = body.querySelector(`#${id}`); if (el && value) el.value = value; }

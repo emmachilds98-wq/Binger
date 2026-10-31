@@ -23,7 +23,7 @@ export function renderTaste(root, ctx) {
   const head = h('header', { class: 'page-head' },
     h('div', { class: 'row-between' },
       h('h1', { class: 'page-title' }, 'Your taste'),
-      h('div', { class: 'row-gap' }, whoChip(ctx.who), h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Settings', onClick: ctx.onSettings }, icon('settings')))));
+      h('div', { class: 'row-gap' }, whoChip(ctx.who))));
   // The scroll area holds an inner column that grows with its content: on a
   // wide screen that column flows into two (CSS columns on a fixed-height box
   // would spill into extra columns off to the side instead).
@@ -119,7 +119,7 @@ export function renderTaste(root, ctx) {
 
   page.append(h('div', { class: 'stack-gap' },
     st.passes ? h('button', { type: 'button', class: 'btn btn-quiet', onClick: ctx.onForgetPasses }, `Give my ${plural(st.passes, 'pass', 'passes')} another chance`) : null,
-    h('button', { type: 'button', class: 'btn btn-quiet', onClick: ctx.onSettings }, icon('settings', 18), 'Settings, backup and TMDB key')));
+    h('button', { type: 'button', class: 'btn btn-quiet', onClick: ctx.onSettings }, icon('settings', 18), 'Settings and backup')));
 }
 
 function plural(n, one, many = one + 's') {
