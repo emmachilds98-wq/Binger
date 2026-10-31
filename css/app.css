@@ -372,6 +372,15 @@ input[type="range"] { accent-color: var(--accent); }
 .onboard-status { margin: 0 0 10px; }
 .onboard-status:empty { display: none; }
 .onboard-more { width: 100%; margin-top: 14px; }
+.onboard-import { align-self: flex-start; margin-top: 2px; text-align: left; }
+/* Bring your history (js/ui/import.js) */
+.import-body { display: flex; flex-direction: column; gap: 18px; }
+.import-body .settings-group { margin: 0; }
+.import-help { margin: 0 0 12px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.import-status { margin: 14px 0 6px; }
+.import-status.error { color: var(--danger); }
+.import-missed summary { cursor: pointer; }
+.import-missed ul { padding-left: 18px; }
 .onboard-more[hidden] { display: none; }
 .onboard-foot { display: flex; align-items: center; gap: 14px; padding: 12px 20px calc(16px + var(--safe-bottom)); border-top: 1px solid var(--surface-2); }
 .onboard-foot .btn-primary:not(.is-ready) { background: var(--surface-2); color: var(--muted); }

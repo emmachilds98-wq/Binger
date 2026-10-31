@@ -386,7 +386,7 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
-- [ ] Import history: Letterboxd CSV, MyAnimeList / AniList export, Trakt
+- [x] Import history: IMDb and Letterboxd CSVs, MyAnimeList export, AniList username (Trakt not yet)
 - [ ] Shared watchlist / "match with a friend" deck (two profiles, one deck)
 
 ### Phase 4: AI assist (optional, needs a tiny backend for the API key)
@@ -399,6 +399,14 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-10-31 (fourth session, evening): bring your history; sign-in only
+- The owner merged #11 ("merge and continue"). Built Import history
+  (Phase 3; COVERAGE-PLAN → Import history): IMDb ratings/watchlist CSV
+  (exact, by IMDb id via TMDB `/find`), Letterboxd's export CSVs (by name
+  and year), MyAnimeList's XML (.gz too) and an AniList username, from
+  Settings and from the first-run screen. `importHistory` (library.js)
+  only adds what's new; the sheet lists misses and offers Undo.
 
 ### 2026-10-31 (fourth session, latest): scores in the engine, anime scores
 - The owner merged #10 ("merge it and continue").

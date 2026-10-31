@@ -356,6 +356,16 @@ export function createTmdb({ key, region = 'GB', language = 'en-GB', fetchImpl =
       const json = await get('/search/person', { query: q, include_adult: 'false' }, HOUR);
       return ((json && json.results) || []).map(fromTmdbPersonHit).filter(Boolean);
     },
+    // An IMDb id ('tt0111161') -> the film or series it is on TMDB (list-level
+    // Title), or null. Exact, so imports from IMDb never guess. Cached a month.
+    async find(imdbId) {
+      const id = String(imdbId || '').trim();
+      if (!/^tt\d+$/.test(id)) return null;
+      const json = await get(`/find/${id}`, { external_source: 'imdb_id' }, 30 * DAY);
+      const film = ((json && json.movie_results) || [])[0];
+      const show = ((json && json.tv_results) || [])[0];
+      return film ? fromTmdbList(film, 'movie') : show ? fromTmdbList(show, 'tv') : null;
+    },
     // id: a TMDB network id (TMDB_NETWORKS in services.js), for the live check.
     async network(id) {
       const d = await get(`/network/${id}`, {}, 7 * DAY);

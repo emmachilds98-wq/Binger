@@ -34,6 +34,7 @@ each one only talks to the one below it.
 | `js/sources/tmdb.js` | TMDB client + normalisers (films, TV) |
 | `js/sources/anilist.js` | AniList client + normaliser (anime); one batched deck query |
 | `js/sources/candidates.js` | Builds the candidate pool from both sources (incl. your services and deck filters); `hydrate` fetches TMDB details |
+| `js/sources/imports.js` | Bring your history: IMDb / Letterboxd CSVs, MyAnimeList XML and AniList lists read into a plan (`readExport`, `mergePlan`), matched to titles (`resolvePlan`); `importHistory` in library.js adds it |
 | `js/sources/ratings.js` | Review scores from MDBList (IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd), by TMDB id; MyAnimeList's for anime, by `malId`; needs `CONFIG.mdblistKey` |
 | `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, service choices, new-season checks |
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |

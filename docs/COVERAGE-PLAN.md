@@ -149,6 +149,32 @@ it's built in.
       it" (half stars, how it felt, your thoughts, when you watched). Saving
       it makes it a normal diary entry. Screenshots 25 and 26.
 
+## Import history (the owner merged #11: "merge and continue")
+
+- [x] **Bring your history** (built, PR #12): Settings → "Your history
+      elsewhere", and a link on the first-run screen under the search.
+  - **IMDb**: the ratings or watchlist export (CSV). Matched exactly by IMDb
+    id (TMDB `/find`); 1-10 becomes half stars; episodes, games and
+    podcasts are skipped.
+  - **Letterboxd**: the CSVs in its data export (diary, ratings, reviews,
+    watched, watchlist), chosen together. Matched by name and year (a year
+    either side); each diary viewing is an entry, a bare rating fills in.
+  - **MyAnimeList**: the anime list export (.xml or .xml.gz). Matched by
+    MyAnimeList id through AniList.
+  - **AniList**: just a username (public lists). Completed is rated,
+    watching and paused count as watched, planning is "want", dropped is
+    "passed" (kept out of the deck).
+  - It never undoes what you did in Binger (`importHistory`): only new
+    diary entries are added (same date and rating = the same entry), and
+    importing twice changes nothing. The sheet says what happened, lists
+    what couldn't be found, and offers "Undo import".
+  - Your favourites (rated 4★+, up to 40) get full details first, so the
+    deck learns their cast, directors and themes, not just genres.
+- Known gap: Japanese animation found through IMDb or Letterboxd keeps its
+  TMDB entry (it counts for your taste, but the AniList copy can still
+  come up in the deck). Import it from AniList or MyAnimeList instead.
+- Not done: Trakt (needs an API app; see Sources).
+
 ## Step 4: needs the owner (connections)
 
 1. [ ] **MDBList key, for review scores** (five minutes, free). Make an

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<myanimelist>
+  <myinfo><user_name>example</user_name><user_export_type>1</user_export_type></myinfo>
+  <anime>
+    <series_animedb_id>52991</series_animedb_id>
+    <series_title><![CDATA[Sousou no Frieren]]></series_title>
+    <series_type>TV</series_type>
+    <my_score>10</my_score>
+    <my_status>Completed</my_status>
+    <my_finish_date>2024-03-23</my_finish_date>
+    <my_comments><![CDATA[Wonderful.]]></my_comments>
+  </anime>
+  <anime>
+    <series_animedb_id>5114</series_animedb_id>
+    <series_title><![CDATA[Fullmetal Alchemist: Brotherhood]]></series_title>
+    <my_score>0</my_score>
+    <my_status>Plan to Watch</my_status>
+    <my_finish_date>0000-00-00</my_finish_date>
+  </anime>
+  <anime>
+    <series_animedb_id>21</series_animedb_id>
+    <series_title><![CDATA[One Piece]]></series_title>
+    <my_score>6</my_score>
+    <my_status>4</my_status>
+    <my_finish_date>0000-00-00</my_finish_date>
+  </anime>
+  <anime>
+    <series_animedb_id>1535</series_animedb_id>
+    <series_title><![CDATA[Death Note]]></series_title>
+    <my_score>8</my_score>
+    <my_status>Watching</my_status>
+    <my_finish_date>0000-00-00</my_finish_date>
+  </anime>
+</myanimelist>

@@ -8,6 +8,7 @@
 
 import { createRequire } from 'node:module';
 import { readFileSync, mkdirSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { startServer } from './serve.mjs';
 
 const require = createRequire(import.meta.url);
@@ -31,6 +32,7 @@ const personChalamet = fx('tmdb-person.json');
 const staffTanezaki = fx('anilist-staff-tanezaki.json');
 const duneCollection = fx('tmdb-collection.json');
 const mdblistJaws = fx('mdblist-movie.json');
+const rawFixture = (name) => readFileSync(new URL(`../tests/fixtures/${name}`, import.meta.url));
 // Severance with season 3 announced: episode 1 airs in 77 days.
 const s3Date = new Date(Date.now() + 77 * 86400000).toISOString().slice(0, 10);
 const severanceNow = { ...tvDetail, next_episode_to_air: { id: 6001, name: 'Season 3, Episode 1', air_date: s3Date, episode_number: 1, season_number: 3 } };
@@ -72,6 +74,14 @@ await context.route('https://graphql.anilist.co/**', async (route) => {
     data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
   }
   else if (body.includes('Staff(id')) data = staffTanezaki.data;
+  // Bring your history: a public AniList list for "emma", and lookups by id.
+  else if (body.includes('MediaListCollection')) {
+    const name = (JSON.parse(body).variables || {}).name;
+    if (name !== 'emma') return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ errors: [{ message: 'User not found', status: 404 }], data: { MediaListCollection: null } }) });
+    data = { MediaListCollection: { lists: [{ isCustomList: false, entries: [{ status: 'COMPLETED', score: 9, completedAt: { year: 2024, month: 3, day: 23 }, updatedAt: 1711152000, notes: 'Wonderful', media: { id: 154587 } }] }] } };
+  }
+  else if (body.includes('idMal_in')) data = { Page: { media: [{ ...frieren.data.Media, idMal: 52991 }] } };
+  else if (body.includes('id_in:')) data = { Page: { media: [frieren.data.Media] } };
   else if (body.includes('search:')) {
     // Like AniList: only titles whose name has the words typed in.
     const q = String((JSON.parse(body).variables || {}).q || '').toLowerCase();
@@ -99,6 +109,9 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p === '/trending/tv/week' || p === '/tv/popular' || p === '/discover/tv') return json(tvList);
   if (p === '/movie/693134') return json(movieDetail);
   if (p === '/tv/95396') return json(severanceNow);
+  if (p === '/find/tt15239678') return json({ movie_results: trending.results.filter((r) => r.id === 693134), tv_results: [] });
+  if (p === '/find/tt11280740') return json({ movie_results: [], tv_results: tvList.results });
+  if (p.startsWith('/find/')) return json({ movie_results: [], tv_results: [] });
   if (p === '/search/movie') return json(trending);
   if (p === '/search/tv') return json(tvList);
   if (p === '/search/person') {
@@ -146,6 +159,7 @@ await page.waitForSelector('.onboarding .tile');
 const afterWelcome = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:device')));
 check(afterWelcome.welcomed === true && afterWelcome.profiles.list[0].name === 'Emma', '"Just my name" goes on to the first run as Emma, and the welcome won’t ask again');
 check(await page.locator('.onboarding h1').innerText() === 'What have you loved?', 'onboarding opens on first visit');
+check(await page.locator('.onboard-import').count() === 1, 'it offers to bring your history in from IMDb, Letterboxd or AniList');
 await page.waitForTimeout(800);
 await shot('01-onboarding');
 const tiles = page.locator('.onboarding .tile');
@@ -491,6 +505,51 @@ const how = await page.locator('.taste-section', { hasText: 'How you like to wat
 check(/Sweet spot/.test(how) && /Funny ×6/.test(how), 'how you like to watch: sweet spot and feeling-tag counts');
 check(/Slow, so long films count against them/.test(how) && /Overhyped, so "Trending this week" counts for less/.test(how), 'one plain line each on what Slow and Overhyped do');
 await shot('12-taste-time');
+
+console.log('Bring your history');
+await page.goto(base + '#taste');
+await page.getByRole('button', { name: 'Settings' }).first().click();
+await page.getByRole('button', { name: /Bring your history/ }).click();
+await page.waitForSelector('.import #anilist-user');
+const statusText = () => page.locator('.import-status').innerText();
+const finished = () => page.waitForFunction(() => /^(Done|Nothing new)|not found|private|couldn/i.test(document.querySelector('.import-status')?.textContent || ''), null, { timeout: 15000 });
+const watchedBefore = (await libraryCount()).watched;
+await page.fill('#anilist-user', 'nobody');
+await page.keyboard.press('Enter');
+await finished();
+check(/User not found/.test(await statusText()), 'an AniList name that doesn’t exist says so');
+await page.fill('#anilist-user', 'emma');
+await page.locator('.import').getByRole('button', { name: 'Import', exact: true }).click();
+await finished();
+check(/^(Done|Nothing new)/.test(await statusText()), `an AniList username imports its list: “${await statusText()}”`);
+const frierenEntry = await page.evaluate(() => (JSON.parse(localStorage.getItem('binger:v1')).items['anilist:154587'] || { watches: [] }).watches.find((w) => w.date === '2024-03-23'));
+check(!!frierenEntry && frierenEntry.rating === 4.5 && frierenEntry.review === 'Wonderful', 'Frieren arrives with its AniList score (9 → 4½★), finish date and notes');
+await page.locator('.import').getByRole('button', { name: 'Undo import' }).click();
+await page.waitForTimeout(300);
+check(await page.evaluate(() => !(JSON.parse(localStorage.getItem('binger:v1')).items['anilist:154587'] || { watches: [] }).watches.some((w) => w.date === '2024-03-23')), 'Undo import takes it back out');
+check(/Undone/.test(await statusText()), 'and says so');
+await page.setInputFiles('#history-file', [
+  { name: 'ratings.csv', mimeType: 'text/csv', buffer: rawFixture('imdb-ratings.csv') },
+  { name: 'animelist_123.xml.gz', mimeType: 'application/gzip', buffer: gzipSync(rawFixture('mal-animelist.xml')) },
+  { name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('hello') },
+]);
+await finished();
+const summary = await statusText();
+// Earlier in this run Severance was logged with the very date and rating in
+// the IMDb file, and Frieren was already watched: the import adds Dune, a
+// new diary entry for Frieren, and skips Severance rather than doubling it.
+check(/^Done: 1 title watched \(2 diary entries\)\. 1 was already in your library\.$/.test(summary), `IMDb ratings and a gzipped MyAnimeList export import together: “${summary}”`);
+const severance = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).items['tmdb:tv:95396']);
+check(severance.watches.filter((w) => w.date === '2025-04-10').length === 1, 'a viewing already in the diary isn’t added twice');
+check(/4 titles couldn.t be found/.test(await page.locator('.import-missed summary').innerText()), 'what couldn’t be found is listed (an obscure film, three anime the mock doesn’t know)');
+check(/Not an export Binger knows: notes\.txt/.test(await page.locator('.import-outcome').innerText()), 'a file that isn’t an export is named, not guessed at');
+const duneEntry = await page.evaluate(() => JSON.parse(localStorage.getItem('binger:v1')).items['tmdb:movie:693134']);
+check(duneEntry && duneEntry.status === 'watched' && duneEntry.watches.some((w) => w.date === '2024-03-10' && w.rating === 4.5), 'Dune: Part Two arrives from IMDb as 4½★ on 10 March 2024');
+check((await libraryCount()).watched === watchedBefore + 1, 'the library grows by what was new (Dune)');
+await shot('27-import');
+await page.locator('.import').getByRole('button', { name: 'Done' }).click();
+await page.keyboard.press('Escape');
+await page.waitForTimeout(200);
 
 console.log('People: you and Dave');
 await page.goto(base + '#taste');

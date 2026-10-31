@@ -232,6 +232,18 @@ await step('deck reach', async () => {
   check(withMemory.total > without.total && withMemory.added[4] >= 20, 'with page memory, later refills keep finding new titles');
 });
 
+// Bring your history: IMDb ids map exactly (tmdb.find), Letterboxd names by search.
+await step('history import', async () => {
+  const dune = await tmdb.find('tt15239678');
+  const severance = await tmdb.find('tt11280740');
+  check(!!(dune && dune.id === 'tmdb:movie:693134'), `IMDb tt15239678 is Dune: Part Two on TMDB (${dune && dune.id})`);
+  check(!!(severance && severance.id === 'tmdb:tv:95396'), `IMDb tt11280740 is Severance on TMDB (${severance && severance.id})`);
+  check((await tmdb.find('tt0000000')) === null, 'an IMDb id TMDB doesn’t know is null, not an error');
+  const { bestMatch } = await import('../js/sources/imports.js');
+  const pastLives = bestMatch(await tmdb.search('Past Lives', { year: 2023 }), 'Past Lives', 2023);
+  check(!!(pastLives && pastLives.kind === 'film' && pastLives.year === 2023), `Letterboxd's "Past Lives (2023)" finds the film (${pastLives && pastLives.id})`);
+});
+
 await step('first-run grid', async () => {
   const grid = await starterTitles({ tmdb });
   const more = await starterTitles({ tmdb, page: 2 });

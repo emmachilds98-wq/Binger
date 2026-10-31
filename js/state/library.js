@@ -212,6 +212,42 @@ export function watchlist(state) {
 }
 
 // One diary row per watch (a rewatch is its own entry), newest first.
+// History brought in from IMDb, Letterboxd, MyAnimeList or AniList
+// (js/sources/imports.js: resolvePlan's matched entries). It never undoes
+// what you've done in Binger: a title already in your library only gains
+// diary entries it doesn't have yet (same date and rating = the same
+// entry), and a "want" or "pass" from elsewhere is skipped for anything you
+// already have. Feeling tags are kept only when they're Binger's own.
+// -> { state, counts: { watched, want, passed, watches, skipped } }
+export function importHistory(state, matched, now = Date.now()) {
+  let s = state;
+  const counts = { watched: 0, want: 0, passed: 0, watches: 0, skipped: 0 };
+  const ownTag = (t) => TAGS.find((x) => x.toLowerCase() === String(t).toLowerCase());
+  for (const { title, status, watches = [] } of matched || []) {
+    if (!title || !title.id) continue;
+    const had = s.items[title.id];
+    if (status === 'watched') {
+      let added = 0;
+      for (const w of watches.length ? watches : [{ date: null, rating: null }]) {
+        const cur = s.items[title.id];
+        const rating = typeof w.rating === 'number' ? w.rating : null;
+        const same = cur && (cur.watches || []).some((x) => (!w.date || x.date === w.date) && (x.rating ?? null) === rating);
+        if (same) continue;
+        s = logWatch(s, title, { rating, review: w.review || '', tags: (w.tags || []).map(ownTag).filter(Boolean), date: w.date || null }, now);
+        added++;
+      }
+      if (!added) counts.skipped++;
+      else { counts.watches += added; if (!had || had.status !== 'watched') counts.watched++; }
+    } else if (!had && (status === 'want' || status === 'passed')) {
+      s = setStatus(s, title, status, now);
+      counts[status]++;
+    } else {
+      counts.skipped++;
+    }
+  }
+  return { state: s, counts };
+}
+
 // First-run picks you haven't reviewed yet, newest first: Library → Diary
 // asks you to rate and review them with the same sheet as "Seen it".
 export function setupPicks(state) {

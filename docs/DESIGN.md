@@ -122,6 +122,14 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   eyebrow "Review your pick" and the button "Save review". Their diary rows
   say "First run" where the date would be. Screenshots
   `25-first-run-review`, `26-first-run-picks`.
+- **Bring your history** (built): a full sheet (title "Bring your history"),
+  a muted intro, then "From a file" (one line each for IMDb, Letterboxd and
+  MyAnimeList on where their export lives, and a quiet "Choose files"
+  button) and "From AniList" (username field + quiet Import). A status line
+  counts "Matching 120 of 1,203…", then says what happened; a "couldn't be
+  found" disclosure lists misses; "Undo import" (quiet) and Done (amber).
+  Reached from Settings → "Your history elsewhere" and a small link under
+  the first-run search. Screenshot `27-import`.
 - **Settings** (built): no "Films & TV (TMDB key)" group where a key is
   built into the site, which is the live site.
 - **PC layout** (built; see below). Designed here rather than on the canvas,

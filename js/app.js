@@ -35,6 +35,8 @@ import { connectFirebase, authMessage } from './sync/firebase.js';
 import { startSync, findHousehold, readHousehold, createHousehold, joinHousehold } from './sync/sync.js';
 import { openWhoIsWatching, openPeople, openWelcome, askName, shareOrCopy } from './ui/people.js';
 import { openShortcuts } from './ui/shortcuts.js';
+import { openImport } from './ui/import.js';
+import { readExport, mergePlan, resolvePlan, fromAniListEntries } from './sources/imports.js';
 
 // ---- state -----------------------------------------------------------------
 
@@ -704,6 +706,60 @@ function editWatch(item, watch) {
   });
 }
 
+// ---- bring your history (IMDb, Letterboxd, MyAnimeList, AniList) ----------
+
+// An export file's text; MyAnimeList's comes gzipped.
+async function fileText(f) {
+  if (/\.gz$/i.test(f.name) && typeof DecompressionStream === 'function') {
+    return new Response(f.stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+  return f.text();
+}
+
+// Match a plan and add it to the library (importHistory decides what's
+// new); the import sheet offers an Undo. Your favourites get full details
+// first (cast, directors, themes), so the deck learns more than their genres.
+async function runImport(plan, onProgress, unknown = []) {
+  if (!plan.length) throw new Error(unknown.length ? 'Those files aren’t IMDb, Letterboxd or MyAnimeList exports.' : 'There was nothing to import in that.');
+  const { matched, missed } = await resolvePlan(plan, { tmdb, anilist, onProgress });
+  const loved = matched.filter((m) => m.title.source === 'tmdb' && m.watches.some((w) => w.rating >= 4)).slice(0, 40);
+  if (loved.length) {
+    const full = await hydrate(loved.map((m) => m.title), { tmdb });
+    loved.forEach((m, i) => { m.title = full[i]; });
+  }
+  const before = store.get();
+  let counts = null;
+  store.update((s) => { const r = L.importHistory(s, matched); counts = r.counts; return r.state; });
+  const added = counts.watched || counts.watches || counts.want || counts.passed;
+  if (added) {
+    deck.topId = null;
+    refill({ force: true });
+    refreshSeasons();
+  }
+  return { counts, missed: missed.map((e) => e.label), unknown, undo: added ? () => store.replace(before) : null };
+}
+
+function showImport({ fromFirstRun = false } = {}) {
+  openImport({
+    hasKey: tmdb.hasKey,
+    importFiles: async (files, onProgress) => {
+      const entries = [];
+      const unknown = [];
+      for (const f of files) {
+        const { format, entries: found } = readExport(f.name, await fileText(f));
+        if (format) entries.push(...found); else unknown.push(f.name);
+      }
+      return runImport(mergePlan(entries), onProgress, unknown);
+    },
+    importAniList: async (name, onProgress) => runImport(mergePlan(fromAniListEntries(await anilist.userList(name))), onProgress),
+    // From the first run: once something's in, there's no need to pick more.
+    onClose: (result) => {
+      const added = result && (result.counts.watched + result.counts.watches + result.counts.want);
+      if (fromFirstRun && added && onboarding) store.update(L.setOnboarded, true);
+    },
+  });
+}
+
 function showSearch() {
   openSearch({
     hasKey: tmdb.hasKey,
@@ -747,6 +803,7 @@ function showSettings() {
     currentKey: () => store.get().settings.tmdbKey || device.tmdbKey || '',
     keyField: !CONFIG.tmdbKey,
     onPeople: showPeople,
+    onImport: () => showImport(),
     saveKey,
     onServices: showServices,
     updateSettings: (patch) => store.update(L.updateSettings, patch),
@@ -780,6 +837,7 @@ function startOnboarding() {
     search: searchAll,
     loadPopular,
     onSettings: showSettings,
+    onImport: () => showImport({ fromFirstRun: true }),
     onDone: async (picks) => {
       onboarding = null;
       store.update(L.setOnboarded, true);
