@@ -8,6 +8,7 @@ import { cardEl, preloadPoster } from './card.js';
 import { filterSummary } from './filters.js';
 import { whoChip } from './people.js';
 import { flickDirection } from './gesture.js';
+import { moodOf } from '../engine/index.js';
 
 // All, or any mix of the three (Films and TV but not Anime, say).
 const FILTERS = [['all', 'All'], ['film', 'Films'], ['tv', 'TV'], ['anime', 'Anime']];
@@ -17,6 +18,7 @@ const THRESHOLD_UP = 120;
 export function renderDiscover(root, ctx) {
   clear(root);
   const active = filterSummary(ctx.deckFilters, ctx.streamOnly, ctx.services);
+  const mood = ctx.deckFilters.mood ? moodOf(ctx.deckFilters.mood) : null;
   const header = h('header', { class: 'topbar' },
     h('div', { class: 'topbar-row' },
       h('div', { class: 'brand' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, icon('play', 14)), h('span', { class: 'brand-word' }, 'binger')),
@@ -31,7 +33,14 @@ export function renderDiscover(root, ctx) {
     h('div', { class: 'pills', role: 'group', 'aria-label': 'What to show' },
       FILTERS.map(([key, label]) => h('button', {
         type: 'button', class: 'pill', 'aria-pressed': String(key === 'all' ? !ctx.kinds.size : ctx.kinds.has(key)), onClick: () => ctx.setFilter(key),
-      }, label))),
+      }, label)),
+      // Opens the mood picker (js/ui/mood.js); amber while a mood is on. It
+      // always reads "Mood", so it fits a small phone: the mood's name is in
+      // the filter line underneath, with Clear.
+      ctx.onMood ? h('button', {
+        type: 'button', class: `pill pill-mood${mood ? ' is-on' : ''}`, 'aria-haspopup': 'dialog',
+        'aria-label': mood ? `Mood: ${mood.label}. Change mood` : 'Pick a mood', onClick: ctx.onMood,
+      }, icon('sparkle', 15), 'Mood') : null),
     active.length ? h('div', { class: 'filter-line' },
       h('span', null, active.join(' · ')),
       h('button', { type: 'button', class: 'link-btn', onClick: ctx.onClearFilters }, 'Clear')) : null);
@@ -102,7 +111,9 @@ function emptyState(ctx) {
     blocks.push(h('button', { type: 'button', class: 'btn btn-primary', onClick: ctx.onSettings }, 'Add a TMDB key'));
     return h('div', { class: 'deck-empty' }, blocks);
   } else if (filterSummary(ctx.deckFilters, ctx.streamOnly, ctx.services).length) {
-    blocks.push(h('h2', null, 'Nothing matches those filters yet'), h('p', { class: 'muted' }, 'Fetch fresh cards to look further, or loosen the filters.'));
+    const onlyMood = ctx.deckFilters.mood && filterSummary({ ...ctx.deckFilters, mood: null }, ctx.streamOnly, ctx.services).length === 0;
+    blocks.push(h('h2', null, onlyMood ? 'Nothing fits that mood yet' : 'Nothing matches those filters yet'),
+      h('p', { class: 'muted' }, onlyMood ? 'Fetch fresh cards to look further, or pick another mood.' : 'Fetch fresh cards to look further, or loosen the filters.'));
     blocks.push(h('button', { type: 'button', class: 'btn btn-quiet', onClick: ctx.onClearFilters }, 'Clear filters'));
   } else {
     blocks.push(h('h2', null, "That's everything for now"), h('p', { class: 'muted' }, 'Try another filter, change your mix on the Taste tab, or fetch fresh cards.'));

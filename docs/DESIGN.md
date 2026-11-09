@@ -168,6 +168,27 @@ favourites plus any that faded), all on **one shared scale** so rows compare.
   the first-run search. Screenshot `27-import`.
 - **Settings** (built): no "Films & TV (TMDB key)" group where a key is
   built into the site, which is the live site.
+- **Moods** (built, `js/ui/mood.js`): a **Mood** pill (sparkle icon) at
+  the end of the Discover pills; amber while a mood is on, and always the
+  word "Mood" so the five pills fit a 360 px phone (the mood's name is in the
+  filter line, with Clear). It opens a bottom sheet, "What are you in the mood
+  for?", with a muted line and a two-column grid of tiles: **Any mood**, then
+  Funny, Feel-good, Gripping, Mind-bending, Scary, Romantic, Moving, Epic,
+  Dark, True stories and Family night. Each tile is the mood in bold over a
+  muted line ("Make me laugh"); where you've tagged something with that
+  feeling, the line names it in amber instead ("Like Paddington 2"). The
+  picked tile has an amber ring. One tap picks and goes back to the deck. The
+  Filters sheet has the same moods as pills, first. **M** opens the picker.
+  An empty deck under a mood alone says "Nothing fits that mood yet".
+  Screenshot `32-mood`.
+- **More like this** (built, the detail sheet): after "Your diary", an
+  eyebrow "More films like this" / "More shows like this" / "More anime like
+  this" over a sideways row of posters (104 px wide, 2:3, rounded 10 px),
+  each with its title (two lines at most) and a small line: the match % once
+  Binger knows your taste, else year and kind; "In your diary" or "On your
+  watchlist" in amber for what's yours. Tap opens that title's details on
+  top; back returns. "Finding more like this…" while it loads; the section
+  disappears when there's nothing. Screenshot `31-more-like-this`.
 - **PC layout** (built; see below). Designed here rather than on the canvas,
   which the 2026-10-31 session couldn't open from its account. Add a desktop
   row to the canvas when someone with access can, and copy it to `design/canvas/`.
@@ -194,7 +215,7 @@ components throughout.
 
 ## Interaction rules
 
-- Every gesture has a button twin and a key: → Want, ← Pass, ↑ Seen it, Enter details, Z undo; / search, ? shortcuts.
+- Every gesture has a button twin and a key: → Want, ← Pass, ↑ Seen it, Enter details, Z undo, M mood; / search, ? shortcuts.
 - Filters that hide things always say so on screen (the summary line, the dot) and can be cleared in one tap.
 - An empty deck under filters says it's the filters ("Nothing matches those filters yet") and offers Clear.
 - A drag can start anywhere on a card, even on the play button; a tap on the button still plays.

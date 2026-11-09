@@ -1,20 +1,24 @@
 // Full detail for one title: trailer clip, why it was picked, synopsis, cast
-// (people you know highlighted), where to watch, and your own history with it.
+// (people you know highlighted), where to watch, your own history with it,
+// and more like it.
 
-import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg, watchWhen, reviewLine } from './dom.js';
+import { h, icon, clear, KIND_NAME, metaLine, publicScore, reviewScores, avatar, starsText, shortDate, titleCase, safeImg, watchWhen, reviewLine, poster } from './dom.js';
 import { ASPECTS } from '../state/library.js';
 import { openSheet } from './sheet.js';
 import { trailerPlayer, fullTrailerUrl } from './trailer.js';
-import { knownFrom } from './card.js';
+import { knownFrom, matchPercent } from './card.js';
 import { canonicalService } from '../sources/services.js';
 
 export function openDetail(initial, ctx) {
   const sheet = openSheet({ label: initial.title, variant: 'full', className: 'detail' });
   let title = initial;
+  // Built once and moved into each render, so fuller details arriving don't
+  // ask for it again or lose where it had scrolled to.
+  const more = ctx.loadSimilar ? moreLikeThis(initial, ctx) : null;
 
   function render() {
     clear(sheet.body);
-    sheet.body.append(media(title, ctx, sheet), body(title, ctx, sheet), footer(title, ctx, sheet));
+    sheet.body.append(media(title, ctx, sheet), body(title, ctx, sheet, more), footer(title, ctx, sheet));
   }
   render();
   sheet.focusFirst();
@@ -92,7 +96,7 @@ function scoresRow(t) {
     : h('span', { class: 'chip' }, s.text))));
 }
 
-function body(t, ctx, sheet) {
+function body(t, ctx, sheet, more = null) {
   const format = t.kind === 'anime' && t.format && t.format !== 'TV' ? t.formatLabel : null;
   const facts = [format, metaLine(t, { genres: 0 }), t.certification, publicScore(t)].filter(Boolean).join(' · ');
   const chips = [...(t.genres || []), ...(t.keywords || []).slice(0, 4)];
@@ -123,6 +127,7 @@ function body(t, ctx, sheet) {
       }))) : null,
     whereToWatch(t, ctx),
     history(t, ctx),
+    more && !more.dataset.empty ? more : null,
     ctx.canHideSeries && ctx.canHideSeries(t) ? h('p', null, h('button', {
       type: 'button', class: 'link-btn quiet-link',
       onClick: () => { if (sheet) sheet.close(); ctx.onHideSeries(t); },
@@ -194,6 +199,40 @@ function history(t, ctx) {
         h('span', { class: 'muted small' }, watchWhen(w)),
         w.review ? h('span', { class: 'history-review' }, w.review) : null,
         reviewLine(w, ASPECTS) ? h('span', { class: 'muted small' }, reviewLine(w, ASPECTS)) : null)))));
+}
+
+const MORE_HEADING = { film: 'More films like this', tv: 'More shows like this', anime: 'More anime like this' };
+
+// "More films like this": a row of posters, best for you first, each opening
+// its own details on top (back returns here). Hidden when there's nothing.
+function moreLikeThis(t, ctx) {
+  const heading = MORE_HEADING[t.kind] || 'More like this';
+  const status = h('p', { class: 'small muted', role: 'status' }, 'Finding more like this…');
+  const list = h('ul', { class: 'similar-row' });
+  const section = h('section', { class: 'similar', 'aria-label': heading }, h('h2', { class: 'eyebrow' }, heading), status, list);
+  const empty = () => {
+    section.dataset.empty = '1';
+    section.remove();
+  };
+  ctx.loadSimilar(t).then((ranked) => {
+    if (!ranked || !ranked.length) { empty(); return; }
+    status.remove();
+    for (const r of ranked) {
+      const s = r.title;
+      const item = ctx.itemOf ? ctx.itemOf(s.id) : null;
+      const mine = item && (item.status === 'watched' || item.status === 'want');
+      const note = item && item.status === 'watched' ? 'In your diary'
+        : item && item.status === 'want' ? 'On your watchlist'
+          : ctx.showMatch ? `${matchPercent(r.score)}% match` : [s.year, KIND_NAME[s.kind]].filter(Boolean).join(' \u00b7 ');
+      list.append(h('li', null, h('button', { type: 'button', class: 'similar-item', onClick: () => ctx.onOpenSimilar(s) },
+        poster(s, 'similar-art'),
+        h('span', { class: 'similar-name' }, s.title),
+        h('span', { class: `similar-note${mine ? ' accent' : ''}` }, note))));
+    }
+  }).catch(() => {
+    status.textContent = 'Couldn\u2019t load suggestions. Check your connection.';
+  });
+  return section;
 }
 
 function footer(t, ctx, sheet) {

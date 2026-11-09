@@ -1,8 +1,8 @@
 // Orders a candidate pool into the deck you swipe through. Pure.
 //
 // 1. Drop anything already in your library, in a hidden genre or hidden
-//    series, of a kind you've filtered out, outside the deck filters (length,
-//    decade), or, with "Only show what I can stream", not on your services.
+//    series, of a kind you've filtered out, outside the deck filters (mood,
+//    length, decade), or, with "Only show what I can stream", not on your services.
 // 2. Score everything (score.js).
 // 3. Pick cards one at a time, best first, but:
 //    - nudge toward your Films / TV / Anime mix from the Taste screen,
@@ -14,6 +14,7 @@
 import { featuresOf, isFilmLike } from './features.js';
 import { scoreTitle, onServices } from './score.js';
 import { explain } from './explain.js';
+import { matchesMood } from './moods.js';
 
 export const DEFAULT_MIX = { film: 50, tv: 50, anime: 50 };
 const EXPLORE_EVERY = 7;
@@ -91,6 +92,7 @@ export function eligible(title, { exclude, hiddenGenres, kinds, mix, block = nul
   if (filters) {
     if (filters.short && isShort(title) === false) return false;
     if (!inDecade(title, filters.decade ?? null)) return false;
+    if (filters.mood && !matchesMood(title, filters.mood)) return false;
   }
   // Unknowns stay in: the app fetches details for the next few cards and
   // re-ranks, so a film that turns out not to be on your services drops out.
@@ -201,4 +203,24 @@ export function rankForYou(titles, profile, { now = Date.now(), services = [] } 
       return { title: t, ...s, score: s.score + (t.major ? MAJOR_ROLE_BONUS : 0) };
     })
     .sort((a, b) => b.score - a.score);
+}
+
+// "More like this" on a title's page: best for you first, without the title
+// itself, what you've passed, or anything in a genre or series you've hidden
+// (they're suggestions, like the deck). What's in your library stays, so the
+// row can say "In your diary".
+export function rankSimilar(titles, profile, { of = null, items = {}, hiddenGenres = [], hiddenFranchises = [], services = [], now = Date.now(), limit = 12 } = {}) {
+  const hidden = new Set(hiddenGenres);
+  const block = franchiseBlock(hiddenFranchises);
+  const seen = new Set(of ? [of] : []);
+  const out = [];
+  for (const t of titles || []) {
+    if (!t || !t.id || seen.has(t.id)) continue;
+    seen.add(t.id);
+    const item = items[t.id];
+    if (item && item.status === 'passed') continue;
+    if (!eligible(t, { hiddenGenres: hidden, block })) continue;
+    out.push({ title: t, ...scoreTitle(t, profile, { now, preferFresh: false, services }) });
+  }
+  return out.sort((a, b) => b.score - a.score).slice(0, limit);
 }

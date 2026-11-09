@@ -11,7 +11,7 @@ import { createTmdb } from './sources/tmdb.js';
 import { createAniList } from './sources/anilist.js';
 import { createRatings } from './sources/ratings.js';
 import { gatherCandidates, hydrate, needsHydrating } from './sources/candidates.js';
-import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline, toggleKind } from './engine/index.js';
+import { buildProfile, buildDeck, explain, scoreTitle, warmth, tasteTimeline, toggleKind, rankSimilar, MOODS, moodSeeds } from './engine/index.js';
 import { renderDiscover } from './ui/deck.js';
 import { openDetail, detailPanel } from './ui/detail.js';
 import { openRate } from './ui/rate.js';
@@ -21,9 +21,10 @@ import { openSearch } from './ui/search.js';
 import { openSettings } from './ui/settings.js';
 import { openOnboarding } from './ui/onboarding.js';
 import { openFilters } from './ui/filters.js';
+import { openMood } from './ui/mood.js';
 import { openServices, servicesSummary } from './ui/services.js';
 import { regionName } from './ui/settings.js';
-import { serviceChoices, loadPerson, loadTitle, hasFranchise, loadFranchise, checkNewSeasons, searchTitles, starterTitles } from './sources/lookups.js';
+import { serviceChoices, loadPerson, loadTitle, hasFranchise, loadFranchise, checkNewSeasons, searchTitles, starterTitles, similarTitles } from './sources/lookups.js';
 import { openPerson } from './ui/person.js';
 import { toast, anySheetOpen, choiceSheet } from './ui/sheet.js';
 import { loadDevice, saveDevice } from './state/device.js';
@@ -70,7 +71,7 @@ const deck = {
   queued: false,     // a forced refill asked for while one was running
   errors: [],
   kinds: new Set(),  // Discover pills: empty = All, else any mix of film / tv / anime
-  filters: { short: false, decade: null }, // length and decade, this session only
+  filters: { short: false, decade: null, mood: null }, // mood, length and decade, this session only
   undo: [],          // [{ id, prev, title }]
   pages: {},         // which page each pull has reached this session (turnPage)
   pendingRender: false,
@@ -272,11 +273,11 @@ function setFilter(key) {
   if (deck.cards.length < REFILL_BELOW) refill({ force: true });
 }
 
-// Length and decade apply now and fetch titles that fit (this week's
+// Mood, length and decade apply now and fetch titles that fit (this week's
 // trending list has no 1990s films in it). "Only what I can stream" is a
 // saved setting, so it goes through the store.
 function applyDeckFilters(filters, streamOnly) {
-  deck.filters = { short: !!filters.short, decade: filters.decade ?? null };
+  deck.filters = { short: !!filters.short, decade: filters.decade ?? null, mood: filters.mood ?? null };
   deck.pages = {}; // a new length or decade starts every list from its first pages again
   deck.topId = null;
   if (!!store.get().settings.streamOnly !== !!streamOnly) {
@@ -296,6 +297,26 @@ function showFilters() {
     services: s.services,
     onPickServices: () => showServices(),
     onApply: applyDeckFilters,
+  });
+}
+
+// "What are you in the mood for?": a mood is a deck filter like the decade,
+// so picking one keeps the others. Each mood's tile names something you
+// tagged with that feeling, when there is one ("Like Paddington 2").
+function showMood() {
+  const { items } = store.get();
+  const hints = {};
+  for (const m of MOODS) {
+    const top = moodSeeds(items, m, { limit: 1 })[0];
+    if (top) hints[m.id] = `Like ${top.item.title.title}`;
+  }
+  openMood({
+    current: deck.filters.mood,
+    hints,
+    onPick: (mood) => {
+      if (mood === deck.filters.mood) return;
+      applyDeckFilters({ ...deck.filters, mood }, store.get().settings.streamOnly);
+    },
   });
 }
 
@@ -670,6 +691,14 @@ function detailCtx(title, card) {
     onRemove: (t) => { store.update(L.removeItem, t.id); toast('Removed from your Watchlist'); },
     onPerson: showPerson,
     onEditWatch: editWatch,
+    // "More films like this", ranked for you; each opens its own details.
+    loadSimilar: (t) => similarTitles(t, { tmdb, anilist }).then((list) => {
+      const { items: all, settings } = store.get();
+      return rankSimilar(list, profile, { of: t.id, items: all, hiddenGenres: settings.hiddenGenres, hiddenFranchises: settings.hiddenFranchises, services: settings.services });
+    }),
+    itemOf: (id) => store.get().items[id] || null,
+    showMatch: warmth(profile) >= 0.25,
+    onOpenSimilar: (t) => showDetail(t),
     onHideSeries: (t) => (hasFranchise(t) && !isSeriesHidden(t) ? hideSeries(t) : null),
     canHideSeries: (t) => hasFranchise(t) && !isSeriesHidden(t),
     onShare: shareTitle,
@@ -907,7 +936,8 @@ function renderDiscoverView({ force = false } = {}) {
     streamOnly: s.streamOnly,
     services: s.services,
     onFilters: showFilters,
-    onClearFilters: () => applyDeckFilters({ short: false, decade: null }, false),
+    onClearFilters: () => applyDeckFilters({ short: false, decade: null, mood: null }, false),
+    onMood: showMood,
     setFilter,
     onAction: deckAction,
     onOpen: (card) => showDetail(card.title, { card }),
@@ -1039,6 +1069,7 @@ document.addEventListener('keydown', (e) => {
   if (ui.tab !== 'discover') return;
   const top = deck.cards[0];
   if (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace') { e.preventDefault(); undo(); return; }
+  if (e.key === 'm' || e.key === 'M') { e.preventDefault(); showMood(); return; }
   if (!top || !discoverHandle) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); discoverHandle.swipe('right'); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); discoverHandle.swipe('left'); }

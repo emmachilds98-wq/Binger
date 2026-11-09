@@ -4,7 +4,7 @@
 // anime season, alongside recommendations seeded from what you've loved.
 // Nothing here is a hand-kept catalogue.
 
-import { itemSignal, latestRating, ratingBaseline, topFeatures, DEFAULT_MIX } from '../engine/index.js';
+import { itemSignal, latestRating, ratingBaseline, topFeatures, DEFAULT_MIX, moodOf, moodSeeds } from '../engine/index.js';
 import { decay } from '../engine/profile.js';
 import { CANON_TO_TMDB, canonToAniList } from './genres.js';
 import { DECK_FORMATS } from './anilist.js';
@@ -138,7 +138,19 @@ export async function providerIdsFor(tmdb, services) {
   return [...ids];
 }
 
-// filters: the deck's session filters { short: boolean, decade: 2020 | ... | 'older' | null }.
+// A mood (js/engine/moods.js) as TMDB genre ids for one media type: the
+// genres that fit (any of them) and the ones that rule a title out. A mood
+// with no genre TMDB has for that type (TV has no Horror) gives no ids.
+export function moodGenreIds(mood, mediaType) {
+  const table = CANON_TO_TMDB[mediaType] || {};
+  const ids = (list) => [...new Set((list || []).map((g) => table[g]).filter(Boolean))];
+  if (!mood) return { genreIds: [], withoutGenreIds: [] };
+  const genreIds = ids(mood.genres);
+  // TV fuses pairs ("Action & Adventure"): never rule out a genre that also fits.
+  return { genreIds, withoutGenreIds: ids(mood.not).filter((id) => !genreIds.includes(id)) };
+}
+
+// filters: the deck's session filters { short: boolean, decade: 2020 | ... | 'older' | null, mood: 'funny' | ... | null }.
 // pages: the session's page memory (turnPage), or null.
 export async function gatherCandidates({ tmdb, anilist, items = {}, profile, settings = {}, filters = null, now = Date.now(), rng = Math.random, pages = null }) {
   const pool = new Map();
@@ -148,6 +160,10 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
   const services = settings.services || [];
   const dates = filters ? decadeDates(filters.decade) : null;
   const short = !!(filters && filters.short);
+  const mood = filters && filters.mood ? moodOf(filters.mood) : null;
+  // What you tagged with this mood's feelings: "more like this" about those too.
+  const moodPicks = mood ? moodSeeds(items, mood, { now }) : [];
+  const moodVia = (s) => ({ ...seedVia(s), mood: s.tag });
 
   const add = (title, via) => {
     if (!title || title.animeLike) return;
@@ -160,8 +176,12 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
     } else if (title.streamHint && !entry.streamHint) {
       entry = { ...entry, streamHint: true };
     }
-    if (via && !entry.via.some((v) => v.type === via.type && v.seedId === via.seedId)) {
+    const same = via ? entry.via.findIndex((v) => v.type === via.type && v.seedId === via.seedId) : -1;
+    if (via && same < 0) {
       entry.via = [...entry.via, via].sort((a, b) => VIA_RANK[a.type] - VIA_RANK[b.type]);
+    } else if (via && via.mood && !entry.via[same].mood) {
+      // The same seed, reached for the mood you picked: say so.
+      entry.via = entry.via.map((v, i) => (i === same ? via : v));
     }
     pool.set(title.id, entry);
   };
@@ -203,6 +223,18 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
         const pg = turnPage(pages, `filtered:${mediaType}`, page);
         run(`tmdb:filtered:${mediaType}`, async () => (await tmdb.discover(mediaType, { genreIds, page: pg, minVotes: dates ? 300 : 150, runtimeMax, ...dateParams, sortBy: dates ? 'vote_count.desc' : 'popularity.desc' }))
           .forEach((t) => add(t, { type: 'popular' })));
+      }
+      // A mood: titles in its genres, the popular ones and the best loved,
+      // so the deck has plenty that fit (eligible() in rank.js keeps only those).
+      const fit = moodGenreIds(mood, mediaType);
+      if (fit.genreIds.length) {
+        const common = { ...fit, runtimeMax, ...dateParams };
+        const pg = turnPage(pages, `mood:${mood.id}:${mediaType}`, page);
+        run(`tmdb:mood:${mediaType}`, async () => (await tmdb.discover(mediaType, { ...common, page: pg, minVotes: MIN_VOTES[mediaType] }))
+          .forEach((t) => add(t, { type: 'genre' })));
+        const best = turnPage(pages, `mood-best:${mood.id}:${mediaType}`, 1 + Math.floor(rng() * 3));
+        run(`tmdb:mood-best:${mediaType}`, async () => (await tmdb.discover(mediaType, { ...common, page: best, sortBy: 'vote_average.desc', minVotes: mediaType === 'movie' ? 1000 : 300 }))
+          .forEach((t) => add(t, { type: 'genre' })));
       }
       // The top 40 this week, not just the top 20.
       for (const pg of [1, 2]) {
@@ -249,35 +281,43 @@ export async function gatherCandidates({ tmdb, anilist, items = {}, profile, set
           .forEach((t) => add({ ...t, airing: true }, { type: 'fresh' })));
       }
     }
-    for (const s of seeds.tmdb) {
+    // Your seeds, and what you tagged with the mood you picked (asked once each).
+    const tmdbMood = moodPicks.filter((x) => x.item.title.source === 'tmdb');
+    const tmdbSeeds = [...tmdbMood, ...seeds.tmdb.filter((s) => !tmdbMood.some((m) => m.item.id === s.item.id))];
+    for (const s of tmdbSeeds) {
       const t = s.item.title;
       if (!wants(t.kind)) continue;
+      const via = s.tag ? moodVia(s) : seedVia(s);
       run(`tmdb:seed:${t.id}`, async () => {
         let recs = await tmdb.recommendations(t.mediaType, t.sourceId);
         // New and niche titles have few recommendations yet: similar ones
         // (same genres and keywords) fill in.
         if (recs.length < 10) recs = [...recs, ...(await tmdb.similar(t.mediaType, t.sourceId).catch(() => []))];
-        recs.forEach((r) => add(r, seedVia(s)));
+        recs.forEach((r) => add(r, via));
       });
     }
   }
 
   if (anilist && wants('anime')) {
     run('anilist:deck', async () => {
+      const animeMood = moodPicks.filter((x) => x.item.title.source === 'anilist');
+      const animeSeeds = [...animeMood, ...seeds.anime.filter((s) => !animeMood.some((m) => m.item.id === s.item.id))];
       const batch = await anilist.deckBatch({
-        seeds: seeds.anime.map((s) => s.item.title.sourceId),
+        seeds: animeSeeds.map((s) => s.item.title.sourceId),
         sequels: sequelIdsToFetch(items),
         genres: genres.map(canonToAniList).filter(Boolean).slice(0, 2),
         page: turnPage(pages, 'anilist', page),
         now: new Date(now),
         filters,
+        mood,
       });
       batch.trending.forEach((t) => add(t, { type: 'trending' }));
       batch.season.forEach((t) => add(t, { type: 'fresh' }));
       batch.genre.forEach((t) => add(t, { type: 'genre' }));
       for (const group of batch.seeds) {
+        const m = animeMood.find((x) => x.item.id === group.seedId);
         const s = seeds.anime.find((x) => x.item.id === group.seedId);
-        group.titles.forEach((t) => add(t, s ? seedVia(s) : null));
+        group.titles.forEach((t) => add(t, m ? moodVia(m) : s ? seedVia(s) : null));
       }
       batch.sequels.forEach((t) => add(t, null));
       (batch.filtered || []).forEach((t) => add(t, { type: 'popular' }));

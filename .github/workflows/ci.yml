@@ -16,7 +16,10 @@ jobs:
       - run: npm test
 
   e2e:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.56.1 can't install Chromium on Ubuntu 26.04,
+    # which ubuntu-latest became in November 2026. Move both browser jobs
+    # on together when Playwright is upgraded.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,7 +40,7 @@ jobs:
   # The Firebase live check (docs/FIREBASE.md) against the local emulators,
   # with this repo's firestore.rules and the real Firebase JS SDK.
   sync:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned with e2e, above
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

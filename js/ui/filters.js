@@ -1,10 +1,12 @@
-// Deck filters: length ("Quick watches"), decade, and "Only what I can stream".
-// Length and decade last for this session, like the Films / TV / Anime
-// pills; "Only what I can stream" is a saved setting (it's also in Settings).
+// Deck filters: mood, length ("Quick watches"), decade, and "Only what I
+// can stream". Mood, length and decade last for this session, like the
+// Films / TV / Anime pills; "Only what I can stream" is a saved setting
+// (it's also in Settings). Moods also have their own picker (js/ui/mood.js).
 
 import { h, append } from './dom.js';
 import { openSheet, closeButton } from './sheet.js';
 import { toggle } from './taste.js';
+import { MOODS, moodOf } from '../engine/index.js';
 
 export const DECADES = [[null, 'Any time'], [2020, '2020s'], [2010, '2010s'], [2000, '2000s'], [1990, '1990s'], [1980, '1980s'], ['older', 'Older']];
 
@@ -13,9 +15,11 @@ export function decadeLabel(d) {
   return hit ? hit[1] : null;
 }
 
-// The one-line summary under the pills, e.g. "Quick watches · 1990s · On your services".
+// The one-line summary under the pills, e.g. "Funny · Quick watches · 1990s · On your services".
 export function filterSummary(filters, streamOnly, services) {
   const bits = [];
+  const mood = filters.mood ? moodOf(filters.mood) : null;
+  if (mood) bits.push(mood.label);
   if (filters.short) bits.push('Quick watches');
   if (filters.decade != null) bits.push(decadeLabel(filters.decade));
   if (streamOnly && services.length) bits.push(services.length === 1 ? `On ${services[0]}` : 'On your services');
@@ -26,6 +30,7 @@ export function openFilters(ctx) {
   const sheet = openSheet({ label: 'Filters', variant: 'bottom', className: 'filters' });
   let short = !!ctx.filters.short;
   let decade = ctx.filters.decade ?? null;
+  let mood = ctx.filters.mood ?? null;
   let streamOnly = !!ctx.streamOnly;
   const services = ctx.services || [];
 
@@ -42,6 +47,7 @@ export function openFilters(ctx) {
     return btns;
   };
 
+  const moodPills = choice([[null, 'Any mood'], ...MOODS.map((m) => [m.id, m.label])], mood, (v) => { mood = v; });
   const lengthPills = choice([[false, 'Any length'], [true, 'Quick watches']], short, (v) => { short = v; });
   const decadePills = choice(DECADES, decade, (v) => { decade = v; });
   // "Where" needs your services; with none picked (and no picker to send
@@ -58,12 +64,12 @@ export function openFilters(ctx) {
 
   const apply = h('button', { type: 'button', class: 'btn btn-primary grow' }, 'Show cards');
   apply.addEventListener('click', () => {
-    ctx.onApply({ short, decade }, streamOnly);
+    ctx.onApply({ short, decade, mood }, streamOnly);
     sheet.close();
   });
   const reset = h('button', { type: 'button', class: 'btn btn-quiet' }, 'Reset');
   reset.addEventListener('click', () => {
-    ctx.onApply({ short: false, decade: null }, false);
+    ctx.onApply({ short: false, decade: null, mood: null }, false);
     sheet.close();
   });
 
@@ -71,6 +77,9 @@ export function openFilters(ctx) {
   append(sheet.body, [
     h('div', { class: 'grabber', 'aria-hidden': 'true' }),
     h('div', { class: 'row-between' }, h('h2', { class: 'sheet-title' }, 'Filters'), closeButton(sheet)),
+    h('div', { class: 'field' },
+      h('div', { class: 'eyebrow', id: 'f-mood' }, 'Mood'),
+      h('div', { class: 'pill-wrap', role: 'group', 'aria-labelledby': 'f-mood' }, moodPills)),
     h('div', { class: 'field' },
       h('div', { class: 'eyebrow', id: 'f-length' }, 'Length'),
       h('div', { class: 'pill-wrap', role: 'group', 'aria-labelledby': 'f-length' }, lengthPills),

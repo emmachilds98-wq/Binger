@@ -36,7 +36,9 @@ export function explain(title, scored, profile, { now = Date.now(), max = 3, ser
 
   const seed = viaOf(title, 'seed');
   if (seed && seed.seedTitle) {
-    if (seed.seedRating >= 4) push('seed', `Because you loved ${seed.seedTitle}`);
+    // Asked about because you tagged it with the mood you picked (moods.js).
+    if (seed.mood) push('seed', `Like ${seed.seedTitle}, which you tagged ${seed.mood}`);
+    else if (seed.seedRating >= 4) push('seed', `Because you loved ${seed.seedTitle}`);
     else if (seed.seedStatus === 'want') push('seed', `Like ${seed.seedTitle}, on your watchlist`);
     else push('seed', `Because you liked ${seed.seedTitle}`);
   }

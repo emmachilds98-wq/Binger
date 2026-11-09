@@ -3,7 +3,7 @@
 // anime is fetched in ONE batched request (deckBatch) rather than many small ones.
 
 import { fetchJSON, cached, HOUR, DAY } from './http.js';
-import { canonicalGenres } from './genres.js';
+import { canonicalGenres, canonToAniList } from './genres.js';
 import { canonicalServices } from './services.js';
 
 const ENDPOINT = 'https://graphql.anilist.co';
@@ -139,7 +139,7 @@ export function buildDeckQuery(voiceLanguage) {
   return `${fragment(voiceLanguage)}
 query ($season: MediaSeason, $year: Int, $genres: [String], $seeds: [Int], $sequels: [Int], $page: Int,
        $withSeeds: Boolean!, $withGenres: Boolean!, $withSequels: Boolean!,
-       $withFiltered: Boolean!, $from: FuzzyDateInt, $to: FuzzyDateInt, $episodesBelow: Int, $filterGenres: [String]) {
+       $withFiltered: Boolean!, $from: FuzzyDateInt, $to: FuzzyDateInt, $episodesBelow: Int, $filterGenres: [String], $notGenres: [String]) {
   trending: Page(perPage: 25) { media(type: ANIME, sort: [TRENDING_DESC], isAdult: false) { ...M } }
   season: Page(perPage: 20) { media(type: ANIME, season: $season, seasonYear: $year, sort: [POPULARITY_DESC], isAdult: false) { ...M } }
   genre: Page(perPage: 25, page: $page) @include(if: $withGenres) {
@@ -150,7 +150,7 @@ query ($season: MediaSeason, $year: Int, $genres: [String], $seeds: [Int], $sequ
   sequels: Page(perPage: 10) @include(if: $withSequels) { media(id_in: $sequels) { ...M } }
   filtered: Page(perPage: 25, page: $page) @include(if: $withFiltered) {
     media(type: ANIME, isAdult: false, format_in: [TV, TV_SHORT, MOVIE, ONA], startDate_greater: $from, startDate_lesser: $to,
-          episodes_lesser: $episodesBelow, genre_in: $filterGenres, sort: [SCORE_DESC], popularity_greater: 3000) { ...M } }
+          episodes_lesser: $episodesBelow, genre_in: $filterGenres, genre_not_in: $notGenres, sort: [SCORE_DESC], popularity_greater: 3000) { ...M } }
 }`;
 }
 
@@ -161,6 +161,14 @@ export function decadeRange(filters = {}) {
   if (d === 'older') return { from: null, to: 19800000 };
   if (typeof d === 'number') return { from: d * 10000, to: (d + 10) * 10000 };
   return { from: null, to: null };
+}
+
+// A mood (js/engine/moods.js) as AniList genres: the ones that fit and the
+// ones that rule a title out. Genres AniList doesn't have are left out.
+export function moodGenres(mood) {
+  if (!mood) return { genres: [], not: [] };
+  const names = (list) => [...new Set((list || []).map(canonToAniList).filter(Boolean))];
+  return { genres: names(mood.genres), not: names(mood.not) };
 }
 
 // Turns a deckBatch response into { trending, season, genre, seeds: [{seedId, titles}], sequels }.
@@ -175,6 +183,12 @@ export function parseDeckBatch(data) {
       .filter(Boolean),
   }));
   return { trending: media('trending'), season: media('season'), genre: media('genre'), seeds, sequels: media('sequels'), filtered: media('filtered') };
+}
+
+// A Media's recommendations as Titles, adult entries left out.
+export function parseSimilar(media) {
+  const nodes = (media && media.recommendations && media.recommendations.nodes) || [];
+  return nodes.map((n) => n && n.mediaRecommendation).filter((m) => m && !m.isAdult).map(fromAniList).filter(Boolean);
 }
 
 // A voice actor's roles and a staff member's credits, merged per show (one
@@ -272,20 +286,24 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
   }
 
   return {
-    // filters: the deck's { short, decade } (see decadeRange). When set, one
-    // extra page asks AniList for exactly that, since trending and this season
-    // rarely include, say, 1990s anime.
-    async deckBatch({ seeds = [], sequels = [], genres = [], page = 1, now = new Date(), filters = null } = {}) {
+    // filters: the deck's { short, decade, mood } (see decadeRange). When
+    // set, one extra page asks AniList for exactly that, since trending and
+    // this season rarely include, say, 1990s anime. mood: the mood object
+    // (moodOf in js/engine/moods.js); its genres replace yours in that page.
+    async deckBatch({ seeds = [], sequels = [], genres = [], page = 1, now = new Date(), filters = null, mood = null } = {}) {
       const { season, year } = seasonOf(now);
       const range = decadeRange(filters || {});
-      const withFiltered = !!(filters && (filters.short || filters.decade));
+      const fit = moodGenres(mood);
+      const withFiltered = !!(filters && (filters.short || filters.decade)) || fit.genres.length > 0;
+      const filterGenres = fit.genres.length ? fit.genres : genres;
       const vars = {
         season, year, genres, page,
         seeds: seeds.slice(0, 10), sequels: sequels.slice(0, 10),
         withSeeds: seeds.length > 0, withGenres: genres.length > 0, withSequels: sequels.length > 0,
         withFiltered, from: range.from, to: range.to,
-        episodesBelow: withFiltered && filters.short ? 14 : null,
-        filterGenres: withFiltered && genres.length ? genres : null,
+        episodesBelow: withFiltered && filters && filters.short ? 14 : null,
+        filterGenres: withFiltered && filterGenres.length ? filterGenres : null,
+        notGenres: withFiltered && fit.not.length ? fit.not : null,
       };
       const key = `anilist:deck:${voiceLanguage}:${JSON.stringify(vars)}`;
       return parseDeckBatch(await gql(buildDeckQuery(voiceLanguage), vars, key, 6 * HOUR));
@@ -344,6 +362,14 @@ export function createAniList({ fetchImpl = globalThis.fetch, cache = null, voic
         date: dateOf(e.completedAt) || (e.updatedAt ? new Date(e.updatedAt * 1000).toISOString().slice(0, 10) : null),
         notes: (e.notes || '').trim(),
       })).filter((e) => e.id);
+    },
+    // "More anime like this": what AniList's users recommend to fans of it,
+    // best rated first. id: the number from 'anilist:<n>'.
+    async similar(id) {
+      const query = `${fragment(voiceLanguage)} query Similar($id: Int) { Media(id: $id, type: ANIME) { id
+  recommendations(perPage: 20, sort: [RATING_DESC]) { nodes { mediaRecommendation { ...M } } } } }`;
+      const data = await gql(query, { id: Number(id) }, `anilist:similar:${voiceLanguage}:${id}`, DAY);
+      return parseSimilar(data && data.Media);
     },
     async details(id) {
       const query = `${fragment(voiceLanguage)} query ($id: Int) { Media(id: $id, type: ANIME) { ...M } }`;
