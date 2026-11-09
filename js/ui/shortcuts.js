@@ -10,6 +10,7 @@ const KEYS = [
   ['↑', 'Seen it: rate it'],
   ['Enter', 'Details'],
   ['Z', 'Undo the last swipe'],
+  ['M', 'Pick a mood'],
   ['/', 'Search'],
   ['?', 'This list'],
   ['Esc', 'Close'],

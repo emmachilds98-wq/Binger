@@ -77,6 +77,8 @@ await context.route('https://graphql.anilist.co/**', async (route) => {
     data = { ...deckFx.data, filtered: vars.withFiltered ? filtered90s.data.filtered : null };
   }
   else if (body.includes('Staff(id')) data = staffTanezaki.data;
+  // "More anime like this": the deck's seed recommendations.
+  else if (body.includes('query Similar')) data = { Media: { id: 154587, recommendations: { nodes: deckFx.data.seeds.media.flatMap((m) => m.recommendations.nodes) } } };
   // Bring your history: a public AniList list for "emma", and lookups by id.
   else if (body.includes('MediaListCollection')) {
     const name = (JSON.parse(body).variables || {}).name;
@@ -112,6 +114,8 @@ await context.route('https://api.themoviedb.org/**', async (route) => {
   if (p.startsWith('/watch/providers/')) return json(providersList);
   if (p === '/person/1190668') return json(personChalamet);
   if (p === '/collection/726871') return json(duneCollection);
+  // "More films like this" on Dune: the other films in the fixtures.
+  if (p === '/movie/693134/recommendations') return json({ results: trending.results.filter((r) => r.id !== 693134) });
   // "What's on these services": like real TMDB, only titles actually on them.
   // In the fixtures that's Dune (on "Netflix Standard with Ads" in GB) and nothing else.
   if (p.startsWith('/discover/') && url.searchParams.has('with_watch_providers')) {
@@ -492,6 +496,51 @@ await page.getByRole('button', { name: 'Clear', exact: true }).click();
 await page.waitForTimeout(300);
 check(await page.locator('.filter-line').count() === 0, 'Clear turns the filters off');
 
+console.log('Moods');
+// The fixtures' titles that fit "Funny": comedies, without horror or war.
+const funnyTitles = new Set([
+  ...[...allAnime, ...filtered90s.data.filtered.media].filter((m) => m.genres.includes('Comedy') && !m.genres.includes('Horror')).map((m) => m.title.english || m.title.romaji),
+  ...trending.results.filter((r) => r.genre_ids.includes(35) && !r.genre_ids.some((g) => g === 27 || g === 10752)).map((r) => r.title),
+]);
+await page.goto(base + '#discover');
+await page.waitForSelector('.deck .card');
+await page.keyboard.press('m');
+await page.waitForSelector('.mood-sheet .mood-tile');
+check(true, 'M opens the mood picker');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.getByRole('button', { name: 'Pick a mood' }).click();
+await page.waitForSelector('.mood-sheet .mood-tile');
+const moodNames = await page.locator('.mood-sheet .mood-name').allInnerTexts();
+check(moodNames[0] === 'Any mood' && ['Funny', 'Feel-good', 'Gripping', 'Mind-bending', 'Scary', 'Romantic', 'Moving'].every((m) => moodNames.includes(m)), `the picker offers moods (${moodNames.join(', ')})`);
+check((await page.locator('.mood-sheet .mood-tile', { hasText: 'Gripping' }).innerText()).includes(`Like ${rated}`), `a mood you’ve tagged names what you tagged ("Gripping: Like ${rated}")`);
+check(await page.locator('.mood-sheet .mood-tile[aria-pressed="true"] .mood-name').innerText() === 'Any mood', 'no mood is picked to start with');
+await page.waitForTimeout(250);
+await shot('32-mood');
+await page.locator('.mood-sheet .mood-tile', { hasText: 'Funny' }).click();
+await page.waitForFunction(() => /Funny/.test(document.querySelector('.filter-line')?.textContent || ''));
+check(true, 'picking a mood shows it in the filter line');
+check(await page.getByRole('button', { name: 'Mood: Funny. Change mood' }).evaluate((e) => e.classList.contains('is-on')), 'the Mood pill turns amber, and says which mood to a screen reader');
+await page.waitForFunction(() => !document.querySelector('.deck-loading') && document.querySelector('.deck .card, .deck-empty h2'), null, { timeout: 8000 }).catch(() => {});
+const funnyCards = await page.locator('.deck .card h2').allInnerTexts();
+check(funnyCards.length > 0 && funnyCards.every((t) => funnyTitles.has(t)), `every card fits the mood (${funnyCards.join(', ')})`);
+await page.getByRole('button', { name: 'Filters (on)' }).click();
+await page.waitForSelector('.filters .pill');
+check(await page.locator('.filters [aria-labelledby="f-mood"] .pill[aria-pressed="true"]').innerText() === 'Funny', 'the Filters sheet shows the mood too');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+await page.getByRole('button', { name: 'Clear', exact: true }).click();
+await page.waitForTimeout(300);
+check(await page.locator('.filter-line').count() === 0 && await page.getByRole('button', { name: 'Pick a mood' }).count() === 1, 'Clear takes the mood off too');
+
+console.log('More anime like this');
+await page.goto(base + '#title/' + encodeURIComponent('anilist:154587'));
+await page.waitForSelector('.detail .similar .similar-item');
+check(await page.locator('.detail .similar h2').textContent() === 'More anime like this', 'an anime’s details end with "More anime like this", from AniList');
+check(!(await page.locator('.detail .similar-name').allInnerTexts()).includes('Frieren: Beyond Journey’s End'), 'without the anime itself');
+await page.keyboard.press('Escape');
+await page.waitForTimeout(300);
+
 console.log('Streaming services');
 await page.goto(base + '#taste');
 await page.getByRole('button', { name: /Your streaming services/ }).click();
@@ -523,6 +572,21 @@ check(await page.locator('.detail .provider-yours', { hasText: 'Netflix' }).coun
 check(/themoviedb\.org\/movie\/693134.*\/watch/.test(await page.locator('.detail a.watch-btn').getAttribute('href') || ''), 'a "Where to watch it" button goes to the title’s legal watch options');
 const why = await page.locator('.detail .why').innerText().catch(() => '');
 console.log(`    (why it was picked: ${why.replace(/\s+/g, ' ').trim()})`);
+
+console.log('More like this');
+await page.waitForSelector('.detail .similar .similar-item');
+check(await page.locator('.detail .similar h2').textContent() === 'More films like this', 'a film’s details end with "More films like this"');
+const similarNames = await page.locator('.detail .similar-name').allInnerTexts();
+check(similarNames.length >= 1 && !similarNames.includes('Dune: Part Two') && !similarNames.includes('Spirited Away'), `it lists other films, not Dune itself or anime from TMDB (${similarNames.join(', ')})`);
+await page.locator('.detail .similar').scrollIntoViewIfNeeded();
+await page.waitForTimeout(250);
+await shot('31-more-like-this');
+await page.locator('.detail .similar-item').first().click();
+await page.waitForFunction((name) => [...document.querySelectorAll('.detail .detail-title')].some((e) => e.textContent === name), similarNames[0]);
+check(await page.locator('.sheet.detail').count() === 2, `tapping one opens its details on top (${similarNames[0]})`);
+await page.keyboard.press('Escape');
+await page.waitForTimeout(400);
+check(await page.locator('.sheet.detail').count() === 1 && (await page.locator('.detail .detail-title').innerText()) === 'Dune: Part Two', 'back returns to Dune');
 
 console.log("A person's work");
 await page.getByRole('button', { name: 'Timothée Chalamet: see their other work' }).click();

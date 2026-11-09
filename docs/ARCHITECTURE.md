@@ -25,9 +25,10 @@ each one only talks to the one below it.
 | `js/engine/profile.js` | Library → taste profile (affinities, evidence, people you know) |
 | `js/engine/score.js` | One title × profile → score |
 | `js/engine/explain.js` | Score → plain-English reasons |
-| `js/engine/rank.js` | Pool → deck (filters, hidden series, streaming, mix quotas, diversity, wildcards); watchlist ranking; `rankForYou` (a person's work) |
+| `js/engine/rank.js` | Pool → deck (filters, hidden series, streaming, mix quotas, diversity, wildcards); watchlist ranking; `rankForYou` (a person's work); `rankSimilar` ("More like this") |
 | `js/engine/seasons.js` | New seasons of TV you've watched (`seasonAlert`, `seasonAlerts`, `showsToCheck`) |
 | `js/engine/timeline.js` | Your profile replayed at past dates (`tasteTimeline`, `itemAsOf`) |
+| `js/engine/moods.js` | The moods on Discover (`MOODS`): which genres fit each, `matchesMood`, and `moodSeeds` (what you tagged with that feeling) |
 | `js/sources/genres.js` | TMDB / AniList genre vocabularies → one canonical set |
 | `js/sources/services.js` | TMDB / AniList streaming-service names → one canonical name each; each service's TMDB networks (its own shows); service names typed into search |
 | `js/sources/http.js` | `fetchJSON` (timeout, 429 retry), `cached` (stale-on-error), `mapLimit` |
@@ -36,11 +37,11 @@ each one only talks to the one below it.
 | `js/sources/candidates.js` | Builds the candidate pool from both sources (incl. your services and deck filters); `hydrate` fetches TMDB details |
 | `js/sources/imports.js` | Bring your history: IMDb / Letterboxd CSVs, MyAnimeList XML and AniList lists read into a plan (`readExport`, `mergePlan`), matched to titles (`resolvePlan`); `importHistory` in library.js adds it |
 | `js/sources/ratings.js` | Review scores from MDBList (IMDb, Rotten Tomatoes critics + audience, Metacritic, Letterboxd), by TMDB id; MyAnimeList's for anime, by `malId`; needs `CONFIG.mdblistKey` |
-| `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, service choices, new-season checks |
+| `js/sources/lookups.js` | On-demand lookups: search (ranked by closeness, service names), the first-run grid, a service's shows, a person's work, a whole franchise, "more like this" (`similarTitles`), service choices, new-season checks |
 | `js/state/library.js` | Pure library rules: status, watches, undo, import/export, migration |
 | `js/state/store.js` | localStorage persistence + change notifications |
 | `js/state/cache.js` | IndexedDB key-value cache with expiry (memory fallback) |
-| `js/ui/*.js` | One file per screen or sheet; `dom.js` = `h()` / `append()` helpers + icons; `sheet.js` = sheets + toasts; `filters.js` = deck filters sheet; `services.js` = your streaming services; `person.js` = a person's work |
+| `js/ui/*.js` | One file per screen or sheet; `dom.js` = `h()` / `append()` helpers + icons; `sheet.js` = sheets + toasts; `filters.js` = deck filters sheet; `services.js` = your streaming services; `person.js` = a person's work; `mood.js` = the mood picker |
 | `service-worker.js` | Network-first app shell, cache-first images |
 | `tests/*.test.js` | `node --test` unit tests; fixtures in `tests/fixtures/` |
 | `scripts/e2e.mjs` | Full browser run with mocked APIs, writes `docs/screenshots/` |
@@ -152,7 +153,7 @@ list once detailed (AniList always), or from `streamHint`.
 **5. Deck** (`rank.js`). First `eligible()` drops what's in your library,
 hidden genres and hidden series (`isBlocked`: by id, TMDB collection or AniList
 relation), kinds filtered out, titles outside the deck filters (`isShort`:
-films ≤ 120 min, series ≤ 13 episodes; `inDecade`), and with "Only what I can
+films ≤ 120 min, series ≤ 13 episodes; `inDecade`; `matchesMood`), and with "Only what I can
 stream", titles known not to be on your services. Unknown length or
 availability stays in until details arrive. Then pick cards one at a time:
 best score, plus a bonus for whichever kind is under its Films/TV/Anime share,
@@ -161,10 +162,20 @@ overlap). With "Surprise me" on, every 7th card is a well-rated title with low
 affinity, so the profile can discover new likes. The deck re-ranks after every swipe.
 
 `rankForYou` orders a person's credits the same way (`major` roles +0.08);
-`rankWatchlist` orders your watchlist.
+`rankWatchlist` orders your watchlist. `rankSimilar` orders "More like this"
+on a title's page: by score, without the title itself, what you passed, or
+hidden genres and series (they're suggestions, like the deck).
+
+**Moods** (`moods.js`). A mood is a deck filter for the session, like the
+decade. Each has genres that fit (any of them) and genres that rule a title
+out ("Funny" is Comedy without Horror or War); anime can also fit by an
+AniList theme (Iyashikei for "Feel-good"). Moods are named after the rate
+sheet's feeling tags, and `moodSeeds` finds what you watched, tagged with
+that feeling and didn't dislike: the deck asks "more like this" about those
+too, and their cards say "Like Paddington 2, which you tagged Funny".
 
 **6. Reasons** (`explain.js`): sequel of something you watched →
-recommended off a title you loved → creator / cast / studio you rate (one cast
+recommended off a title you loved (or tagged with the mood you picked) → creator / cast / studio you rate (one cast
 line max) → liked genres folded into one line → themes → a length you rate
 highly → new / airing / coming soon → on your services ("On Netflix") →
 trending → "Highly rated".
@@ -194,6 +205,7 @@ On every refill (deck below 8 cards, a filter change, or "Fetch fresh cards"):
 | Next seasons | (TV keeps one id: see engine/seasons.js) | `SEQUEL` ids of anime you've watched |
 | Your services | discover with `with_watch_providers` (your services' ids in your region); 2 pages with "only" on | (AniList links checked per title) |
 | Deck filters | discover with `with_runtime.lte=120` and/or the decade's dates | a `filtered` page: `episodes_lesser`, `startDate` range |
+| A mood | discover with the mood's genres (`with_genres`, any of) and `without_genres`, popular and best-rated; `/recommendations` for titles you tagged with it (`moodGenreIds`). TMDB has no Horror or Thriller for TV, so "Scary" brings no TV pull | the `filtered` page with the mood's `genre_in` / `genre_not_in`; tagged anime join the seeds |
 | Cold start | `/movie/popular`; TV by discover (TMDB's own popular TV is mostly talk shows) | (trending covers it) |
 
 TV lists for the deck never include news, talk shows or daily soaps
@@ -209,6 +221,16 @@ the next part, when you have). The top few TMDB titles are then *hydrated*
 (one detail call each, with credits, keywords, videos, watch providers and
 certificates appended) so their cards have cast and trailers, and, with an
 MDBList key, their review scores (`ratings.js`, one call each, cached a week).
+
+## More like this (`similarTitles` in `sources/lookups.js`)
+
+A title's details end with "More films like this" (or shows, or anime).
+Films and TV: TMDB `/recommendations` (what people who liked it went on to
+like), topped up with `/similar` when there are fewer than 10. Anime:
+AniList's `recommendations` for that Media (one small request, cached a day).
+Ranked by `rankSimilar` and shown as a row of up to 12 posters; each opens
+its own details on top. Not on the wide-screen side panel, which follows
+every top card and would ask on every swipe.
 
 ## Search and the first-run grid (`sources/lookups.js`)
 

@@ -223,6 +223,27 @@ export async function loadTitle(id, { tmdb, anilist }) {
   return a && anilist ? anilist.details(a[1]) : null;
 }
 
+// "More like this" on a title's page. Films and TV: TMDB's recommendations
+// (what people who liked it went on to like), topped up with /similar (same
+// genres and keywords) for new or niche titles that have few yet. Anime:
+// AniList's own users' recommendations. Never the title itself, and no
+// Japanese animation from TMDB (anime comes from AniList, decision 3).
+// The engine ranks them for you (rankSimilar).
+export async function similarTitles(title, { tmdb, anilist }) {
+  if (!title) return [];
+  let list = [];
+  if (title.source === 'tmdb') {
+    if (!tmdb || !tmdb.hasKey) return [];
+    const recs = await tmdb.recommendations(title.mediaType, title.sourceId);
+    const more = recs.length < 10 ? await tmdb.similar(title.mediaType, title.sourceId).catch(() => []) : [];
+    list = [...recs, ...more];
+  } else if (title.source === 'anilist' && anilist) {
+    list = await anilist.similar(title.sourceId);
+  }
+  const seen = new Set([title.id]);
+  return list.filter((t) => t && !t.animeLike && !seen.has(t.id) && seen.add(t.id));
+}
+
 // Can this title be hidden as a whole series? Films in a TMDB collection and
 // anime with related entries can; a standalone film is just a pass.
 export function hasFranchise(title) {

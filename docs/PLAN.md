@@ -397,6 +397,10 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 - [ ] Step 4 (owner): `MDBLIST_API_KEY` repository secret (switches scores
       on); `TMDB_API_KEY` + `MDBLIST_API_KEY` in the cloud environment; Trakt later, maybe
 
+### Discovery extras ✅ (2026-11-09, the owner's ask)
+- [x] "More films / shows / anime like this" on every title's details
+- [x] Moods on Discover (Mood pill, M, Filters), seeded by your own feeling tags
+
 ### Phase 3: Grows with you everywhere
 - [x] Optional sync across devices (Firebase Auth + Firestore): built early, see above
 - [x] Import history: IMDb and Letterboxd CSVs, MyAnimeList export, AniList username (Trakt not yet)
@@ -412,6 +416,31 @@ Details, order and owner decisions: [UPGRADE-PLAN.md](UPGRADE-PLAN.md).
 ## Status log
 
 Newest first. One entry per working session: what changed, what's next, what's blocking.
+
+### 2026-11-09: more like this, and moods
+- The owner asked for "movies like this one or shows like this one" on a
+  title's page, and "ways to find a mood and other things I might want".
+- **More like this**: every title's details end with "More films like
+  this" (or shows, or anime): up to 12 posters, best for you first, without
+  what you passed or hid. TMDB recommendations topped up with `/similar`;
+  AniList's own recommendations for anime (`similarTitles` in lookups.js,
+  `rankSimilar` in rank.js, `anilist.similar`). Each opens its own details on
+  top. Not on the PC side panel (it would ask on every swipe).
+- **Moods**: a Mood pill on Discover (and M) opens "What are you in the mood
+  for?": Funny, Feel-good, Gripping, Mind-bending, Scary, Romantic, Moving,
+  Epic, Dark, True stories, Family night (`js/engine/moods.js`). A mood is a
+  session deck filter like the decade (also in the Filters sheet, cleared by
+  Clear): only cards that fit, still ranked for you, and each refill asks
+  TMDB and AniList for that mood's genres. Moods share names with the rate
+  sheet's feeling tags, so what you tagged "Funny" seeds "Funny" ("Like
+  Paddington 2, which you tagged Funny"), and its tile says "Like Paddington 2".
+- Known gap: TMDB has no Horror, Thriller or Romance genre for TV, so Scary
+  and Romantic bring films and anime, and TV only where TMDB's TV genres fit.
+- Tests: 176 unit (tests/moods.test.js); e2e all passing (new: moods, more
+  films like this, more anime like this); screenshots `31-more-like-this`,
+  `32-mood`. e2e:sync not needed (no sync code changed).
+- **Next:** unchanged (COVERAGE-PLAN leftovers, then Phase 3's shared deck).
+  A mood could later steer "match with a friend".
 
 ### 2026-10-31 (fifth session, last): combined pills, deeper reviews
 - The owner asked to pick several Discover pills at once (Films and TV, not
